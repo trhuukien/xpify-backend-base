@@ -1,0 +1,22 @@
+{
+  "name": "xpify/module-merchant",
+  "version": "1.0.0",
+  "description": "N/A",
+  "type": "magento2-module",
+  "require": {
+    "magento/framework": "*",
+    "xpify/module-auth": "1.0.*",
+    "xpify/module-core": "1.0.*"
+  },
+  "license": [
+    "Proprietary"
+  ],
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Xpify\\Merchant\\": ""
+    }
+  }
+}

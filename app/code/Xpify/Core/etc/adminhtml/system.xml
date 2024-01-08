@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="bss" translate="label" sortOrder="555" class="simi-logo">
+            <label><![CDATA[Bss Commerce]]></label>
+        </tab>
+        <section id="xpify" translate="label" showInStore="1" showInWebsite="1" showInDefault="1">
+            <label><![CDATA[X Team Shopify]]></label>
+            <tab>bss</tab>
+            <class>separator-top</class>
+            <resource>Xpify_Core::config</resource>
+            <group id="general" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label><![CDATA[General]]></label>
+                <field id="xpify_secret" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="0">
+                    <label><![CDATA[Xpify Secret Key]]></label>
+                    <comment>The secret key for retrieve app config when build</comment>
+                </field>
+<!--                <field id="api_secret" translate="label comment" type="obscure" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="0">-->
+<!--                    <label><![CDATA[Shopify API Secret]]></label>-->
+<!--                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>-->
+<!--                    <comment>The App's API Secret or Client Secret</comment>-->
+<!--                </field>-->
+
+<!--                <field id="app_bridge_version" translate="label comment" type="text" sortOrder="100" showInDefault="1" canRestore="1">-->
+<!--                    <label><![CDATA[Shopify App Bridge Version]]></label>-->
+<!--                    <comment><![CDATA[Use semver range to link to a major or minor version number. <br /> Leaving empty will use the latest version - not recommended in production.]]></comment>-->
+<!--                </field>-->
+<!--                <field id="api_version" translate="label comment" type="text" sortOrder="150" showInDefault="1" canRestore="1">-->
+<!--                    <label><![CDATA[Shopify API Version]]></label>-->
+<!--                    <validate>validate-shopify-api-version</validate>-->
+<!--                    <comment><![CDATA[This option is for the app's API version string. <br /> Use "YYYY-MM" or "unstable". Refer to Shopify documentation at <a href='https://shopify.dev/docs/api/usage/versioning#release-schedule'>Shopify API versioning</a> for the current stable version.]]></comment>-->
+<!--                </field>-->
+<!--                <field id="shopify_api_grant_mode" translate="label comment" type="select" sortOrder="200" showInDefault="1" canRestore="1">-->
+<!--                    <label><![CDATA[Shopify API Grant Mode]]></label>-->
+<!--                    <source_model>SimiCart\SimpifyManagement\Model\Source\AuthMode</source_model>-->
+<!--                    <comment><![CDATA[This option is for the grant mode when authenticating. </br > <strong style='color: red'>Note:</strong> Install will always be in offline mode.]]></comment>-->
+<!--                </field>-->
+<!--                <field id="shopify_api_scopes" translate="label comment" type="textarea" sortOrder="250" showInDefault="1" canRestore="1">-->
+<!--                    <label><![CDATA[Shopify API Scopes]]></label>-->
+<!--                    <comment>This option is for the scopes your application needs in the API.</comment>-->
+<!--                </field>-->
+<!--                <field id="frontend_url" translate="label comment" type="text" sortOrder="300" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="0">-->
+<!--                    <label><![CDATA[Dashboard Front-end URL]]></label>-->
+<!--                    <comment>Note: No slash at the end.</comment>-->
+<!--                </field>-->
+            </group>
+        </section>
+    </system>
+</config>

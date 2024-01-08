@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="xpify_apps" resource="default" engine="innodb" comment="Shopify Apps">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true"
+                comment="Local App ID"/>
+        <column xsi:type="varchar" name="remote_id" length="64" comment="Remote Real App ID"/>
+        <column xsi:type="varchar" name="name" length="32" comment="Shopify App Name"/>
+        <column xsi:type="varchar" name="api_key" length="64" comment="App API Key"/>
+        <column xsi:type="varchar" name="secret_key" length="64" comment="App Secret Key"/>
+
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="App Created Time"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="XPIFY_APPS_REMOTE_ID">
+            <column name="remote_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="XPIFY_APPS_NAME">
+            <column name="name"/>
+        </constraint>
+    </table>
+</schema>
