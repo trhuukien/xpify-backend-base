@@ -8,6 +8,10 @@ use Xpify\App\Api\Data\AppInterface;
 
 class App extends AbstractModel implements AppInterface
 {
+    protected function _construct()
+    {
+        $this->_init(\Xpify\App\Model\ResourceModel\App::class);
+    }
 
     /**
      * @inheritDoc

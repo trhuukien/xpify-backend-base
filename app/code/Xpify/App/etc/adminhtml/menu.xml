@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Xpify_App::apps" title="Manage Apps" module="Xpify_App" sortOrder="10" action="xpify/apps" resource="Xpify_App::app_management" parent="Xpify_Core::xpify_management"/>
+    </menu>
+</config>

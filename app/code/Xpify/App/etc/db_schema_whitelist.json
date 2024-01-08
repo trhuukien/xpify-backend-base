@@ -1,0 +1,16 @@
+{
+    "xpify_apps": {
+        "column": {
+            "entity_id": true,
+            "remote_id": true,
+            "name": true,
+            "api_key": true,
+            "secret_key": true,
+            "created_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "XPIFY_APPS_NAME": true
+        }
+    }
+}

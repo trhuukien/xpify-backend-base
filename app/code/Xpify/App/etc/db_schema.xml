@@ -5,7 +5,7 @@
         <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true"
                 comment="Local App ID"/>
         <column xsi:type="varchar" name="remote_id" length="64" comment="Remote Real App ID"/>
-        <column xsi:type="varchar" name="name" length="32" comment="Shopify App Name"/>
+        <column xsi:type="varchar" name="name" length="32" nullable="false" comment="Shopify App Name"/>
         <column xsi:type="varchar" name="api_key" length="64" comment="App API Key"/>
         <column xsi:type="varchar" name="secret_key" length="64" comment="App Secret Key"/>
 
@@ -14,9 +14,6 @@
 
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="entity_id"/>
-        </constraint>
-        <constraint xsi:type="unique" referenceId="XPIFY_APPS_REMOTE_ID">
-            <column name="remote_id"/>
         </constraint>
         <constraint xsi:type="unique" referenceId="XPIFY_APPS_NAME">
             <column name="name"/>

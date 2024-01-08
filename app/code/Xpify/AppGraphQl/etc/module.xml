@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    <module name="Xpify_AppGraphQl">
+        <sequence>
+            <module name="Magento_GraphQl"/>
+            <module name="Xpify_App"/>
+            <module name="Xpify_Core"/>
+        </sequence>
+    </module>
+</config>

@@ -9082,6 +9082,37 @@
             "description": "N/A"
         },
         {
+            "name": "magento/module-url-rewrite-graph-ql",
+            "version": "100.4.4",
+            "dist": {
+                "type": "zip",
+                "url": "https://repo.magento.com/archives/magento/module-url-rewrite-graph-ql/magento-module-url-rewrite-graph-ql-100.4.4.0.zip",
+                "shasum": "0f9bbcbb7ff349dc5fdf5c2f886dff57441473fd"
+            },
+            "require": {
+                "magento/framework": "103.0.*",
+                "magento/module-url-rewrite": "102.0.*",
+                "php": "~7.4.0||~8.1.0"
+            },
+            "suggest": {
+                "magento/module-graph-ql": "100.4.*"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "registration.php"
+                ],
+                "psr-4": {
+                    "Magento\\UrlRewriteGraphQl\\": ""
+                }
+            },
+            "license": [
+                "OSL-3.0",
+                "AFL-3.0"
+            ],
+            "description": "N/A"
+        },
+        {
             "name": "magento/module-user",
             "version": "101.2.5",
             "dist": {
@@ -9547,6 +9578,7 @@
                 "magento/module-translation": "100.4.5",
                 "magento/module-ui": "101.2.5",
                 "magento/module-url-rewrite": "102.0.4-p4",
+                "magento/module-url-rewrite-graph-ql": "100.4.4",
                 "magento/module-user": "101.2.5",
                 "magento/module-variable": "100.4.3",
                 "magento/module-version": "100.4.2",

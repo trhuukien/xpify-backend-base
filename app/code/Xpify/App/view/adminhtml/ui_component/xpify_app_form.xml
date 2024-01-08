@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">xpify_app_form.xpify_app_form_data_source</item>
+        </item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="save" class="Xpify\App\Block\Adminhtml\Form\SaveButton" />
+            <button name="back" class="Magento\Customer\Block\Adminhtml\Edit\BackButton" />
+        </buttons>
+        <deps>
+            <dep>xpify_app_form.xpify_app_form_data_source</dep>
+        </deps>
+        <label translate="true">App</label>
+        <dataScope>data</dataScope>
+        <namespace>simpify_shop_form</namespace>
+    </settings>
+
+    <dataSource name="xpify_app_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="xpify/apps/save"/>
+        </settings>
+        <dataProvider name="xpify_app_form_data_source" class="Xpify\App\Ui\Component\Form\AppDataProvider">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <fieldset name="general">
+        <settings>
+            <label />
+            <dataScope />
+            <collapsible>false</collapsible>
+        </settings>
+
+        <!-- import hidden id field -->
+        <field name="entity_id" sortOrder="0" formElement="hidden">
+            <settings>
+                <dataType>text</dataType>
+                <visible>false</visible>
+            </settings>
+        </field>
+        <field name="remote_id" sortOrder="200" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Shopify App ID</label>
+                <dataScope>remote_id</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">false</rule>
+                    <rule name="max_text_length" xsi:type="number">255</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="name" sortOrder="200" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">App Name</label>
+                <dataScope>name</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="max_text_length" xsi:type="number">32</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="api_key" sortOrder="300" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">API Key</label>
+                <dataScope>api_key</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">false</rule>
+                    <rule name="max_text_length" xsi:type="number">255</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="secret_key" sortOrder="400" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Secret Key</label>
+                <dataScope>secret_key</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">false</rule>
+                    <rule name="max_text_length" xsi:type="number">255</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="created_at" sortOrder="900" formElement="date">
+            <settings>
+                <disabled>true</disabled>
+                <dataType>text</dataType>
+                <label translate="true">Installation Date</label>
+                <dataScope>created_at</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+</form>

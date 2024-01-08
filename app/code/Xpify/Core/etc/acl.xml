@@ -3,10 +3,11 @@
     <acl>
         <resources>
             <resource id="Magento_Backend::admin">
+                <resource id="Xpify_Core::xpify_management" translate="title" title="X Team Shopify Management" sortOrder="10" />
                 <resource id="Magento_Backend::stores">
                     <resource id="Magento_Backend::stores_settings">
                         <resource id="Magento_Config::config">
-                            <resource id="Xpify_Core::config" title="Shopify Mobile Management Configuration" sortOrder="0" />
+                            <resource id="Xpify_Core::config" title="X Team Shopify Management Configuration" sortOrder="0" />
                         </resource>
                     </resource>
                 </resource>
