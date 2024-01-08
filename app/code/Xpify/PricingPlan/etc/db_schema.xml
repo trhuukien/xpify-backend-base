@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="xpify_pricing_plans" resource="default" engine="innodb" comment="Pricing Plans">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true" />
+<!--        is active field-->
+        <column xsi:type="smallint" name="status" unsigned="true" nullable="false" default="1" comment="Enable plan" />
+        <column xsi:type="varchar" name="name" length="255" comment="Plan name" />
+        <column xsi:type="text" name="description" nullable="true" comment="Plan description"/>
+        <column xsi:type="decimal" name="price" scale="6" precision="20" unsigned="false" nullable="true" comment="Plan price" />
+        <column xsi:type="int" name="free_trial_days" padding="3" unsigned="true" nullable="true" comment="Free trial days" />
+        <column xsi:type="smallint" name="enable_free_trial" unsigned="true" nullable="false" default="0" comment="Enable free trial" />
+<!--        Sort orde field-->
+        <column xsi:type="int" name="sort_order" unsigned="true" nullable="false" default="0" comment="Sort order" />
+<!--        app_id field-->
+        <column xsi:type="int" name="app_id" unsigned="true" nullable="false" comment="App ID"/>
+        <constraint xsi:type="foreign" referenceId="XPIFY_PRICING_PLANS_APP_ID_XPIFY_APPS_ENTITY_ID" table="xpify_pricing_plans"
+                    column="app_id" referenceTable="xpify_apps" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <index referenceId="XPIFY_PRICING_PLANS_ENTITY_ID" indexType="btree">
+            <column name="entity_id"/>
+        </index>
+        <index referenceId="XPIFY_PRICING_PLANS_APP_ID" indexType="btree">
+            <column name="app_id"/>
+        </index>
+    </table>
+</schema>

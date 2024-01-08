@@ -54,19 +54,19 @@ class AppDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
         if (!empty($items)) {
             foreach ($items as $item) {
                 $data = $item->getData();
-                $this->loadedData[$item->getId()] = $data;
+                $this->loadedData[$item->getId()]['general'] = $data;
             }
         }
         $data = $this->dataPersistor->get('xpify_app');
         if (!empty($data)) {
             $items = $this->collectionFactory->create()->addFieldToFilter(IApp::ID, $data['entity_id']);
             if ($items->getSize() === 0) {
-                $this->loadedData[$data['entity_id'] ?? ""] = $data;
+                $this->loadedData[$data['entity_id'] ?? ""]['general'] = $data;
             } else {
                 foreach ($items as $item) {
                     if ($data['entity_id'] === $item->getId()) {
                         $key = $this->request->getParam('id') ?? "";
-                        $this->loadedData[$key] = $data;
+                        $this->loadedData[$key]['general'] = $data;
                     }
                 }
             }

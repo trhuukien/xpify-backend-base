@@ -1,9 +1,10 @@
 {
   "name": "xpify/module-core",
   "version": "1.0.0",
-  "description": "N/A",
+  "description": "X Team Shopify Core Module",
   "type": "magento2-module",
   "require": {
+    "php": "~7.4.0||~8.1.0",
     "magento/framework": "*"
   },
   "license": [

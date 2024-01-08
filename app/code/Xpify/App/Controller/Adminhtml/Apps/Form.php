@@ -50,7 +50,7 @@ class Form extends \Magento\Backend\App\Action implements HttpGetActionInterface
 
         $title = __('New App');
         if (isset($shop) && $shop->getId()) {
-            $title = __("Edit: %1", $shop->getShopDomain());
+            $title = __("Edit: %1", $shop->getName());
         }
         $this->registry->register('current_app', $shop);
         $page = $this->pageFactory->create();

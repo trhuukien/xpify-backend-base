@@ -137,6 +137,7 @@ return [
         'Xpify_App' => 1,
         'Xpify_Auth' => 1,
         'Xpify_AppGraphQl' => 1,
-        'Xpify_Merchant' => 0
+        'Xpify_Merchant' => 0,
+        'Xpify_PricingPlan' => 1
     ]
 ];

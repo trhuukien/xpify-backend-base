@@ -1,0 +1,133 @@
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">xpify_pricing_plan_listing.xpify_pricing_plan_listing_data_source</item>
+        </item>
+        <item name="spinner" xsi:type="string">spinner_columns</item>
+        <item name="buttons" xsi:type="array">
+            <item name="add" xsi:type="array">
+                <item name="name" xsi:type="string">add</item>
+                <item name="label" xsi:type="string" translate="true">New Plan</item>
+                <item name="class" xsi:type="string">primary</item>
+                <item name="url" xsi:type="string">*/*/new</item>
+            </item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>xpify_pricing_plan_listing_columns</spinner>
+        <deps>
+            <dep>xpify_pricing_plan_listing.xpify_pricing_plan_listing_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="xpify_pricing_plan_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <filterUrlParams>
+                <param name="id">*</param>
+            </filterUrlParams>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">entity_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>Xpify_PricingPlan::pricing_plan</aclResource>
+        <dataProvider class="Xpify\PricingPlan\Ui\Component\Listing\DataProvider" name="xpify_pricing_plan_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <listingToolbar name="listing_top">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="sticky" xsi:type="boolean">false</item>
+            </item>
+        </argument>
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <exportButton name="export_button"/>
+        <filters name="listing_filters" />
+        <filterSearch name="fulltext"/>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="spinner_columns">
+        <column name="entity_id" sortOrder="10">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">ID</label>
+                <sorting>asc</sorting>
+            </settings>
+        </column>
+        <column name="name" sortOrder="50">
+            <settings>
+                <label translate="true">Name</label>
+                <filter>text</filter>
+                <editor>
+                    <editorType>text</editorType>
+                    <validation>
+                        <rule name="required-entry" xsi:type="boolean">true</rule>
+                    </validation>
+                </editor>
+            </settings>
+        </column>
+        <column name="status" sortOrder="100" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <options class="Magento\Cms\Model\Block\Source\IsActive"/>
+                <filter>select</filter>
+                <editor>
+                    <editorType>select</editorType>
+                </editor>
+                <dataType>select</dataType>
+                <label translate="true">Status</label>
+            </settings>
+        </column>
+        <column name="price" sortOrder="200" class="Xpify\PricingPlan\Ui\Component\Listing\Column\PlanValue">
+            <settings>
+                <label translate="true">Price</label>
+                <filter>textRange</filter>
+                <editor>
+                    <editorType>text</editorType>
+                    <validation>
+                        <rule name="required-entry" xsi:type="boolean">true</rule>
+                    </validation>
+                </editor>
+            </settings>
+        </column>
+        <column name="enable_free_trial" sortOrder="300" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <options class="Magento\Cms\Model\Block\Source\IsActive"/>
+                <label translate="true">Enable Free Trial</label>
+                <filter>select</filter>
+                <editor>
+                    <editorType>select</editorType>
+                </editor>
+            </settings>
+        </column>
+        <column name="free_trial_days" sortOrder="400">
+            <settings>
+                <label translate="true">Free Trial Days</label>
+                <filter>textRange</filter>
+                <editor>
+                    <editorType>text</editorType>
+                </editor>
+            </settings>
+        </column>
+        <column name="sort_order" sortOrder="500">
+            <settings>
+                <label translate="true">Sort Order</label>
+                <filter>textRange</filter>
+                <editor>
+                    <editorType>text</editorType>
+                </editor>
+            </settings>
+        </column>
+
+        <actionsColumn name="actions" class="Xpify\PricingPlan\Ui\Component\Listing\Column\Actions">
+            <settings>
+                <indexField>entity_id</indexField>
+            </settings>
+        </actionsColumn>
+    </columns>
+</listing>

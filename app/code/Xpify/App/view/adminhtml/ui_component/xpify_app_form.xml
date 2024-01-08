@@ -4,27 +4,25 @@
         <item name="js_config" xsi:type="array">
             <item name="provider" xsi:type="string">xpify_app_form.xpify_app_form_data_source</item>
         </item>
-        <item name="template" xsi:type="string">templates/form/collapsible</item>
+        <item name="label" xsi:type="string" translate="true">App Information</item>
     </argument>
     <settings>
         <buttons>
             <button name="save" class="Xpify\App\Block\Adminhtml\Form\SaveButton" />
             <button name="back" class="Magento\Customer\Block\Adminhtml\Edit\BackButton" />
         </buttons>
+        <layout>
+            <type>tabs</type>
+            <navContainerName>left</navContainerName>
+        </layout>
         <deps>
             <dep>xpify_app_form.xpify_app_form_data_source</dep>
         </deps>
-        <label translate="true">App</label>
         <dataScope>data</dataScope>
-        <namespace>simpify_shop_form</namespace>
+        <namespace>xpify_app_form</namespace>
     </settings>
 
-    <dataSource name="xpify_app_form_data_source">
-        <argument name="data" xsi:type="array">
-            <item name="js_config" xsi:type="array">
-                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
-            </item>
-        </argument>
+    <dataSource name="xpify_app_form_data_source" component="Magento_Ui/js/form/provider">
         <settings>
             <submitUrl path="xpify/apps/save"/>
         </settings>
@@ -38,7 +36,7 @@
 
     <fieldset name="general">
         <settings>
-            <label />
+            <label translate="true">General</label>
             <dataScope />
             <collapsible>false</collapsible>
         </settings>

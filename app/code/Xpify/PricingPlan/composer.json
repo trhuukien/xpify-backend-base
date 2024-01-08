@@ -1,12 +1,13 @@
 {
-  "name": "xpify/module-app",
+  "name": "xpify/module-pricing-plan",
   "version": "1.0.0",
-  "description": "N/A",
+  "description": "X Team - Shopify Pricing Plan management module for Magento 2",
   "type": "magento2-module",
   "require": {
     "php": "~7.4.0||~8.1.0",
     "magento/framework": "*",
-    "xpify/module-core": "1.0.*"
+    "xpify/module-core": "1.0.*",
+    "xpify/module-app": "1.0.*"
   },
   "license": [
     "Proprietary"
@@ -16,7 +17,7 @@
       "registration.php"
     ],
     "psr-4": {
-      "Xpify\\ShopifyApp\\": ""
+      "Xpify\\PricingPlan\\": ""
     }
   }
 }
