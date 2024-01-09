@@ -10,7 +10,8 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "laminas/laminas-dependency-plugin": true,
-            "magento/*": true
+            "magento/*": true,
+            "cweagans/composer-patches": true
         },
         "preferred-install": "dist",
         "sort-packages": true
@@ -55,7 +56,8 @@
         "phpunit/phpunit": "~9.5.20",
         "sebastian/phpcpd": "^6.0.3",
         "squizlabs/php_codesniffer": "~3.6.0",
-        "symfony/finder": "^5.2"
+        "symfony/finder": "^5.2",
+        "symplify/vendor-patches": "^11.3"
     },
     "conflict": {
         "gene/bluefoot": "*"
@@ -79,7 +81,11 @@
         }
     ],
     "extra": {
+        "patches": {
+            "magento/theme-adminhtml-backend": [
+                "patches/magento-theme-adminhtml-backend-magento-ui-web-css-source-module-data-grid-less.patch"
+            ]
+        },
         "magento-force": "override"
     }
 }
-
