@@ -103,6 +103,7 @@
                 <editor>
                     <editorType>select</editorType>
                 </editor>
+                <dataType>select</dataType>
             </settings>
         </column>
         <column name="free_trial_days" sortOrder="400">
@@ -124,7 +125,7 @@
             </settings>
         </column>
 
-        <actionsColumn name="actions" class="Xpify\PricingPlan\Ui\Component\Listing\Column\Actions">
+        <actionsColumn name="actions" class="Xpify\PricingPlan\Ui\Component\Listing\Column\Actions" component="Magento_Customer/js/grid/columns/actions">
             <settings>
                 <indexField>entity_id</indexField>
             </settings>

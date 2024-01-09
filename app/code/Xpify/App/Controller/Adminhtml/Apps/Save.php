@@ -41,7 +41,7 @@ class Save extends Action implements HttpPostActionInterface
     public function execute()
     {
         $postData = $this->getRequest()->getPost();
-        $postData = $postData->toArray();
+        $postData = $postData->toArray()['general'] ?? [];
         $redirectData = [
             'path' => 'xpify/apps/',
             'params' => []
@@ -49,6 +49,9 @@ class Save extends Action implements HttpPostActionInterface
         try {
             $this->validate($postData);
             try {
+                if (empty($postData['entity_id'])) {
+                    throw new \Magento\Framework\Exception\NoSuchEntityException(__("No Provided App ID, let create one."));
+                }
                 $app = $this->appRepository->get($postData['entity_id']);
             } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
                 $app = $this->appRepository->newInstance();

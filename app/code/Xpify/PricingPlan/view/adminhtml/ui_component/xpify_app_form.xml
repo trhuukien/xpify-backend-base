@@ -4,34 +4,34 @@
         <settings>
             <label translate="true">Pricing Plan</label>
         </settings>
-<!--        <button name="add_plan" component="Xpify_App/js/pricing-plan/button">-->
-<!--            <argument name="data" xsi:type="array">-->
-<!--                <item name="config" xsi:type="array">-->
-<!--                    <item name="formElement" xsi:type="string">container</item>-->
-<!--                    <item name="buttonClasses" xsi:type="string">add-new-plan-button</item>-->
-<!--                    <item name="actions" xsi:type="array">-->
-<!--                        <item name="0" xsi:type="array">-->
-<!--                            <item name="targetName" xsi:type="string">${ $.parentName}.xpify_pricingplan_update_modal.xpify_pricingplan_form_loader</item>-->
-<!--                            <item name="actionName" xsi:type="string">destroyInserted</item>-->
-<!--                        </item>-->
-<!--                        <item name="1" xsi:type="array">-->
-<!--                            <item name="targetName" xsi:type="string">${ $.parentName}.xpify_pricingplan_update_modal</item>-->
-<!--                            <item name="actionName" xsi:type="string">openModal</item>-->
-<!--                        </item>-->
-<!--                        <item name="2" xsi:type="array">-->
-<!--                            <item name="targetName" xsi:type="string">${ $.parentName}.xpify_pricingplan_update_modal.xpify_pricingplan_form_loader</item>-->
-<!--                            <item name="actionName" xsi:type="string">render</item>-->
-<!--                        </item>-->
-<!--                    </item>-->
-<!--                </item>-->
-<!--            </argument>-->
-<!--            <settings>-->
-<!--                <title translate="true">Add New Plan</title>-->
-<!--                <imports>-->
-<!--                    <link name="appId">${ $.provider}:data.app_id</link>-->
-<!--                </imports>-->
-<!--            </settings>-->
-<!--        </button>-->
+        <button name="add_plan" component="Xpify_App/js/pricing-plan/button">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="formElement" xsi:type="string">container</item>
+                    <item name="buttonClasses" xsi:type="string">add-new-plan-button</item>
+                    <item name="actions" xsi:type="array">
+                        <item name="0" xsi:type="array">
+                            <item name="targetName" xsi:type="string">${ $.parentName }.xpify_pricingplan_update_modal.xpify_pricingplan_form_loader</item>
+                            <item name="actionName" xsi:type="string">destroyInserted</item>
+                        </item>
+                        <item name="1" xsi:type="array">
+                            <item name="targetName" xsi:type="string">${ $.parentName }.xpify_pricingplan_update_modal</item>
+                            <item name="actionName" xsi:type="string">openModal</item>
+                        </item>
+                        <item name="2" xsi:type="array">
+                            <item name="targetName" xsi:type="string">${ $.parentName }.xpify_pricingplan_update_modal.xpify_pricingplan_form_loader</item>
+                            <item name="actionName" xsi:type="string">render</item>
+                        </item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <title translate="true">Add New Plan</title>
+                <imports>
+                    <link name="appId">${ $.provider }:data.general.entity_id</link>
+                </imports>
+            </settings>
+        </button>
 
         <modal name="xpify_pricingplan_update_modal">
             <settings>
@@ -55,12 +55,12 @@
                     <loading>true</loading>
                     <toolbarContainer>${ $.parentName }</toolbarContainer>
                     <externalProvider>${ $.ns }.xpify_pricingplan_form_data_source</externalProvider>
-                    <ns>bss_companyaccount_customer_listroles_form</ns>
+                    <ns>xpify_pricingplan_form</ns>
                     <exports>
-                        <link name="parentId">${ $.externalProvider }:data.parent_id</link>
+                        <link name="appId">${ $.externalProvider }:data.app_id</link>
                     </exports>
                     <imports>
-                        <link name="parentId">${ $.provider}:data.role_id</link>
+                        <link name="appId">${ $.provider }:data.general.entity_id</link>
                         <link name="onRoleDelete">${ $.ns }.${ $.ns }:deleteRoleAction</link>
                     </imports>
                 </settings>

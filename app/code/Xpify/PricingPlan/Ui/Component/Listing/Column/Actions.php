@@ -49,23 +49,15 @@ class Actions extends Column
                 $item[$name]['edit'] = [
                     'callback' => [
                         [
-                            'provider' => 'customer_form.areas.bss_company_account_manage_role.'
-                                . 'bss_company_account_manage_role.'
-                                . 'bss_companyaccount_customer_listroles_update_modal.'
-                                . 'update_bss_companyaccount_customer_listroles_form_loader',
+                            'provider' => 'xpify_app_form.areas.pricing_plan.pricing_plan.xpify_pricingplan_update_modal.xpify_pricingplan_form_loader',
                             'target' => 'destroyInserted',
                         ],
                         [
-                            'provider' => 'customer_form.areas.bss_company_account_manage_role.'
-                                . 'bss_company_account_manage_role.'
-                                . 'bss_companyaccount_customer_listroles_update_modal',
+                            'provider' => 'xpify_app_form.areas.pricing_plan.pricing_plan.xpify_pricingplan_update_modal',
                             'target' => 'openModal',
                         ],
                         [
-                            'provider' => 'customer_form.areas.bss_company_account_manage_role.'
-                                . 'bss_company_account_manage_role.'
-                                . 'bss_companyaccount_customer_listroles_update_modal.'
-                                . 'update_bss_companyaccount_customer_listroles_form_loader',
+                            'provider' => 'xpify_app_form.areas.pricing_plan.pricing_plan.xpify_pricingplan_update_modal.xpify_pricingplan_form_loader',
                             'target' => 'render',
                             'params' => [
                                 'entity_id' => $item['entity_id'],
@@ -80,7 +72,12 @@ class Actions extends Column
                 $item[$name]['delete'] = [
                     'href' => $this->urlBuilder->getUrl(
                         self::PRICING_PLAN_DELETE_PATH,
-                        ['app_id' => $item['app_id'], 'id' => $item['entity_id']]
+                        [
+                            'id' => $item['entity_id'],
+                            '_query' => [
+                                'isAjax' => true,
+                            ]
+                        ]
                     ),
                     'label' => __('Delete'),
                     'isAjax' => true,

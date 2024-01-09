@@ -1,7 +1,6 @@
 define([
-    'Magento_Ui/js/form/components/insert-form',
-    'Xpify_PricingPlan/js/notification'
-], function (Insert, xNotification) {
+    'Magento_Ui/js/form/components/insert-form'
+], function (Insert) {
     'use strict';
 
     return Insert.extend({
@@ -27,7 +26,7 @@ define([
                     refresh: true
                 });
             }
-            xNotification.xNotification(responseData);
+            // xNotification.xNotification(responseData);
         },
 
         /**

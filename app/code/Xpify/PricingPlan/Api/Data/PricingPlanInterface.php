@@ -15,6 +15,7 @@ interface PricingPlanInterface
     const FREE_TRIAL_DAYS = 'free_trial_days';
     const ENABLE_FREE_TRIAL = 'enable_free_trial';
     const APP_ID = 'app_id';
+    const SORT_ORDER = 'sort_order';
 
     /**
      * Get status

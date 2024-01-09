@@ -59,7 +59,10 @@ class AppDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
         }
         $data = $this->dataPersistor->get('xpify_app');
         if (!empty($data)) {
-            $items = $this->collectionFactory->create()->addFieldToFilter(IApp::ID, $data['entity_id']);
+            $items = $this->collectionFactory->create();
+            if (!empty($data['entity_id'])) {
+                $items->addFieldToFilter(IApp::ID, $data['entity_id']);
+            }
             if ($items->getSize() === 0) {
                 $this->loadedData[$data['entity_id'] ?? ""]['general'] = $data;
             } else {
