@@ -107,6 +107,16 @@ class PricingPlan extends AbstractModel implements PricingPlanInterface
         return $this->setData(self::ENABLE_FREE_TRIAL, $enableFreeTrial);
     }
 
+    public function getSortOrder(): ?int
+    {
+        return (int) $this->getData(self::SORT_ORDER);
+    }
+
+    public function setSortOrder(mixed $sortOrder): self
+    {
+        return $this->setData(self::SORT_ORDER, $sortOrder);
+    }
+
     public function getAppId(): ?int
     {
         return (int) $this->getData(self::APP_ID);

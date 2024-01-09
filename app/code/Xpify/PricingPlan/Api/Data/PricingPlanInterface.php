@@ -7,6 +7,8 @@ use Xpify\App\Api\Data\AppInterface;
 
 interface PricingPlanInterface
 {
+    const BASE_CURRENCY = 'USD';
+
     const ID = 'entity_id';
     const STATUS = 'status';
     const NAME = 'name';
@@ -111,6 +113,21 @@ interface PricingPlanInterface
      * @return $this
      */
     public function setEnableFreeTrial(mixed $enableFreeTrial): self;
+
+    /**
+     * Get sort order
+     *
+     * @return int|null
+     */
+    public function getSortOrder(): ?int;
+
+    /**
+     * Set sort order
+     *
+     * @param int|null $sortOrder
+     * @return $this
+     */
+    public function setSortOrder(mixed $sortOrder): self;
 
     /**
      * Get app ID

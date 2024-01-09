@@ -9,10 +9,8 @@ define([
             }
             $('body').notification('clear')
                 .notification('add', {
-                    reset_pw_subuser_request_success: !response.error,
                     error: response.error,
                     message: response.message,
-                    messageErrorEmail: response.messageErrorEmail,
                     insertMethod: function (message) {
                         var $wrapper = $('<div/>').html(message);
 

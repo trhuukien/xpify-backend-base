@@ -7,6 +7,7 @@ use Magento\Framework\View\Element\UiComponent\ContextInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Ui\Component\Listing\Columns\Column;
 use Magento\Directory\Model\Currency;
+use Xpify\PricingPlan\Api\Data\PricingPlanInterface as IPricingPlan;
 
 class PlanValue extends Column
 {
@@ -40,7 +41,7 @@ class PlanValue extends Column
     {
         if (isset($dataSource['data']['items'])) {
             foreach ($dataSource['data']['items'] as & $item) {
-                $purchaseCurrency = $this->currency->load("USD");
+                $purchaseCurrency = $this->currency->load(IPricingPlan::BASE_CURRENCY);
                 $item[$this->getData('name')] = $purchaseCurrency
                     ->format($item[$this->getData('name')], [], false);
             }

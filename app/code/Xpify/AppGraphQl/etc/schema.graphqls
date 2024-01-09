@@ -17,6 +17,7 @@ type App {
     api_key: String @doc(description: "The API key for the app.")
     secret_key: String @doc(description: "The secret key for the app.")
     created_at: String @doc(description: "The date and time when the app was created.")
+    token: String @doc(description: "The token for the app.")
 }
 
 input SaveAppInput {

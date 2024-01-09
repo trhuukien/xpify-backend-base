@@ -125,7 +125,7 @@
             </settings>
         </column>
 
-        <actionsColumn name="actions" class="Xpify\PricingPlan\Ui\Component\Listing\Column\Actions" component="Magento_Customer/js/grid/columns/actions">
+        <actionsColumn name="actions" class="Xpify\PricingPlan\Ui\Component\Listing\Column\Actions" component="Xpify_PricingPlan/js/ui/grid/actions">
             <settings>
                 <indexField>entity_id</indexField>
             </settings>

@@ -3,10 +3,14 @@ declare(strict_types=1);
 
 namespace Xpify\PricingPlan\Model;
 
+use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
 use Psr\Log\LoggerInterface;
+use Xpify\PricingPlan\Api\Data;
 use Xpify\PricingPlan\Api\Data\PricingPlanInterface as IPricingPlan;
+use Xpify\PricingPlan\Api\Data\PricingPlanSearchResultsInterfaceFactory;
 use Xpify\PricingPlan\Api\PricingPlanRepositoryInterface;
 use Xpify\PricingPlan\Model\ResourceModel\PricingPlan;
+use Xpify\PricingPlan\Model\ResourceModel\PricingPlan\CollectionFactory;
 
 class PricingPlanRepository implements PricingPlanRepositoryInterface
 {
@@ -16,19 +20,34 @@ class PricingPlanRepository implements PricingPlanRepositoryInterface
 
     private \Psr\Log\LoggerInterface $logger;
 
+    private CollectionFactory $collectionFactory;
+
+    private CollectionProcessorInterface $collectionProcessor;
+
+    private Data\SearchResultsInterfaceFactory $searchResultsFactory;
+
     /**
      * @param PricingPlan $resource
      * @param PricingPlanFactory $factory
      * @param LoggerInterface $logger
+     * @param CollectionFactory $collectionFactory
+     * @param SearchResultsInterfaceFactory $searchResultsFactory
+     * @param CollectionProcessorInterface|null $collectionProcessor
      */
     public function __construct(
         ResourceModel\PricingPlan $resource,
         PricingPlanFactory $factory,
-        \Psr\Log\LoggerInterface $logger
+        \Psr\Log\LoggerInterface $logger,
+        CollectionFactory $collectionFactory,
+        Data\SearchResultsInterfaceFactory $searchResultsFactory,
+        CollectionProcessorInterface $collectionProcessor = null
     ) {
         $this->resource = $resource;
         $this->factory = $factory;
         $this->logger = $logger;
+        $this->collectionFactory = $collectionFactory;
+        $this->collectionProcessor = $collectionProcessor;
+        $this->searchResultsFactory = $searchResultsFactory;
     }
 
     /**
@@ -91,5 +110,25 @@ class PricingPlanRepository implements PricingPlanRepositoryInterface
         } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
             // it ok.
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $criteria)
+    {
+        /** @var \Xpify\PricingPlan\Model\ResourceModel\PricingPlan\Collection $collection */
+        $collection = $this->collectionFactory->create();
+        $this->collectionProcessor->process($criteria, $collection);
+
+        /** @var Data\SearchResultsInterface $searchResults */
+        $searchResults = $this->searchResultsFactory->create();
+        $searchResults->setSearchCriteria($criteria);
+
+        /** @var IPricingPlan[] $items */
+        $items = $collection->getItems();
+        $searchResults->setItems($items);
+        $searchResults->setTotalCount($collection->getSize());
+        return $searchResults;
     }
 }

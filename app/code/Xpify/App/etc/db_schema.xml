@@ -8,6 +8,7 @@
         <column xsi:type="varchar" name="name" length="32" nullable="false" comment="Shopify App Name"/>
         <column xsi:type="varchar" name="api_key" length="64" comment="App API Key"/>
         <column xsi:type="varchar" name="secret_key" length="64" comment="App Secret Key"/>
+        <column xsi:type="varchar" name="token" length="128" comment="App Internal Token Key"/>
 
         <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
                 comment="App Created Time"/>

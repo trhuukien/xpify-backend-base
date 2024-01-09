@@ -1,5 +1,5 @@
 define([
-    'Magento_Ui/js/form/components/insert-form'
+    'Magento_Ui/js/form/components/insert-form',
 ], function (Insert) {
     'use strict';
 
@@ -26,7 +26,6 @@ define([
                     refresh: true
                 });
             }
-            // xNotification.xNotification(responseData);
         },
 
         /**

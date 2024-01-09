@@ -5,7 +5,7 @@ namespace Xpify\PricingPlan\Ui\Component\Form;
 
 use Magento\Directory\Model\Currency;
 use Magento\Framework\View\Element\UiComponent\ContextInterface;
-use Xpify\PricingPlan\Api\Data\PricingPlanInterface;
+use Xpify\PricingPlan\Api\Data\PricingPlanInterface as IPricingPlan;
 use Xpify\PricingPlan\Model\ResourceModel\PricingPlan\CollectionFactory;
 
 class DataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
@@ -63,7 +63,7 @@ class DataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
             return $this->loadedData;
         }
         $items = $this->collection->getItems();
-        /* @var PricingPlanInterface $item */
+        /* @var IPricingPlan $item */
         foreach ($items as $item) {
             $this->loadedData[$item->getId()] = $item->getData();
         }
@@ -83,7 +83,7 @@ class DataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
      */
     private function populateCurrencyData(): void
     {
-        $currency = $this->currency->load('USD');
+        $currency = $this->currency->load(IPricingPlan::BASE_CURRENCY);
         $currency->getCurrencySymbol();
         foreach ($this->loadedData as &$dItem) {
             $dItem['currency'] = $currency->getCurrencySymbol();
