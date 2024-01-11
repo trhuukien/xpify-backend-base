@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="controller_action_predispatch">
+        <observer name="shopify_add_webhook_handlers" instance="Xpify\Webhook\Service\WebhookHandlerRegister"/>
+
+<!-- Disabled all unnecessary observer in frontend -->
+        <observer name="persistent_synchronize" disabled="true" />
+        <observer name="persistent" disabled="true" />
+        <observer name="persistent_session" disabled="true" />
+        <observer name="persistent_quote" disabled="true" />
+        <observer name="persistent_customer" disabled="true" />
+
+        <observer name="newrelicreporting_observer_report_concurrent_users" disabled="true" />
+        <observer name="newrelicreporting_newrelic_report_concurrent_users" disabled="true" />
+
+        <observer name="customer_visitor" disabled="true" />
+    </event>
+</config>

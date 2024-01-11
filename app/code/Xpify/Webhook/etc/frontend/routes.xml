@@ -3,7 +3,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
     <router id="standard">
         <route id="xCore">
-            <module name="Xpify_Auth" after="Xpify_Core"/>
+            <module name="Xpify_Webhook" after="Xpify_Core"/>
         </route>
     </router>
 </config>

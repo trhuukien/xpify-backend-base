@@ -80,6 +80,22 @@ class App extends AbstractModel implements AppInterface
     /**
      * @inheritDoc
      */
+    public function getScopes(): ?string
+    {
+        return $this->getData(self::SCOPES);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setScopes(string $scopes): AppInterface
+    {
+        return $this->setData(self::SCOPES, $scopes);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getCreatedAt(): ?string
     {
         return $this->getData(self::CREATED_AT);

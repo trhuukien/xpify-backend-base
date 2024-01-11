@@ -11,6 +11,7 @@ interface AppInterface
     const NAME = 'name';
     const API_KEY = 'api_key';
     const SECRET_KEY = 'secret_key';
+    const SCOPES = 'scopes';
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
     const BILLING_REQUIRED = 'billing_required';
@@ -59,6 +60,27 @@ interface AppInterface
      * @return AppInterface
      */
     public function setSecretKey(string $secretKey): AppInterface;
+
+    /**
+     * Get the scopes
+     *
+     * This method is used to get the scopes of the application.
+     * The return type is nullable string, meaning it can return a string or null.
+     *
+     * @return string|null The scopes of the application or null if not set
+     */
+    public function getScopes(): ?string;
+
+    /**
+     * Set the scopes
+     *
+     * This method is used to set the scopes of the application.
+     * It accepts a string as an argument.
+     *
+     * @param string $scopes The scopes of the application
+     * @return AppInterface Returns the current instance of the class to allow method chaining
+     */
+    public function setScopes(string $scopes): AppInterface;
 
     /**
      * @return string|null

@@ -1,5 +1,5 @@
 type Query {
-    ensureShopifyAppInstalled: EnsureShopifyAppInstalledOutPut! @doc(description: "Ensure Shopify App is installed") @resolver(class: "Xpify\\AuthGraphQl\\Model\\Resolver\\EnsureShopifyInstalled")
+    ensureShopifyAppInstalled(_query: String!): EnsureShopifyAppInstalledOutPut! @doc(description: "Ensure Shopify App is installed") @resolver(class: "Xpify\\AuthGraphQl\\Model\\Resolver\\EnsureShopifyInstalledQuery")
 }
 
 type EnsureShopifyAppInstalledOutPut {
