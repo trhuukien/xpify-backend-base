@@ -1,11 +1,11 @@
 {
-  "name": "xpify/module-auth",
+  "name": "xpify/module-auth-graph-ql",
   "version": "1.0.0",
   "description": "N/A",
   "type": "magento2-module",
   "require": {
     "magento/framework": "*",
-    "shopify/shopify-api": "v5.2.0"
+    "xpify/module-auth": "1.0.*"
   },
   "license": [
     "Proprietary"
@@ -15,7 +15,7 @@
       "registration.php"
     ],
     "psr-4": {
-      "Xpify\\Auth\\": ""
+      "Xpify\\AuthGraphQl\\": ""
     }
   }
 }

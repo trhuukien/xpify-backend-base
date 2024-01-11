@@ -7,7 +7,9 @@
             "api_key": true,
             "secret_key": true,
             "created_at": true,
-            "token": true
+            "token": true,
+            "billing_required": true,
+            "billing_interval": true
         },
         "constraint": {
             "PRIMARY": true,

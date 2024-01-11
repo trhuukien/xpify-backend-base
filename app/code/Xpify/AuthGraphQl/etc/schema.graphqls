@@ -1,0 +1,8 @@
+type Query {
+    ensureShopifyAppInstalled: EnsureShopifyAppInstalledOutPut! @doc(description: "Ensure Shopify App is installed") @resolver(class: "Xpify\\AuthGraphQl\\Model\\Resolver\\EnsureShopifyInstalled")
+}
+
+type EnsureShopifyAppInstalledOutPut {
+    installed: Boolean!
+    redirectUri: String
+}

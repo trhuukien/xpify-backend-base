@@ -2,43 +2,53 @@
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
     <table name="xpify_merchants" resource="default" engine="innodb" comment="Installed Merchants">
-        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true"
-                comment="Entity ID"/>
-        <column xsi:type="varchar" name="shop_domain" nullable="false" length="128" comment="Shop Domain"/>
-        <column xsi:type="varchar" name="shop_name" nullable="true" length="255" comment="Shop Name"/>
-        <column xsi:type="varchar" name="shop_email" nullable="true" length="64" comment="Shop Email"/>
-        <column xsi:type="varchar" name="shop_access_token" nullable="true" length="128" comment="Shopify Store Access Token"/>
-        <column xsi:type="varchar" name="shop_storefront_token" nullable="true" length="128" comment="Shopify Storefront Access Token"/>
-        <column xsi:type="varchar" name="simi_access_token" nullable="true" length="128" comment="Access Token to communicate with SimiSystem"/>
-        <column xsi:type="smallint" name="status" unsigned="true" nullable="false" identity="false"
-                default="0" comment="Shop Status"/>
-        <column xsi:type="mediumtext" name="app_info" nullable="true" comment="App Information"/>
-        <column xsi:type="text" name="more_info" nullable="true" comment="More Shop Information" />
-        <column xsi:type="int" name="plan_id" unsigned="true" nullable="true" identity="false"
-                comment="Subscription Plan ID"/>
-        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
-                comment="App first installation Time"/>
+        <column xsi:type="bigint" name="entity_id" unsigned="true" nullable="false" identity="true" padding="20" comment="Entity ID"/>
+        <column xsi:type="varchar" name="session_id" nullable="false" length="255" comment="Session ID"/>
+        <column xsi:type="varchar" name="shop" nullable="false" length="255" comment="Merchant Domain"/>
+        <column xsi:type="tinyint" name="is_online" nullable="false" default="0" unsigned="true" />
+        <column xsi:type="varchar" name="state" nullable="true" length="255" comment="Merchant State"/>
+        <column xsi:type="varchar" name="scope" nullable="true" length="255" comment="Merchant Allowed scopes"/>
+        <column xsi:type="varchar" name="access_token" nullable="true" length="255" comment="Shopify Access Token"/>
+<!--        <column xsi:type="varchar" name="x_access_token" nullable="true" length="128" comment="Access Token to communicate with X Eco System"/>-->
+        <column xsi:type="datetime" name="expires_at" nullable="true" comment="Expire time"/>
+        <column xsi:type="bigint" unsigned="true" padding="20" name="user_id" nullable="true" />
+        <column xsi:type="varchar" name="user_first_name" nullable="true" length="255" comment="Merchant First Name"/>
+        <column xsi:type="varchar" name="user_last_name" nullable="true" length="255" comment="Merchant Last Name"/>
+        <column xsi:type="varchar" name="user_email" nullable="true" length="255" comment="Merchant Email"/>
+        <column xsi:type="tinyint" name="user_email_verified" nullable="true" comment="Merchant Verified"/>
+        <column xsi:type="tinyint" name="account_owner" nullable="true" comment="Account Owner"/>
+        <column xsi:type="varchar" name="locale" nullable="true" length="255" />
+        <column xsi:type="tinyint" name="collaborator" nullable="true" comment="Is Collaborator" />
+        <column xsi:type="int" name="app_id" unsigned="true" nullable="false" identity="false" comment="Installed App ID" />
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" default="CURRENT_TIMESTAMP" comment="First interaction Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="true" comment="Update Time"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="entity_id"/>
         </constraint>
-        <constraint xsi:type="unique" referenceId="SIMICART_SIMPIFY_USERS_SHOP_DOMAIN_SHOP_EMAIL">
-            <column name="shop_domain"/>
-            <column name="shop_email"/>
+        <constraint xsi:type="unique" referenceId="XPIFY_MERCHANTS_SESSION_ID_APP_ID">
+            <column name="session_id"/>
+            <column name="app_id"/>
         </constraint>
-        <constraint xsi:type="unique" referenceId="SIMICART_SIMPIFY_USERS_SHOP_DOMAIN">
-            <column name="shop_domain"/>
-        </constraint>
-        <index referenceId="SIMICART_SIMPIFY_USERS_ENTITY_ID" indexType="btree">
+    </table>
+
+    <table name="xpify_merchant_subscription" resource="default" engine="innodb" comment="Merchant Subscription">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true" comment="Entity ID"/>
+        <column xsi:type="bigint" name="merchant_id" unsigned="true" nullable="false" identity="false" padding="20" comment="Merchant ID" />
+        <column xsi:type="int" name="plan_id" unsigned="true" nullable="false" identity="false" comment="Subscription Plan ID" />
+        <column xsi:type="varchar" name="name" length="255" comment="Plan name" />
+        <column xsi:type="text" name="description" nullable="true" comment="Plan description"/>
+        <column xsi:type="decimal" name="price" scale="6" precision="20" unsigned="false" nullable="true" comment="Plan price" />
+        <column xsi:type="int" name="free_trial_days" padding="3" unsigned="true" nullable="true" comment="Free trial days" />
+        <column xsi:type="smallint" name="enable_free_trial" unsigned="true" nullable="false" default="0" comment="Enable free trial" />
+
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Subscription Time"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="entity_id"/>
-        </index>
-        <index referenceId="SIMICART_SIMPIFY_USERS_SHOP_ACCESS_TOKEN" indexType="btree">
-            <column name="shop_access_token"/>
-        </index>
-        <index referenceId="SIMICART_SIMPIFY_USERS_SHOP_STOREFRONT_ACCESS_TOKEN" indexType="btree">
-            <column name="shop_storefront_token"/>
-        </index>
-        <index referenceId="SIMICART_SIMPIFY_USERS_SIMI_ACCESS_TOKEN" indexType="btree">
-            <column name="simi_access_token"/>
-        </index>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="XPIFY_MERCHANT_SUBSCRIPTION_MERCHANT_ID_XPIFY_MERCHANTS_ENTITY_ID" table="xpify_merchant_subscription"
+                    column="merchant_id" referenceTable="xpify_merchants" referenceColumn="entity_id"
+                    onDelete="CASCADE"/>
     </table>
 </schema>

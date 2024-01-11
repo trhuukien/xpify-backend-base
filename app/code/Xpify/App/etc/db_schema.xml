@@ -9,6 +9,8 @@
         <column xsi:type="varchar" name="api_key" length="64" comment="App API Key"/>
         <column xsi:type="varchar" name="secret_key" length="64" comment="App Secret Key"/>
         <column xsi:type="varchar" name="token" length="128" comment="App Internal Token Key"/>
+        <column xsi:type="smallint" name="billing_required" default="0" comment="Free App?"/>
+        <column xsi:type="varchar" name="billing_interval" length="16" nullable="false" default="1" comment="Billing Interval Type. ONE_TIME, EVERY_30_DAYS, ANNUAL"/>
 
         <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
                 comment="App Created Time"/>

@@ -5,6 +5,7 @@ namespace Xpify\App\Api\Data;
 
 interface AppInterface
 {
+    const CURRENCY_CODE = 'USD'; // Currently only supports USD
     const ID = 'entity_id';
     const REMOTE_ID = 'remote_id';
     const NAME = 'name';
@@ -12,6 +13,8 @@ interface AppInterface
     const SECRET_KEY = 'secret_key';
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
+    const BILLING_REQUIRED = 'billing_required';
+    const BILLING_INTERVAL = 'billing_interval';
 
     /**
      * @return string|null
