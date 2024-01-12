@@ -136,4 +136,12 @@ class MerchantRepository implements \Xpify\Merchant\Api\MerchantRepositoryInterf
         $searchResults->setTotalCount($collection->getSize());
         return $searchResults;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function cleanNotCompleted(string $shop): int|string
+    {
+        return $this->resource->cleanNotCompleted($shop);
+    }
 }

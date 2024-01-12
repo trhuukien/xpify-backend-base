@@ -5,6 +5,7 @@ namespace Xpify\App\Api;
 
 use Magento\Framework\Exception\NoSuchEntityException;
 use Xpify\App\Api\Data\AppInterface as IApp;
+use Xpify\App\Api\Data\AppSearchResultsInterface as IAppSearchResults;
 
 interface AppRepositoryInterface
 {
@@ -43,4 +44,12 @@ interface AppRepositoryInterface
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function deleteById(mixed $id);
+
+    /**
+     * Retrieve apps matching the specified criteria.
+     *
+     * @param \Magento\Framework\Api\SearchCriteriaInterface $criteria
+     * @return IAppSearchResults
+     */
+    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $criteria): IAppSearchResults;
 }

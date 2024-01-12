@@ -51,4 +51,13 @@ interface MerchantRepositoryInterface
      * @return \Xpify\Merchant\Api\Data\MerchantSearchResultsInterface
      */
     public function getList(\Magento\Framework\Api\SearchCriteriaInterface $criteria): \Xpify\Merchant\Api\Data\MerchantSearchResultsInterface;
+
+    /**
+     * Delete any previously created OAuth sessions that were not completed (don't have an access token)
+     *
+     * @param string $shop
+     * @return int|string
+     * @throws CouldNotDeleteException
+     */
+    public function cleanNotCompleted(string $shop): int|string;
 }

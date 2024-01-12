@@ -3,17 +3,13 @@ declare(strict_types=1);
 
 namespace Xpify\AppGraphQl\Model\Context;
 
-use Magento\Framework\App\Config\ScopeConfigInterface as IScopeConfig;
 use Magento\Framework\App\RequestInterface as IRequest;
 use Magento\Framework\GraphQl\Query\Uid;
 use Magento\GraphQl\Model\Query\ContextParametersInterface;
 use Magento\GraphQl\Model\Query\ContextParametersProcessorInterface;
-use Psr\Log\LoggerInterface;
-use Shopify\ApiVersion;
-use Shopify\Context as ShopifyContext;
 use Xpify\App\Api\AppRepositoryInterface as IAppRepository;
 use Xpify\App\Api\Data\AppInterface as IApp;
-use Xpify\Merchant\Service\MerchantStorage;
+use Xpify\Core\Helper\ShopifyContextInitializer;
 
 class AppToContext implements ContextParametersProcessorInterface
 {
@@ -23,34 +19,24 @@ class AppToContext implements ContextParametersProcessorInterface
 
     private IAppRepository $appRepository;
 
-    private IScopeConfig $scopeConfig;
-
-    private MerchantStorage $merchantStorage;
-
-    private \Psr\Log\LoggerInterface $logger;
+    private ShopifyContextInitializer $contextInitializer;
 
     /**
      * @param IRequest $request
      * @param Uid $uidEncoder
      * @param IAppRepository $appRepository
-     * @param IScopeConfig $scopeConfig
-     * @param MerchantStorage $merchantStorage
-     * @param LoggerInterface $logger
+     * @param ShopifyContextInitializer $contextInitializer
      */
     public function __construct(
         IRequest $request,
         Uid $uidEncoder,
         IAppRepository $appRepository,
-        IScopeConfig $scopeConfig,
-        MerchantStorage $merchantStorage,
-        \Psr\Log\LoggerInterface $logger
+        ShopifyContextInitializer $contextInitializer
     ) {
         $this->request = $request;
         $this->uidEncoder = $uidEncoder;
         $this->appRepository = $appRepository;
-        $this->scopeConfig = $scopeConfig;
-        $this->merchantStorage = $merchantStorage;
-        $this->logger = $logger;
+        $this->contextInitializer = $contextInitializer;
     }
 
     /**
@@ -76,36 +62,12 @@ class AppToContext implements ContextParametersProcessorInterface
                 }
 
                 $contextParameters->addExtensionAttribute('app', $app);
-
-                $host = $this->scopeConfig->getValue('web/secure/base_url', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                ShopifyContext::initialize(
-                    $app->getApiKey(),
-                    $app->getSecretKey(),
-                    $app->getScopes(),
-                    $host,
-                    $this->getMerchantStorage(),
-                    ApiVersion::LATEST,
-                    true,
-                    false,
-                    null,
-                    '',
-                    $this->logger
-                );
+                $this->contextInitializer->initialize($app);
             }
         } catch (\Exception $e) {
 
         }
 
         return $contextParameters;
-    }
-
-    /**
-     * Get merchant storage object
-     *
-     * @return MerchantStorage
-     */
-    public function getMerchantStorage(): MerchantStorage
-    {
-        return $this->merchantStorage;
     }
 }

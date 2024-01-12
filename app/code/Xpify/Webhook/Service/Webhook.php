@@ -3,12 +3,15 @@ declare(strict_types=1);
 
 namespace Xpify\Webhook\Service;
 
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\RequestInterface as IRequest;
 use Shopify\Clients\HttpHeaders;
-use Shopify\Context;
-use Shopify\Webhooks\Registry;
 use Shopify\Exception\InvalidWebhookException;
+use Shopify\Webhooks\Registry;
+use Xpify\App\Api\AppRepositoryInterface as IAppRepository;
 use Xpify\App\Api\Data\AppInterface as IApp;
+use Xpify\Core\Helper\ShopifyContextInitializer;
+use Xpify\Core\Helper\Utils;
 use Xpify\Merchant\Api\Data\MerchantInterface as IMerchant;
 
 class Webhook
@@ -16,14 +19,26 @@ class Webhook
     const WEBHOOK_PATH = 'api/webhook';
 
     private IRequest $request;
+    private IAppRepository $appRepository;
+    private SearchCriteriaBuilder $criteriaBuilder;
+    private ShopifyContextInitializer $contextInitializer;
 
     /**
      * @param IRequest $request
+     * @param IAppRepository $appRepository
+     * @param SearchCriteriaBuilder $criteriaBuilder
+     * @param ShopifyContextInitializer $contextInitializer
      */
     public function __construct(
         IRequest $request,
+        IAppRepository $appRepository,
+        SearchCriteriaBuilder $criteriaBuilder,
+        ShopifyContextInitializer $contextInitializer
     ) {
         $this->request = $request;
+        $this->appRepository = $appRepository;
+        $this->criteriaBuilder = $criteriaBuilder;
+        $this->contextInitializer = $contextInitializer;
     }
 
     /**
@@ -45,6 +60,7 @@ class Webhook
         $accessToken = $merchant->getAccessToken();
 
         try {
+            $this->contextInitializer->initialize($app);
             $response = Registry::register(static::WEBHOOK_PATH, $topic, $shop, $accessToken);
             if (!$response->isSuccess()) {
                 $this->getLogger()?->debug(__("Failed to register APP_UNINSTALLED webhook for shop $shop with response body: %1", print_r($response->getBody(), true))->render());
@@ -72,6 +88,8 @@ class Webhook
         $topic = $this->request->getHeader(HttpHeaders::X_SHOPIFY_TOPIC, '');
         try {
             // required load app before processing webhook
+            $app = $this->appOrException();
+            $this->contextInitializer->initialize($app);
 
             $response = Registry::process($this->request->getHeaders(), $this->request->getContent());
             if (!$response->isSuccess()) {
@@ -92,6 +110,45 @@ class Webhook
             $errmsg = __("Got an exception when handling '$topic' webhook");
         }
         return [$code, $errmsg];
+    }
+
+    /**
+     * Phương thức này được sử dụng để tìm một ứng dụng phù hợp với chữ ký HMAC từ yêu cầu.
+     * Đầu tiên, nó lấy danh sách tất cả các ứng dụng từ kho ứng dụng.
+     * Nếu không tìm thấy ứng dụng nào, nó sẽ ném ra một ngoại lệ.
+     * Sau đó, nó lặp qua từng ứng dụng và kiểm tra xem ứng dụng có khóa bí mật hay không.
+     * Nếu ứng dụng có khóa bí mật, nó sẽ xác thực chữ ký HMAC từ yêu cầu so với khóa bí mật của ứng dụng.
+     * Nếu chữ ký HMAC hợp lệ, nó đặt ứng dụng tìm thấy thành ứng dụng hiện tại và ngừng vòng lặp.
+     * Nếu không tìm thấy ứng dụng sau khi lặp qua tất cả các ứng dụng, nó sẽ ném ra một ngoại lệ.
+     * Cuối cùng, nó trả về ứng dụng tìm thấy.
+     *
+     * @throws \Exception nếu không tìm thấy ứng dụng hoặc không có ứng dụng nào phù hợp với chữ ký HMAC từ yêu cầu
+     * @return IApp ứng dụng tìm thấy
+     */
+    protected function appOrException(): IApp
+    {
+        $appSearchResults = $this->appRepository->getList($this->criteriaBuilder->create());
+        if ($appSearchResults->getTotalCount() === 0) {
+            throw new \Exception("No app found!");
+        }
+        foreach ($appSearchResults->getItems() as $app) {
+            if ($app->getSecretKey()) {
+                $validSign = Utils::validateHmac([
+                    'data' => $this->request->getContent(),
+                    'hmac' => $this->request->getHeader(HttpHeaders::X_SHOPIFY_HMAC),
+                    'raw' => true,
+                    'encode' => true,
+                ], $app->getSecretKey());
+                if ($validSign) {
+                    $foundApp = $app;
+                    break;
+                }
+            }
+        }
+        if (!isset($foundApp)) {
+            throw new \Exception("No app found!");
+        }
+        return $foundApp;
     }
 
     /**

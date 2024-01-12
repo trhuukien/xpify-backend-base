@@ -26,27 +26,21 @@ class CookieHandler
         $this->cookieMetadataFactory = $cookieMetadataFactory;
     }
 
-    /**
-     * set public cookie
-     */
-    public function setPublicCookie($cookieName, $value)
+    public function saveShopifyCookie(OAuthCookie $cookie)
     {
         $metadata = $this->cookieMetadataFactory
             ->createPublicCookieMetadata()
-            ->setDuration(86400) // Cookie will expire after one day (86400 seconds)
-            ->setSecure(true) //the cookie is only available under HTTPS
-            ->setPath('/subfolder')// The cookie will be available to all pages and subdirectories within the /subfolder path
-            ->setHttpOnly(false); // cookies can be accessed by JS
+            ->setDuration($cookie->getExpire() ? ceil(($cookie->getExpire() - time()) / 60) : null) // Cookie will expire after one day (86400 seconds)
+            ->setSecure($cookie->isSecure())
+            ->setPath('/')
+            ->setHttpOnly($cookie->isHttpOnly())
+            ->setSameSite('Lax')
+            ->setDomain(parse_url(Context::$HOST_SCHEME . "://" . Context::$HOST_NAME, PHP_URL_HOST));
 
         $this->cookieManager->setPublicCookie(
-            $cookieName,
-            $value,
+            $cookie->getName(),
+            $cookie->getValue(),
             $metadata
         );
-    }
-
-    public function saveShopifyCookie(OAuthCookie $cookie)
-    {
-
     }
 }
