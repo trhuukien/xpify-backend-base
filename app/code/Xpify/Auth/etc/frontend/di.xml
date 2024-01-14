@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <virtualType name="Shopify\Webhooks\Topics\AppUninstalled" type="Xpify\Webhook\Model\WebhookTopicInterface">
+    <virtualType name="Shopify_Webhooks_Topics_AppUninstalled" type="Xpify\Webhook\Model\WebhookTopic">
         <arguments>
             <argument name="topic" xsi:type="const">Shopify\Webhooks\Topics::APP_UNINSTALLED</argument>
             <argument name="handler" xsi:type="object">Xpify\Auth\Service\Webhooks\AppUninstalled</argument>
@@ -11,7 +11,7 @@
     <type name="Xpify\Webhook\Service\WebhookHandlerRegister">
         <arguments>
             <argument name="webhookTopics" xsi:type="array">
-                <item name="app_uninstalled" xsi:type="object">Shopify\Webhooks\Topics\AppUninstalled</item>
+                <item name="app_uninstalled" xsi:type="object">Shopify_Webhooks_Topics_AppUninstalled</item>
             </argument>
         </arguments>
     </type>

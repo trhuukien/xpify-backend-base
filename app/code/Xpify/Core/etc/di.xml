@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!--  DISABLE INDEXER  -->
+    <preference for="Magento\Framework\Indexer\ConfigInterface" type="Xpify\Core\Model\Deprecated\Indexer\Config" />
+    <preference for="Magento\Theme\Setup\RecurringData" type="Xpify\Core\Model\Deprecated\Theme\RecurringData"/>
+    <preference for="Magento\Customer\Setup\RecurringData" type="Xpify\Core\Model\Deprecated\Theme\RecurringData"/>
+    <preference for="Magento\Customer\Model\Indexer\Attribute\Filter" type="Xpify\Core\Model\Deprecated\Customer\IndexerAttributeFilter"/>
+    <!-- /END DISABLE INDEXER DECLARE  -->
     <!--  DISABLE SEARCH ENGINE  -->
     <type name="Magento\Search\Model\Adminhtml\System\Config\Source\Engine">
         <arguments>

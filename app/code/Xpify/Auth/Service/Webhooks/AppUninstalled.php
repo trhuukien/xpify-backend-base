@@ -4,18 +4,30 @@ declare(strict_types=1);
 namespace Xpify\Auth\Service\Webhooks;
 
 use Shopify\Webhooks\Handler;
+use Xpify\App\Service\GetCurrentApp;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Xpify\Merchant\Api\Data\MerchantInterface as IMerchant;
 use Xpify\Merchant\Api\MerchantRepositoryInterface as IMerchantRepository;
 
 class AppUninstalled implements Handler
 {
     private IMerchantRepository $merchantRepository;
+    private GetCurrentApp $currentApp;
+    private SearchCriteriaBuilder $searchCriteriaBuilder;
 
     /**
      * @param IMerchantRepository $merchantRepository
+     * @param GetCurrentApp $currentApp
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
      */
-    public function __construct(IMerchantRepository $merchantRepository)
-    {
+    public function __construct(
+        IMerchantRepository $merchantRepository,
+        GetCurrentApp $currentApp,
+        SearchCriteriaBuilder $searchCriteriaBuilder
+    ) {
         $this->merchantRepository = $merchantRepository;
+        $this->currentApp = $currentApp;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
     /**
@@ -24,7 +36,14 @@ class AppUninstalled implements Handler
     public function handle(string $topic, string $shop, array $body): void
     {
         try {
-            $this->merchantRepository->de($shop);
+            $this->searchCriteriaBuilder->addFilter(IMerchant::SHOP, $shop);
+            $this->searchCriteriaBuilder->addFilter(IMerchant::APP_ID, $this->currentApp->get()->getId());
+            $searchResults = $this->merchantRepository->getList($this->searchCriteriaBuilder->create());
+            if ($searchResults->getTotalCount() === 0) {
+                return;
+            }
+            $merchant = $searchResults->getItems()[0];
+            $this->merchantRepository->delete($merchant);
             $this->getLogger()?->info(__("$shop đã gỡ cài đặt app")->render());
         } catch (\Exception $e) {
             $this->getLogger()?->debug(__("Failed to uninstall app for shop $shop: %1", $e->getMessage())->render());

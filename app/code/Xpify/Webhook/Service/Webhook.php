@@ -10,35 +10,40 @@ use Shopify\Exception\InvalidWebhookException;
 use Shopify\Webhooks\Registry;
 use Xpify\App\Api\AppRepositoryInterface as IAppRepository;
 use Xpify\App\Api\Data\AppInterface as IApp;
+use Xpify\App\Service\GetCurrentApp;
 use Xpify\Core\Helper\ShopifyContextInitializer;
 use Xpify\Core\Helper\Utils;
 use Xpify\Merchant\Api\Data\MerchantInterface as IMerchant;
 
 class Webhook
 {
-    const WEBHOOK_PATH = 'api/webhook';
+    const WEBHOOK_PATH = '/api/webhook';
 
     private IRequest $request;
     private IAppRepository $appRepository;
     private SearchCriteriaBuilder $criteriaBuilder;
     private ShopifyContextInitializer $contextInitializer;
+    private GetCurrentApp $getCurrentApp;
 
     /**
      * @param IRequest $request
      * @param IAppRepository $appRepository
      * @param SearchCriteriaBuilder $criteriaBuilder
      * @param ShopifyContextInitializer $contextInitializer
+     * @param GetCurrentApp $getCurrentApp
      */
     public function __construct(
         IRequest $request,
         IAppRepository $appRepository,
         SearchCriteriaBuilder $criteriaBuilder,
-        ShopifyContextInitializer $contextInitializer
+        ShopifyContextInitializer $contextInitializer,
+        GetCurrentApp $getCurrentApp
     ) {
         $this->request = $request;
         $this->appRepository = $appRepository;
         $this->criteriaBuilder = $criteriaBuilder;
         $this->contextInitializer = $contextInitializer;
+        $this->getCurrentApp = $getCurrentApp;
     }
 
     /**
@@ -50,24 +55,26 @@ class Webhook
      * If an exception is caught, it logs an error message.
      *
      * @param string $topic The topic to register the webhook for
-     * @param IMerchant $merchant The merchant object
+     * @param string $merchantDomain The merchant domain
+     * @param string $accessToken
      * @param IApp $app The app object
-     * @return void
+     * @return bool
      */
-    public function register(string $topic, IMerchant $merchant, IApp $app): void
+    public function register(string $topic, string $merchantDomain, string $accessToken, IApp $app): bool
     {
-        $shop = $merchant->getShop();
-        $accessToken = $merchant->getAccessToken();
+        $shop = $merchantDomain;
 
         try {
             $this->contextInitializer->initialize($app);
             $response = Registry::register(static::WEBHOOK_PATH, $topic, $shop, $accessToken);
-            if (!$response->isSuccess()) {
-                $this->getLogger()?->debug(__("Failed to register APP_UNINSTALLED webhook for shop $shop with response body: %1", print_r($response->getBody(), true))->render());
+            if ($response->isSuccess()) {
+                return true;
             }
+            $this->getLogger()?->debug(__("Failed to register APP_UNINSTALLED webhook for shop $shop with response body: %1", print_r($response->getBody(), true))->render());
         } catch (\Throwable $e) {
             $this->getLogger()?->debug(__("Failed to register APP_UNINSTALLED webhook for shop $shop with response body: %1", $e)->render());
         }
+        return false;
     }
 
     /**
@@ -91,6 +98,7 @@ class Webhook
             $app = $this->appOrException();
             $this->contextInitializer->initialize($app);
 
+            $this->getCurrentApp->set($app);
             $response = Registry::process($this->request->getHeaders(), $this->request->getContent());
             if (!$response->isSuccess()) {
                 $this->getLogger()?->debug(__("Failed to process '$topic' webhook: %1", $response->getErrorMessage())->render());

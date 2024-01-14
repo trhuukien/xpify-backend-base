@@ -56,7 +56,7 @@ class AppToContext implements ContextParametersProcessorInterface
         try {
             $decodedAppId = $this->uidEncoder->decode($xpifyAppHeader);
             if ($decodedAppId !== null) {
-                $app = $this->appRepository->get($decodedAppId, IApp::REMOTE_ID);
+                $app = $this->appRepository->get($decodedAppId, IApp::ID);
                 if (!$app->getId()) {
                     return $contextParameters;
                 }
@@ -65,7 +65,7 @@ class AppToContext implements ContextParametersProcessorInterface
                 $this->contextInitializer->initialize($app);
             }
         } catch (\Exception $e) {
-
+dd($e);
         }
 
         return $contextParameters;

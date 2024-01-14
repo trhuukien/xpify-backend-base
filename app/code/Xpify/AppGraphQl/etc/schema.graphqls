@@ -18,12 +18,14 @@ type App {
     secret_key: String @doc(description: "The secret key for the app.")
     created_at: String @doc(description: "The date and time when the app was created.")
     token: String @doc(description: "The token for the app.")
+    scopes: String @doc(description: "The scopes for the app. Comma separated.")
 }
 
 input SaveAppInput {
     id: ID @doc(description: "The unique ID for a `App` object. If not provided, a new `App` object will be created.")
     remote_id: String @doc(description: "The real Shopify App ID.")
-    name: String! @doc(description: "The name of the app. Required.")
+    name: String @doc(description: "The name of the app. Required.")
     api_key: String @doc(description: "The API key for the app.")
     secret_key: String @doc(description: "The secret key for the app.")
+    scopes: String @doc(description: "The scopes for the app. Comma separated.")
 }

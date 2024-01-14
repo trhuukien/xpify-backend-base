@@ -2,8 +2,8 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
     <router id="standard">
-        <route id="xCore">
-            <module name="Xpify_Webhook" after="Xpify_Core"/>
+        <route id="api">
+            <module name="Xpify_Webhook" after="Magento_Webapi"/>
         </route>
     </router>
 </config>

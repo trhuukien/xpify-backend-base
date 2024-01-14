@@ -202,6 +202,17 @@ location /errors/ {
         deny all;
     }
 }
+add_header 'Access-Control-Allow-Origin' '*' 'always';
+location ~ ^/graphql {
+    if ($request_method = 'OPTIONS') {
+        add_header 'Access-Control-Allow-Origin' '*' 'always';
+        add_header 'Access-Control-Allow-Headers' 'x-requested-with, x-magento-cache-id, authorization, x-xpify-app, content-type' 'always';
+        add_header 'Access-Control-Max-Age' 86400 'always';
+        add_header 'Content-Length' 0 'always';
+        return 204;
+    }
+    try_files $uri $uri/ /index.php$is_args$args;
+}
 
 # PHP entry point for main application
 location ~ ^/(index|get|static|errors/report|errors/404|errors/503|health_check)\.php$ {

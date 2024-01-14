@@ -8,7 +8,7 @@ use Magento\Framework\App\RequestInterface as IRequest;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\GraphQl\Query\Uid;
-use Xpify\App\Api\AppRepositoryInterface as IAppRepository;
+use Xpify\App\Service\GetCurrentApp;
 use Xpify\Core\Helper\ShopifyContextInitializer;
 use Xpify\Core\Helper\Utils;
 use Xpify\Merchant\Api\MerchantRepositoryInterface as IMerchantRepository;
@@ -20,31 +20,31 @@ class Index implements HttpGetActionInterface
     private Uid $uidEncoder;
     private IMerchantRepository $merchantRepository;
     private ShopifyContextInitializer $contextInitializer;
-    private IAppRepository $appRepository;
     private RedirectFactory $redirectFactory;
+    private GetCurrentApp $getCurrentApp;
 
     /**
      * @param IRequest $request
      * @param Uid $uidEncoder
      * @param IMerchantRepository $merchantRepository
      * @param ShopifyContextInitializer $contextInitializer
-     * @param IAppRepository $appRepository
      * @param RedirectFactory $redirectFactory
+     * @param GetCurrentApp $getCurrentApp
      */
     public function __construct(
         IRequest $request,
         Uid $uidEncoder,
         IMerchantRepository $merchantRepository,
         ShopifyContextInitializer $contextInitializer,
-        IAppRepository $appRepository,
-        RedirectFactory $redirectFactory
+        RedirectFactory $redirectFactory,
+        GetCurrentApp $getCurrentApp
     ) {
         $this->request = $request;
         $this->uidEncoder = $uidEncoder;
         $this->merchantRepository = $merchantRepository;
         $this->contextInitializer = $contextInitializer;
-        $this->appRepository = $appRepository;
         $this->redirectFactory = $redirectFactory;
+        $this->getCurrentApp = $getCurrentApp;
     }
     /**
      * @inheritDoc
@@ -55,11 +55,11 @@ class Index implements HttpGetActionInterface
         $shop = \Shopify\Utils::sanitizeShopDomain($this->getRequest()->getParam('shop'));
         $this->merchantRepository->cleanNotCompleted($this->getRequest()->getParam('shop'));
 
-        $app = $this->appRepository->get((int) $this->uidEncoder->decode($this->getRequest()->getParam('_i')));
+        $app = $this->getCurrentApp->get();
         $this->contextInitializer->initialize($app);
         $redirectUrl = OAuth::begin(
             $shop,
-            'api/auth/callback',
+            'api/auth/callback/_rid/' . $app->getRemoteId(),
             false,
             ['Xpify\Auth\Service\CookieHandler', 'saveShopifyCookie'],
         );
@@ -82,7 +82,7 @@ class Index implements HttpGetActionInterface
                 ],
                 'buildQuery' => true,
                 'buildQueryWithJoin' => true,
-                'hmac' => $this->getRequest()->getParam('hmac'),
+                'hmac' => $this->getRequest()->getParam('sign'),
             ], \Xpify\Core\Model\Constants::SYS_SECRET_KEY);
             if (!$isValid) {
                 throw new LocalizedException(__("Invalid signature."));

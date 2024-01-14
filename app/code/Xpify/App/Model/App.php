@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace Xpify\App\Model;
 
 use Magento\Framework\Model\AbstractModel;
-use Xpify\App\Api\Data\AppInterface;
+use Xpify\App\Api\Data\AppInterface as IApp;
 
-class App extends AbstractModel implements AppInterface
+class App extends AbstractModel implements IApp
 {
     protected function _construct()
     {
@@ -24,7 +24,7 @@ class App extends AbstractModel implements AppInterface
     /**
      * @inheritDoc
      */
-    public function setRemoteId(int|string $remoteId): AppInterface
+    public function setRemoteId(int|string $remoteId): IApp
     {
         return $this->setData(self::REMOTE_ID, $remoteId);
     }
@@ -40,7 +40,7 @@ class App extends AbstractModel implements AppInterface
     /**
      * @inheritDoc
      */
-    public function setName(string $name): AppInterface
+    public function setName(string $name): IApp
     {
         return $this->setData(self::NAME, $name);
     }
@@ -56,7 +56,7 @@ class App extends AbstractModel implements AppInterface
     /**
      * @inheritDoc
      */
-    public function setApiKey(string $apiKey): AppInterface
+    public function setApiKey(string $apiKey): IApp
     {
         return $this->setData(self::API_KEY, $apiKey);
     }
@@ -72,7 +72,7 @@ class App extends AbstractModel implements AppInterface
     /**
      * @inheritDoc
      */
-    public function setSecretKey(string $secretKey): AppInterface
+    public function setSecretKey(string $secretKey): IApp
     {
         return $this->setData(self::SECRET_KEY, $secretKey);
     }
@@ -88,7 +88,7 @@ class App extends AbstractModel implements AppInterface
     /**
      * @inheritDoc
      */
-    public function setScopes(string $scopes): AppInterface
+    public function setScopes(string $scopes): IApp
     {
         return $this->setData(self::SCOPES, $scopes);
     }
@@ -104,7 +104,7 @@ class App extends AbstractModel implements AppInterface
     /**
      * @inheritDoc
      */
-    public function setCreatedAt(string $createdAt): AppInterface
+    public function setCreatedAt(string $createdAt): IApp
     {
         return $this->setData(self::CREATED_AT, $createdAt);
     }
@@ -120,8 +120,34 @@ class App extends AbstractModel implements AppInterface
     /**
      * @inheritDoc
      */
-    public function setUpdatedAt(string $updatedAt): AppInterface
+    public function setUpdatedAt(string $updatedAt): IApp
     {
         return $this->setData(self::UPDATED_AT, $updatedAt);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getBillingRequired(): ?int
+    {
+        return (int) $this->getData(self::BILLING_REQUIRED);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isBillingRequired(): bool
+    {
+        return (bool) $this->getBillingRequired();
+    }
+
+    public function getApiVersion(): ?string
+    {
+        return $this->getData(self::API_VERSION);
+    }
+
+    public function setApiVersion(?string $version): IApp
+    {
+        return $this->setData(self::API_VERSION, $version);
     }
 }

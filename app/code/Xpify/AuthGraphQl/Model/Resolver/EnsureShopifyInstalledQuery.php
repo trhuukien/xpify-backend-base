@@ -31,11 +31,12 @@ class EnsureShopifyInstalledQuery implements ResolverInterface
      */
     public function resolve(Field $field, $context, ResolveInfo $info, array $value = null, array $args = null)
     {
-        $appId = $context->getExtensionAttributes()->getAppId();
+        $app = $context->getExtensionAttributes()->getApp();
+        $appId = $app?->getId();
         if (!$appId) {
             throw new \Exception("Something went wrong! Please contact us for support.");
         }
-        $_query = $args['_query'];
+        $_query = ltrim($args['_query'], '?');
         parse_str($_query, $query);
         if (!isset($query['shop'])) {
             throw new \Exception("Something went wrong! Please contact us for support.");
@@ -46,7 +47,7 @@ class EnsureShopifyInstalledQuery implements ResolverInterface
 
         return [
             'installed' => $installed,
-            'redirectUri' => $this->buildRedirectUri((int) $appId, $query),
+            'redirectQuery' => $installed ? null : $this->buildRedirectQuery((int) $appId, $query),
         ];
     }
 
@@ -63,7 +64,7 @@ class EnsureShopifyInstalledQuery implements ResolverInterface
      * @param array $query Các tham số truy vấn
      * @return string Chuỗi truy vấn URL chứa URI chuyển hướng
      */
-    protected function buildRedirectUri(int $appId, array $query): string
+    protected function buildRedirectQuery(int $appId, array $query): string
     {
         $sign = \Xpify\Core\Helper\Utils::createHmac([
             'data' => ['shop' => $query['shop'], '_i' => $appId],

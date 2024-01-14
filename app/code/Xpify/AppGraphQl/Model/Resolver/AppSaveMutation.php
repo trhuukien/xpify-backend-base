@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Xpify\AppGraphQl\Model\Resolver;
 
@@ -16,11 +17,11 @@ class AppSaveMutation implements ResolverInterface
 {
     use AuthorizationTrait;
 
-    private $appRepository;
+    private AppRepositoryInterface $appRepository;
 
-    private $uidEncoder;
+    private Uid $uidEncoder;
 
-    private $appResultFormatter;
+    private AppResultFormatter $appResultFormatter;
 
     /**
      * @param AppRepositoryInterface $appRepository
@@ -47,19 +48,16 @@ class AppSaveMutation implements ResolverInterface
             } else {
                 $app = $this->appRepository->newInstance();
             }
-            $app->setName($args['input']['name']);
-            if (isset($args['input']['remote_id'])) {
-                $app->setRemoteId($args['input']['remote_id']);
+            $filteredChanges = array_filter($args['input'], function ($key) {
+                return $key !== 'id';
+            }, ARRAY_FILTER_USE_KEY);
+            if (!empty($filteredChanges)) {
+                foreach ($filteredChanges as $key => $value) {
+                    $app->setData($key, $value);
+                }
+
+                $this->appRepository->save($app);
             }
-            // api_key
-            if (isset($args['input']['api_key'])) {
-                $app->setApiKey($args['input']['api_key']);
-            }
-            // secret_key
-            if (isset($args['input']['secret_key'])) {
-                $app->setSecretKey($args['input']['secret_key']);
-            }
-            $this->appRepository->save($app);
 
             return array_merge(['model' => $app], $this->appResultFormatter->toGraphQlOutput($app));
         } catch (GraphQlInputException $e) {
@@ -76,12 +74,12 @@ class AppSaveMutation implements ResolverInterface
      * @return void
      * @throws GraphQlInputException
      */
-    protected function validateArgs(array $args)
+    protected function validateArgs(array $args): void
     {
         if (empty($args['input'])) {
             throw new GraphQlInputException(__("Input argument is required."));
         }
-        if (empty($args['input']['name'])) {
+        if (empty($args['input']['id']) && empty($args['input']['name'])) {
             throw new GraphQlInputException(__("Name is required."));
         }
         // validate name length must less or equal 30

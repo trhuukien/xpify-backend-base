@@ -47,5 +47,15 @@ Setup môi trường đáp ứng các yêu cầu sau:
     --use-secure-admin=1
    
    # Tắt các module không cần thiết
-   php8.1 bin/magento mod:dis Magento_AdobeIms Magento_AdobeImsApi Magento_EavGraphQl Magento_CmsGraphQl Magento_CatalogGraphQl Magento_AdminAdobeIms Magento_UrlRewriteGraphQl
+   php8.1 bin/magento mod:dis \
+   Magento_AdobeIms \
+   Magento_AdobeImsApi \
+   Magento_EavGraphQl \
+   Magento_CmsGraphQl \
+   Magento_CatalogGraphQl \
+   Magento_AdminAdobeIms \
+   Magento_UrlRewriteGraphQl \
+   Magento_AdvancedSearch \
+   Magento_Search \
+   Magento_CatalogSearch
     ```

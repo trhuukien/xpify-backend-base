@@ -34,6 +34,7 @@ class AppResultFormatter
             IApp::API_KEY => $app->getApiKey(),
             IApp::SECRET_KEY => $app->getSecretKey(),
             IApp::CREATED_AT => $app->getCreatedAt(),
+            IApp::SCOPES => $app->getScopes(),
         ];
     }
 }
