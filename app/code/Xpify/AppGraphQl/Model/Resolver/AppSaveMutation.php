@@ -3,12 +3,14 @@ declare(strict_types=1);
 
 namespace Xpify\AppGraphQl\Model\Resolver;
 
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\GraphQl\Config\Element\Field;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Exception\GraphQlNoSuchEntityException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Query\Uid;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
+use Psr\Log\LoggerInterface;
 use Xpify\App\Api\AppRepositoryInterface;
 use Xpify\AppGraphQl\Model\AppResultFormatter;
 use Xpify\AppGraphQl\Model\AuthorizationTrait;
@@ -22,20 +24,24 @@ class AppSaveMutation implements ResolverInterface
     private Uid $uidEncoder;
 
     private AppResultFormatter $appResultFormatter;
+    private \Psr\Log\LoggerInterface $logger;
 
     /**
      * @param AppRepositoryInterface $appRepository
      * @param Uid $uidEncoder
      * @param AppResultFormatter $appResultFormatter
+     * @param LoggerInterface $logger
      */
     public function __construct(
         AppRepositoryInterface $appRepository,
         Uid $uidEncoder,
-        AppResultFormatter $appResultFormatter
+        AppResultFormatter $appResultFormatter,
+        \Psr\Log\LoggerInterface $logger
     ) {
         $this->appRepository = $appRepository;
         $this->uidEncoder = $uidEncoder;
         $this->appResultFormatter = $appResultFormatter;
+        $this->logger = $logger;
     }
 
     public function resolve(Field $field, $context, ResolveInfo $info, array $value = null, array $args = null)
@@ -62,8 +68,11 @@ class AppSaveMutation implements ResolverInterface
             return array_merge(['model' => $app], $this->appResultFormatter->toGraphQlOutput($app));
         } catch (GraphQlInputException $e) {
             throw $e;
-        } catch (\Exception $e) {
+        } catch (NoSuchEntityException $e) {
             throw new GraphQlNoSuchEntityException(__("App not found!"));
+        } catch (\Throwable $e) {
+            $this->logger->debug($e);
+            throw new GraphQlInputException(__("Can not complete the mutation. Please check log!"));
         }
     }
 
@@ -83,7 +92,7 @@ class AppSaveMutation implements ResolverInterface
             throw new GraphQlInputException(__("Name is required."));
         }
         // validate name length must less or equal 30
-        if (strlen($args['input']['name']) > 30) {
+        if (isset($args['input']['name']) && strlen($args['input']['name']) > 30) {
             throw new GraphQlInputException(__("Name must less or equal 30 characters."));
         }
     }

@@ -9,11 +9,13 @@
             "created_at": true,
             "token": true,
             "billing_required": true,
-            "billing_interval": true
+            "billing_interval": true,
+            "scopes": true,
+            "api_version": true
         },
         "constraint": {
             "PRIMARY": true,
-            "XPIFY_APPS_NAME": true
+            "XPIFY_APPS_REMOTE_ID": true
         }
     }
 }

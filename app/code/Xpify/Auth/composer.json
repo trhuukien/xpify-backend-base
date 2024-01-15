@@ -5,7 +5,8 @@
   "type": "magento2-module",
   "require": {
     "magento/framework": "*",
-    "shopify/shopify-api": "v5.2.0"
+    "shopify/shopify-api": "v5.2.0",
+    "xpify/module-merchant": "1.0.*"
   },
   "license": [
     "Proprietary"

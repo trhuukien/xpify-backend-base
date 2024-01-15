@@ -82,7 +82,7 @@ class App extends AbstractModel implements IApp
      */
     public function getScopes(): ?string
     {
-        return $this->getData(self::SCOPES);
+        return (string) $this->getData(self::SCOPES);
     }
 
     /**

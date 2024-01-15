@@ -9,6 +9,7 @@
         <column xsi:type="varchar" name="api_key" length="64" comment="App API Key"/>
         <column xsi:type="varchar" name="secret_key" length="64" comment="App Secret Key"/>
         <column xsi:type="text" name="scopes" nullable="true" comment="App Scopes"/>
+        <column xsi:type="varchar" name="api_version" length="32" nullable="true" comment="App Webhook Api Version"/>
         <column xsi:type="varchar" name="token" length="128" comment="App Internal Token Key"/>
         <column xsi:type="smallint" name="billing_required" default="0" comment="Free App?"/>
         <column xsi:type="varchar" name="billing_interval" length="16" nullable="false" default="ONE_TIME" comment="Billing Interval Type. ONE_TIME, EVERY_30_DAYS, ANNUAL"/>
@@ -19,8 +20,8 @@
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="entity_id"/>
         </constraint>
-        <constraint xsi:type="unique" referenceId="XPIFY_APPS_NAME">
-            <column name="name"/>
+        <constraint xsi:type="unique" referenceId="XPIFY_APPS_REMOTE_ID">
+            <column name="remote_id"/>
         </constraint>
     </table>
 </schema>

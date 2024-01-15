@@ -42,8 +42,9 @@ class AppUninstalled implements Handler
             if ($searchResults->getTotalCount() === 0) {
                 return;
             }
-            $merchant = $searchResults->getItems()[0];
-            $this->merchantRepository->delete($merchant);
+            foreach ($searchResults->getItems() as $merchant) {
+                $this->merchantRepository->delete($merchant);
+            }
             $this->getLogger()?->info(__("$shop đã gỡ cài đặt app")->render());
         } catch (\Exception $e) {
             $this->getLogger()?->debug(__("Failed to uninstall app for shop $shop: %1", $e->getMessage())->render());

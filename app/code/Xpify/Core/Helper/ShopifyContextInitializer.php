@@ -48,7 +48,7 @@ class ShopifyContextInitializer
             $app->getScopes(),
             $host,
             $this->getMerchantStorage(),
-            ApiVersion::LATEST,
+            $app->getApiVersion() ? $app->getApiVersion() : ApiVersion::LATEST,
             true,
             false,
             null,

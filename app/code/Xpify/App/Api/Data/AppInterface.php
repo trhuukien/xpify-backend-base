@@ -5,6 +5,16 @@ namespace Xpify\App\Api\Data;
 
 interface AppInterface
 {
+    const ACCESS_MODE_ONLINE = 'online';
+    const ACCESS_MODE_OFFLINE = 'offline';
+
+    /**
+     * Default access mode. Hiện tại chỉ support offline mode.
+     *
+     * Dùng biến này để định nghĩa những chỗ nào cần sử dụng access mode khi mà mình chưa triển khai phần app access mode này.
+     * Có thể sau này triển khai access mode cho từng app thì lúc ấy mò theo biến này dễ hơn 🫡
+     */
+    const DEFAULT_ACCESS_MODE = self::ACCESS_MODE_OFFLINE;
     const CURRENCY_CODE = 'USD'; // Currently only supports USD
     const ID = 'entity_id';
     const REMOTE_ID = 'remote_id';

@@ -134,7 +134,7 @@ class MerchantStorage implements SessionStorage
      * @return IMerchant
      * @throws NoSuchEntityException
      */
-    private function loadMerchantBySessionid(string $sessId): IMerchant
+    public function loadMerchantBySessionid(string $sessId): IMerchant
     {
         $app = $this->getCurrentApp->get();
         if (isset($this->runtimeCache[$this->getCachedId($sessId)])) {

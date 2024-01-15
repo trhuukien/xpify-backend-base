@@ -9,10 +9,12 @@ use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\GraphQl\Query\Uid;
 use Xpify\App\Service\GetCurrentApp;
+use Xpify\Auth\Service\AuthRedirection;
 use Xpify\Core\Helper\ShopifyContextInitializer;
 use Xpify\Core\Helper\Utils;
 use Xpify\Merchant\Api\MerchantRepositoryInterface as IMerchantRepository;
 use Shopify\Auth\OAuth;
+use Xpify\App\Api\Data\AppInterface as IApp;
 
 class Index implements HttpGetActionInterface
 {
@@ -22,6 +24,7 @@ class Index implements HttpGetActionInterface
     private ShopifyContextInitializer $contextInitializer;
     private RedirectFactory $redirectFactory;
     private GetCurrentApp $getCurrentApp;
+    private AuthRedirection $authRedirection;
 
     /**
      * @param IRequest $request
@@ -30,6 +33,7 @@ class Index implements HttpGetActionInterface
      * @param ShopifyContextInitializer $contextInitializer
      * @param RedirectFactory $redirectFactory
      * @param GetCurrentApp $getCurrentApp
+     * @param AuthRedirection $authRedirection
      */
     public function __construct(
         IRequest $request,
@@ -37,7 +41,8 @@ class Index implements HttpGetActionInterface
         IMerchantRepository $merchantRepository,
         ShopifyContextInitializer $contextInitializer,
         RedirectFactory $redirectFactory,
-        GetCurrentApp $getCurrentApp
+        GetCurrentApp $getCurrentApp,
+        AuthRedirection $authRedirection
     ) {
         $this->request = $request;
         $this->uidEncoder = $uidEncoder;
@@ -45,6 +50,7 @@ class Index implements HttpGetActionInterface
         $this->contextInitializer = $contextInitializer;
         $this->redirectFactory = $redirectFactory;
         $this->getCurrentApp = $getCurrentApp;
+        $this->authRedirection = $authRedirection;
     }
     /**
      * @inheritDoc
@@ -57,12 +63,7 @@ class Index implements HttpGetActionInterface
 
         $app = $this->getCurrentApp->get();
         $this->contextInitializer->initialize($app);
-        $redirectUrl = OAuth::begin(
-            $shop,
-            'api/auth/callback/_rid/' . $app->getRemoteId(),
-            false,
-            ['Xpify\Auth\Service\CookieHandler', 'saveShopifyCookie'],
-        );
+        $redirectUrl = $this->authRedirection->createRedirectUrl($app, $shop);
         return $this->redirectFactory->create()->setUrl($redirectUrl);
     }
 

@@ -4,10 +4,13 @@ declare(strict_types=1);
 namespace Xpify\Merchant\Model;
 
 use Magento\Framework\Model\AbstractModel;
+use Shopify\Clients\Graphql;
 use Xpify\Merchant\Api\Data\MerchantInterface as IMerchant;
 
 class Merchant extends AbstractModel implements IMerchant
 {
+    private ?Graphql $graphQlClient = null;
+
     /**
      * @inheritDoc
      */
@@ -284,5 +287,24 @@ class Merchant extends AbstractModel implements IMerchant
     public function setScope(?string $scope): IMerchant
     {
         return $this->setData(IMerchant::SCOPE, $scope);
+    }
+
+    /**
+     * Get the Graphql client for merchant
+     *
+     * @return Graphql|null
+     * @throws \Shopify\Exception\MissingArgumentException
+     */
+    public function getGraphqlClient(): ?Graphql
+    {
+        if (!$this->graphQlClient) {
+            if (!$this->getShop() || !$this->getAccessToken()) {
+                return null;
+            }
+
+            $this->graphQlClient = new GraphQl($this->getShop(), $this->getAccessToken());
+        }
+
+        return $this->graphQlClient;
     }
 }

@@ -12,6 +12,7 @@ use Xpify\App\Api\AppRepositoryInterface as IAppRepository;
 
 class GetCurrentApp
 {
+    private bool $locked = false;
     private ?IApp $app = null;
     private IRequest $request;
     private IAppRepository $appRepository;
@@ -32,36 +33,45 @@ class GetCurrentApp
         $this->uidEncoder = $uidEncoder;
     }
 
+    public function lock(): self
+    {
+        $this->locked = true;
+        return $this;
+    }
+
     /**
      * Force set app
      *
      * @param IApp $app
+     * @return $this
      */
-    public function set(IApp $app): void
+    public function set(IApp $app): self
     {
-        $this->app = $app;
+        if ($this->locked === false) {
+            $this->app = $app;
+        }
+        return $this;
     }
 
     /**
+     * Try to resolve app id from request and return app instance or throw exception
+     *
      * @return IApp|null
      * @throws NoSuchEntityException
      */
-    public function get()
+    public function get(): ?IApp
     {
-        if ($this->app) {
-            return $this->app;
+        if (!$this->app) {
+            try {
+                list($id, $requestFieldName) = $this->resolveRequestId();
+                if (empty($id)) {
+                    throw new NoSuchEntityException(__("App not found"));
+                }
+                $this->app = $this->appRepository->get($id, $requestFieldName);
+            } catch (GraphQlInputException $e) {
+                throw new NoSuchEntityException(__("App not found"));
+            }
         }
-        try {
-            list($id, $requestFieldName) = $this->resolveRequestId();
-        } catch (GraphQlInputException $e) {
-            throw new NoSuchEntityException(__("App not found"));
-        }
-
-        if (empty($id)) {
-            throw new NoSuchEntityException(__("App not found"));
-        }
-        $this->app = $this->appRepository->get($id, $requestFieldName);
-
         return $this->app;
     }
 

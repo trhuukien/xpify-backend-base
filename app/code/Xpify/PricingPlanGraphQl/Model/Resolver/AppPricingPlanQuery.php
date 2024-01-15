@@ -5,15 +5,16 @@ namespace Xpify\PricingPlanGraphQl\Model\Resolver;
 
 use Magento\Framework\Exception\InputException;
 use Magento\Framework\GraphQl\Config\Element\Field;
-use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Query\Uid;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
+use Xpify\AuthGraphQl\Model\EnsureMerchantSession;
+use Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractResolver;
 use Xpify\PricingPlan\Api\Data\PricingPlanInterface;
 use Xpify\PricingPlan\Api\PricingPlanRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Xpify\PricingPlanGraphQl\Model\PricingPlanFormatter;
 
-class AppPricingPlanQuery implements ResolverInterface
+class AppPricingPlanQuery extends AuthSessionAbstractResolver implements \Magento\Framework\GraphQl\Query\ResolverInterface
 {
     private PricingPlanRepositoryInterface $pricingPlanRepository;
 
@@ -28,6 +29,7 @@ class AppPricingPlanQuery implements ResolverInterface
      * @param PricingPlanRepositoryInterface $pricingPlanRepository
      * @param Uid $uidEncoder
      * @param PricingPlanFormatter $formatter
+     * @param EnsureMerchantSession $ensureMerchantSession
      */
     public function __construct(
         SearchCriteriaBuilder $criteriaBuilder,
@@ -44,7 +46,7 @@ class AppPricingPlanQuery implements ResolverInterface
     /**
      * @inheritDoc
      */
-    public function resolve(Field $field, $context, ResolveInfo $info, array $value = null, array $args = null)
+    public function execResolve(Field $field, $context, ResolveInfo $info, array $value = null, array $args = null)
     {
         try {
             $id = $this->uidEncoder->decode($args['id']);
