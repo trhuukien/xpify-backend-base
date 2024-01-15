@@ -203,6 +203,7 @@ location /errors/ {
     }
 }
 add_header 'Access-Control-Allow-Origin' '*' 'always';
+add_header 'Access-Control-Expose-Headers' 'X-Shopify-Api-Request-Failure-Reauthorize,X-Shopify-Api-Request-Failure-Reauthorize-Url' 'always';
 location ~ ^/graphql {
     if ($request_method = 'OPTIONS') {
         add_header 'Access-Control-Allow-Origin' '*' 'always';

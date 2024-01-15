@@ -7,7 +7,6 @@ use Magento\Framework\Exception\InputException;
 use Magento\Framework\GraphQl\Config\Element\Field;
 use Magento\Framework\GraphQl\Query\Uid;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
-use Xpify\AuthGraphQl\Model\EnsureMerchantSession;
 use Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractResolver;
 use Xpify\PricingPlan\Api\Data\PricingPlanInterface;
 use Xpify\PricingPlan\Api\PricingPlanRepositoryInterface;
@@ -29,7 +28,6 @@ class AppPricingPlanQuery extends AuthSessionAbstractResolver implements \Magent
      * @param PricingPlanRepositoryInterface $pricingPlanRepository
      * @param Uid $uidEncoder
      * @param PricingPlanFormatter $formatter
-     * @param EnsureMerchantSession $ensureMerchantSession
      */
     public function __construct(
         SearchCriteriaBuilder $criteriaBuilder,
@@ -49,6 +47,7 @@ class AppPricingPlanQuery extends AuthSessionAbstractResolver implements \Magent
     public function execResolve(Field $field, $context, ResolveInfo $info, array $value = null, array $args = null)
     {
         try {
+            $merchant = $this->getEnsureMerchantSession()->getMerchant();
             $id = $this->uidEncoder->decode($args['id']);
             if ($id === null) {
                 throw new InputException(__('Invalid ID'));

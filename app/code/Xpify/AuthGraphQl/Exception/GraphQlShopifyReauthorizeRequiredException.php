@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace Xpify\AuthGraphQl\Exception;
 
-use GraphQL\Error\ClientAware;
-use Magento\Framework\Exception\AggregateExceptionInterface;
+//use GraphQL\Error\ClientAware;
+//use Magento\Framework\Exception\AggregateExceptionInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 
-class GraphQlShopifyReauthorizeRequiredException extends LocalizedException implements AggregateExceptionInterface, ClientAware
+class GraphQlShopifyReauthorizeRequiredException extends LocalizedException
 {
     const EXCEPTION_HEADER = 'X-Shopify-API-Request-Failure-Reauthorize-Url';
     const EXCEPTION_CATEGORY = 'x-shopify-reauthorize-required';

@@ -2,6 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Magento\Framework\App\FrontControllerInterface" type="Xpify\Core\GraphQl\Controller\GraphQl" />
+    <preference for="Magento\Framework\GraphQl\Query\ErrorHandlerInterface" type="Xpify\Core\GraphQl\Query\ErrorHandler"/>
     <type name="Magento\GraphQl\Model\Query\ContextFactory">
         <arguments>
             <argument name="contextParametersProcessors" xsi:type="array">

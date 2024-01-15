@@ -51,7 +51,6 @@ class EnsureMerchantSession
         $this->getCurrentApp = $getCurrentApp;
     }
     /**
-     * @inheritDoc
      * @throws GraphQlShopifyReauthorizeRequiredException
      */
     public function execute()
@@ -73,9 +72,7 @@ class EnsureMerchantSession
         if ($session && $shop && $session->getShop() !== $shop) {
             // This request is for a different shop. Go straight to login
             $reauthorizeUrl = $this->authRedirection->createRedirectUrl($app, $shop);
-            $e = new GraphQlShopifyReauthorizeRequiredException(__("Please reauthorize the app for $shop"));
-            $e->setReauthorizeUrl($reauthorizeUrl);
-            throw $e;
+            throw new GraphQlShopifyReauthorizeRequiredException(__("Please reauthorize the app for $shop"), null, 0, true, $reauthorizeUrl);
         }
 
         if ($session && $session->isValid()) {
@@ -105,9 +102,7 @@ class EnsureMerchantSession
         }
 
         $redirectUrl = $this->authRedirection->createAuthUrl($shop, (int) $app->getId());
-        $e = new GraphQlShopifyReauthorizeRequiredException(__("Please reauthorize the app for $shop"));
-        $e->setReauthorizeUrl($redirectUrl);
-        throw $e;
+        throw new GraphQlShopifyReauthorizeRequiredException(__("Please reauthorize the app for $shop"), null, 0, true, $redirectUrl);
     }
 
     public function hasInitialized(): bool

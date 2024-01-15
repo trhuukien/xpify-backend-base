@@ -11,9 +11,9 @@ use Xpify\AuthGraphQl\Model\EnsureMerchantSession;
 
 abstract class AuthSessionAbstractResolver implements ResolverInterface
 {
-    private $_ensureMerchantSession;
+    private ?EnsureMerchantSession $_ensureMerchantSession = null;
 
-    private function getEnsureMerchantSession(): EnsureMerchantSession
+    protected function getEnsureMerchantSession(): EnsureMerchantSession
     {
         if (!$this->_ensureMerchantSession) {
             $this->_ensureMerchantSession = \Magento\Framework\App\ObjectManager::getInstance()->get(EnsureMerchantSession::class);

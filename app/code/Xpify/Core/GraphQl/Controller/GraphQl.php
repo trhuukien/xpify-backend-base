@@ -183,15 +183,14 @@ class GraphQl implements FrontControllerInterface
                 $this->contextFactory->create(),
                 $data['variables'] ?? []
             );
+        } catch (GraphQlShopifyReauthorizeRequiredException $e) {
+            $statusCode = $e->getStatusCode() ?: 401;
+            $jsonResult->setHeader(GraphQlShopifyReauthorizeRequiredException::EXCEPTION_HEADER, $e->getReauthorizeUrl());
+            $jsonResult->setHeader('X-Shopify-API-Request-Failure-Reauthorize', '1');
         } catch (\Exception $error) {
-            if ($error instanceof GraphQlShopifyReauthorizeRequiredException) {
-                $statusCode = $error->getStatusCode() ?: 401;
-                $jsonResult->setHeader(GraphQlShopifyReauthorizeRequiredException::EXCEPTION_HEADER, $error->getReauthorizeUrl());
-            } else {
-                $result['errors'] = isset($result['errors']) ? $result['errors'] : [];
-                $result['errors'][] = $this->graphQlError->create($error);
-                $statusCode = ExceptionFormatter::HTTP_GRAPH_QL_SCHEMA_ERROR_STATUS;
-            }
+            $result['errors'] = $result['errors'] ?? [];
+            $result['errors'][] = $this->graphQlError->create($error);
+            $statusCode = ExceptionFormatter::HTTP_GRAPH_QL_SCHEMA_ERROR_STATUS;
         }
 
         $jsonResult->setHttpResponseCode($statusCode);
