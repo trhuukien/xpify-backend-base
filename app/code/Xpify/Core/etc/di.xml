@@ -6,6 +6,8 @@
     <preference for="Magento\Theme\Setup\RecurringData" type="Xpify\Core\Model\Deprecated\Theme\RecurringData"/>
     <preference for="Magento\Customer\Setup\RecurringData" type="Xpify\Core\Model\Deprecated\Theme\RecurringData"/>
     <preference for="Magento\Customer\Model\Indexer\Attribute\Filter" type="Xpify\Core\Model\Deprecated\Customer\IndexerAttributeFilter"/>
+    <preference for="Magento\CatalogInventory\Setup\Patch\Data\UpdateStockItemsWebsite" type="Xpify\Core\Model\Deprecated\CatalogInventory\UpdateStockItemsWebsite"/>
+    <preference for="Magento\CatalogSearch\Setup\Patch\Data\SetInitialSearchWeightForAttributes" type="Xpify\Core\Model\Deprecated\CatalogSearch\SetInitialSearchWeightForAttributes"/>
     <!-- /END DISABLE INDEXER DECLARE  -->
     <!--  DISABLE SEARCH ENGINE  -->
     <type name="Magento\Search\Model\Adminhtml\System\Config\Source\Engine">
