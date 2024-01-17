@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 namespace Xpify\Merchant\Api\Data;
 
+use Shopify\Clients\Graphql;
+use Shopify\Clients\Rest;
+use Shopify\Clients\Storefront;
+
 interface MerchantInterface
 {
     const ID = 'entity_id';
@@ -309,4 +313,10 @@ interface MerchantInterface
      * @return self Returns the current instance of the class to allow method chaining
      */
     public function setAccessToken(?string $accessToken): self;
+
+    public function getGraphql(): ?Graphql;
+
+    public function getRest(): ?Rest;
+
+    public function getStoreFront(): ?Storefront;
 }

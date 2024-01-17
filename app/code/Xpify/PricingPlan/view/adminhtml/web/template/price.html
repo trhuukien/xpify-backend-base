@@ -1,0 +1,16 @@
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<div class="data-grid-cell-content">
+    <!-- ko foreach: { data: getDataPrices($row()), as: 'elem'}  -->
+    <div class="price-container">
+        <span class="price-interval" data-bind="text: elem.interval + ': '"></span>
+        <span class="price-wrapper" data-bind="attr: {'data-price-amount': elem.amount}">
+            <span class="price" data-bind="text: elem.formatted_amount"></span>
+        </span>
+    </div>
+    <!-- /ko -->
+</div>

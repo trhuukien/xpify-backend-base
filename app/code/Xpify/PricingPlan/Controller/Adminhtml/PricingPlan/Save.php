@@ -80,18 +80,24 @@ class Save extends Action implements HttpPostActionInterface
         if (empty($payload[IPricingPlan::APP_ID])) {
             throw new \Magento\Framework\Exception\InputException(__('Please create App first.'));
         }
-        $keysToUnset = ['form_key', 'currency', IPricingPlan::ID, IPricingPlan::FREE_TRIAL_DAYS, IPricingPlan::SORT_ORDER];
+        $keysToUnset = ['form_key', 'currency', IPricingPlan::ID, IPricingPlan::SORT_ORDER];
         foreach ($keysToUnset as $key) {
             if (isset($payload[$key]) && (empty($payload[$key]) || !is_numeric($payload[$key]))) {
                 unset($payload[$key]);
             }
         }
 
-        $keysToCheck = [IPricingPlan::ENABLE_FREE_TRIAL, IPricingPlan::STATUS];
+        $keysToCheck = [IPricingPlan::STATUS];
         foreach ($keysToCheck as $key) {
             if (isset($payload[$key]) && !in_array((int) $payload[$key], [0, 1])) {
                 unset($payload[$key]);
             }
         }
+
+        if (empty($payload[IPricingPlan::PRICES])) {
+            throw new \Magento\Framework\Exception\InputException(__('Please add at least one price.'));
+        }
+
+        $payload[IPricingPlan::PRICES] = json_encode($payload[IPricingPlan::PRICES]);
     }
 }

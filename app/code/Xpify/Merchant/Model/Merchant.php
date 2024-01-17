@@ -5,11 +5,15 @@ namespace Xpify\Merchant\Model;
 
 use Magento\Framework\Model\AbstractModel;
 use Shopify\Clients\Graphql;
+use Shopify\Clients\Rest;
+use Shopify\Clients\Storefront;
 use Xpify\Merchant\Api\Data\MerchantInterface as IMerchant;
 
 class Merchant extends AbstractModel implements IMerchant
 {
-    private ?Graphql $graphQlClient = null;
+    private ?Graphql $graphQl = null;
+    private ?Rest $rest = null;
+    private ?Storefront $storefront = null;
 
     /**
      * @inheritDoc
@@ -295,16 +299,46 @@ class Merchant extends AbstractModel implements IMerchant
      * @return Graphql|null
      * @throws \Shopify\Exception\MissingArgumentException
      */
-    public function getGraphqlClient(): ?Graphql
+    public function getGraphql(): ?Graphql
     {
-        if (!$this->graphQlClient) {
+        if (!$this->graphQl) {
             if (!$this->getShop() || !$this->getAccessToken()) {
                 return null;
             }
 
-            $this->graphQlClient = new GraphQl($this->getShop(), $this->getAccessToken());
+            $this->graphQl = new GraphQl($this->getShop(), $this->getAccessToken());
         }
 
-        return $this->graphQlClient;
+        return $this->graphQl;
+    }
+
+    /**
+     * Get REST client for admin resource
+     *
+     * @return Rest|null
+     * @throws \Shopify\Exception\MissingArgumentException
+     */
+    public function getRest(): ?Rest
+    {
+        if (!$this->rest) {
+            if (!$this->getShop() || !$this->getAccessToken()) {
+                return null;
+            }
+
+            $this->rest = new Rest($this->getShop(), $this->getAccessToken());
+        }
+        return $this->rest;
+    }
+
+    public function getStoreFront(): ?Storefront
+    {
+        if (!$this->storefront) {
+            if (!$this->getShop()) {
+                return null;
+            }
+
+            $this->storefront = new Storefront($this->getShop(), $this->getStorefrontAccessToken());
+        }
+        return $this->storefront;
     }
 }

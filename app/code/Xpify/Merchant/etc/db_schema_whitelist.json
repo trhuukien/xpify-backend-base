@@ -1,19 +1,14 @@
 {
-    "xpify_merchants": {
+    "$xpify_merchants": {
         "column": {
             "entity_id": true,
-            "domain": true,
-            "name": true,
-            "email": true,
-            "app_info": true,
-            "more_info": true,
-            "created_at": true,
             "session_id": true,
             "shop": true,
             "is_online": true,
             "state": true,
             "scope": true,
             "access_token": true,
+            "storefront_access_token": true,
             "expires_at": true,
             "user_id": true,
             "user_first_name": true,
@@ -24,57 +19,29 @@
             "locale": true,
             "collaborator": true,
             "app_id": true,
+            "created_at": true,
             "updated_at": true
-        },
-        "index": {
-            "XPIFY_MERCHANTS_ENTITY_ID": true
         },
         "constraint": {
             "PRIMARY": true,
-            "XPIFY_MERCHANTS_DOMAIN_NAME": true,
-            "XPIFY_MERCHANTS_DOMAIN": true,
-            "XPIFY_MERCHANTS_SESSION_ID_APP_ID": true
+            "$XPIFY_MERCHANTS_SESSION_ID_APP_ID": true
         }
     },
-    "xpify_merchant_app": {
+    "$xpify_merchant_subscription": {
         "column": {
             "entity_id": true,
             "merchant_id": true,
-            "app_id": true,
-            "status": true,
-            "access_token": true,
-            "storefront_token": true,
-            "x_access_token": true,
-            "created_at": true
-        },
-        "index": {
-            "XPIFY_MERCHANT_APP_ENTITY_ID": true,
-            "XPIFY_MERCHANT_APP_ACCESS_TOKEN": true,
-            "XPIFY_MERCHANT_APP_STOREFRONT_TOKEN": true,
-            "XPIFY_MERCHANT_APP_X_ACCESS_TOKEN": true
-        },
-        "constraint": {
-            "PRIMARY": true,
-            "XPIFY_MERCHANT_APP_MERCHANT_ID_XPIFY_MERCHANTS_ENTITY_ID": true
-        }
-    },
-    "xpify_merchant_subscription": {
-        "column": {
-            "entity_id": true,
-            "merchant_app_id": true,
             "plan_id": true,
+            "code": true,
             "name": true,
             "description": true,
             "price": true,
-            "free_trial_days": true,
-            "enable_free_trial": true,
-            "created_at": true,
-            "merchant_id": true
+            "interval": true,
+            "created_at": true
         },
         "constraint": {
             "PRIMARY": true,
-            "FK_A1A370977EF19FC3723F7A23E13434FA": true,
-            "XPIFY_MERCHANT_SUBSCRIPTION_MERCHANT_ID_XPIFY_MERCHANTS_ENTT_ID": true
+            "FK_96B931D59CDDFBEF1B7DA83A3D9FE423": true
         }
     }
 }

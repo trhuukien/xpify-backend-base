@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Xpify\AuthGraphQl\Model;
 
 use Magento\Framework\App\RequestInterface as IRequest;
+use Magento\Framework\Exception\LocalizedException;
+use Psr\Log\LoggerInterface;
 use Shopify\Auth\Session;
 use Shopify\Context;
 use Shopify\Utils;
@@ -11,8 +13,8 @@ use Xpify\App\Api\Data\AppInterface as IApp;
 use Xpify\App\Service\GetCurrentApp;
 use Xpify\Auth\Service\AuthRedirection;
 use Xpify\AuthGraphQl\Exception\GraphQlShopifyReauthorizeRequiredException;
-use Xpify\Merchant\Service\MerchantStorage;
 use Xpify\Merchant\Api\Data\MerchantInterface as IMerchant;
+use Xpify\Merchant\Service\MerchantStorage;
 
 class EnsureMerchantSession
 {
@@ -32,26 +34,31 @@ class EnsureMerchantSession
     private AuthRedirection $authRedirection;
     private MerchantStorage $merchantStorage;
     private GetCurrentApp $getCurrentApp;
+    private \Psr\Log\LoggerInterface $logger;
 
     /**
      * @param IRequest $request
      * @param AuthRedirection $authRedirection
      * @param MerchantStorage $merchantStorage
      * @param GetCurrentApp $getCurrentApp
+     * @param LoggerInterface $logger
      */
     public function __construct(
         IRequest $request,
         AuthRedirection $authRedirection,
         MerchantStorage $merchantStorage,
-        GetCurrentApp $getCurrentApp
+        GetCurrentApp $getCurrentApp,
+        \Psr\Log\LoggerInterface $logger
     ) {
         $this->request = $request;
         $this->authRedirection = $authRedirection;
         $this->merchantStorage = $merchantStorage;
         $this->getCurrentApp = $getCurrentApp;
+        $this->logger = $logger;
     }
     /**
      * @throws GraphQlShopifyReauthorizeRequiredException
+     * @throws LocalizedException
      */
     public function execute()
     {
@@ -78,14 +85,20 @@ class EnsureMerchantSession
         if ($session && $session->isValid()) {
             $authorizedMerchant = $this->merchantStorage->loadMerchantBySessionid($session->getId());
             // make a request to ensure the access token still valid. otherwise, re-authenticate the user.
-            $response = $authorizedMerchant->getGraphQlClient()->query(static::TEST_GRAPHQL_QUERY);
+            try {
+                $response = $authorizedMerchant->getGraphql()->query(static::TEST_GRAPHQL_QUERY);
+            } catch (\Throwable $e) {
+                $this->logger->debug($e);
+                // Unknown error. just throw error
+                throw new LocalizedException(__("Internal Server. Please report this issue to us."));
+            }
             $proceed = $response->getStatusCode() === 200;
             if ($proceed) {
                 $this->merchant = $authorizedMerchant;
                 $this->session = $session;
+                $this->hasInitialized = true;
+                return;
             }
-            $this->hasInitialized = true;
-            return;
         }
 
         $authTokenHeader =$this->request->getHeader('Authorization', '');

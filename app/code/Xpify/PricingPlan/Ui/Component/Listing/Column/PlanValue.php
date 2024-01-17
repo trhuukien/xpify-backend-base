@@ -8,6 +8,7 @@ use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Ui\Component\Listing\Columns\Column;
 use Magento\Directory\Model\Currency;
 use Xpify\PricingPlan\Api\Data\PricingPlanInterface as IPricingPlan;
+use Xpify\PricingPlan\Model\Source\IntervalType;
 
 class PlanValue extends Column
 {
@@ -41,12 +42,26 @@ class PlanValue extends Column
     {
         if (isset($dataSource['data']['items'])) {
             foreach ($dataSource['data']['items'] as & $item) {
-                $purchaseCurrency = $this->currency->load(IPricingPlan::BASE_CURRENCY);
-                $item[$this->getData('name')] = $purchaseCurrency
-                    ->format($item[$this->getData('name')], [], false);
+                $item[$this->getData('name')] = $this->prepareItemPrice($item[$this->getData('name')]);
             }
         }
 
         return $dataSource;
+    }
+
+    /**
+     * Prepare item price
+     *
+     * @param string $rawData
+     * @return array
+     */
+    protected function prepareItemPrice(string $rawData): array
+    {
+        $decodedData = json_decode($rawData, true);
+        foreach ($decodedData as &$value) {
+            $value['formatted_amount'] = $this->currency->format($value['amount'], [], false);
+            $value['interval'] = IntervalType::getIntervalLabel($value['interval']);
+        }
+        return $decodedData;
     }
 }

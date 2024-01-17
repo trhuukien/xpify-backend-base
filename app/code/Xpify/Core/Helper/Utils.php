@@ -3,8 +3,11 @@ declare(strict_types=1);
 
 namespace Xpify\Core\Helper;
 
+use Magento\Framework\GraphQl\Query\Uid;
+
 final class Utils
 {
+    private static ?Uid $uidEncoder = null;
     /**
      * Create HMAC hash based on provided options and secret key.
      *
@@ -64,5 +67,43 @@ final class Utils
             $params['hmac'],
             self::createHmac($params, $secret)
         );
+    }
+
+    /**
+     * @param string $base64Id
+     * @return string
+     * @throws \Magento\Framework\GraphQl\Exception\GraphQlInputException
+     */
+    public static function uidToId(string $base64Id): string
+    {
+        $encoder = self::getUidEncoder();
+        $id = $encoder->decode($base64Id);
+        if (!$id) {
+            throw new \Magento\Framework\GraphQl\Exception\GraphQlInputException(__("Invalid ID!"));
+        }
+        return $id;
+    }
+
+    /**
+     * @param string $id
+     * @return string
+     */
+    public static function idToUid(string $id): string
+    {
+        $encoder = self::getUidEncoder();
+        return $encoder->encode($id);
+    }
+
+    /**
+     * Get the uid encoder.
+     *
+     * @return Uid
+     */
+    private static function getUidEncoder(): Uid
+    {
+        if (!self::$uidEncoder) {
+            self::$uidEncoder = \Magento\Framework\App\ObjectManager::getInstance()->get(Uid::class);
+        }
+        return self::$uidEncoder;
     }
 }

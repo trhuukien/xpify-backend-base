@@ -8,7 +8,7 @@ use Xpify\App\Api\Data\AppInterface as IApp;
 
 class App extends AbstractDb
 {
-    const MAIN_TABLE = 'xpify_apps';
+    const MAIN_TABLE = '$xpify_apps';
 
     /**
      * Init app resource model

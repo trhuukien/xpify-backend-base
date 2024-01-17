@@ -6,7 +6,7 @@ Hướng dẫn setup project
 
 Setup môi trường đáp ứng các yêu cầu sau:
 - PHP 8.1 (các extensions: bcmath,ctype,curl,dom,common,gd,iconv,intl,mbstring,simplexml,soap,xsl,zip,sockets,mysql,bz2)
-- Mariadb-10.6
+- Mariadb-10.4
 - Varnish 6
 - Composer 2.2.x
 - nginx

@@ -2,8 +2,10 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Xpify\Merchant\Api\Data\MerchantSearchResultsInterface" type="Xpify\Merchant\Model\SearchResults"/>
+    <preference for="Xpify\Merchant\Api\Data\MerchantSubscriptionSearchResultsInterface" type="Xpify\Merchant\Model\SubscriptionSearchResults"/>
     <preference for="Xpify\Merchant\Api\Data\MerchantInterface" type="Xpify\Merchant\Model\Merchant"/>
     <preference for="Xpify\Merchant\Api\MerchantRepositoryInterface" type="Xpify\Merchant\Model\MerchantRepository"/>
+    <preference for="Xpify\Merchant\Api\MerchantSubscriptionRepositoryInterface" type="Xpify\Merchant\Model\SubscriptionRepository"/>
 
     <virtualType name="Xpify\Merchant\Model\Api\SearchCriteria\CollectionProcessor" type="Magento\Framework\Api\SearchCriteria\CollectionProcessor">
         <arguments>
@@ -14,6 +16,11 @@
         </arguments>
     </virtualType>
     <type name="Xpify\Merchant\Model\MerchantRepository">
+        <arguments>
+            <argument name="collectionProcessor" xsi:type="object">Xpify\Merchant\Model\Api\SearchCriteria\CollectionProcessor</argument>
+        </arguments>
+    </type>
+    <type name="Xpify\Merchant\Model\SubscriptionRepository">
         <arguments>
             <argument name="collectionProcessor" xsi:type="object">Xpify\Merchant\Model\Api\SearchCriteria\CollectionProcessor</argument>
         </arguments>

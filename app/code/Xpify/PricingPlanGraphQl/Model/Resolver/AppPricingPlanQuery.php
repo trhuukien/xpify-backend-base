@@ -47,7 +47,7 @@ class AppPricingPlanQuery extends AuthSessionAbstractResolver implements \Magent
     public function execResolve(Field $field, $context, ResolveInfo $info, array $value = null, array $args = null)
     {
         try {
-            $merchant = $this->getEnsureMerchantSession()->getMerchant();
+            $merchant = $this->getMerchantSession()->getMerchant();
             $id = $this->uidEncoder->decode($args['id']);
             if ($id === null) {
                 throw new InputException(__('Invalid ID'));

@@ -34,8 +34,8 @@ class PricingPlanFormatter
             IPricingPlan::NAME => $pricingPlan->getName(),
             IPricingPlan::PRICE => $pricingPlan->getPrice(),
             IPricingPlan::DESCRIPTION => $pricingPlan->getDescription(),
-            IPricingPlan::ENABLE_FREE_TRIAL => $pricingPlan->isEnableFreeTrial(),
-            IPricingPlan::FREE_TRIAL_DAYS => $pricingPlan->getFreeTrialDays(),
+//            IPricingPlan::ENABLE_FREE_TRIAL => $pricingPlan->isEnableFreeTrial(),
+//            IPricingPlan::FREE_TRIAL_DAYS => $pricingPlan->getFreeTrialDays(),
             IPricingPlan::SORT_ORDER => $pricingPlan->getSortOrder(),
         ];
     }

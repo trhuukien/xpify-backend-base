@@ -14,12 +14,12 @@ class DataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
     /**
      * @var array
      */
-    private $loadedData;
+    private array $loadedData = [];
 
     /**
      * @var ContextInterface
      */
-    private $context;
+    private ContextInterface $context;
     private \Magento\Directory\Model\Currency $currency;
 
     /**
@@ -59,18 +59,36 @@ class DataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
      */
     public function getData(): array
     {
-        if (null !== $this->loadedData) {
+        if (!empty($this->loadedData)) {
             return $this->loadedData;
         }
         $items = $this->collection->getItems();
         /* @var IPricingPlan $item */
         foreach ($items as $item) {
-            $this->loadedData[$item->getId()] = $item->getData();
+            $this->prepareItemData($item);
+            $this->loadedData[$item->getId()] = $this->prepareItemData($item);
         }
         $this->loadedData[''] = $this->getDefaultData();
 
         $this->populateCurrencyData();
         return $this->loadedData;
+    }
+
+    /**
+     * Prepare item data
+     *
+     * @param IPricingPlan $item
+     *
+     * @return array
+     */
+    public function prepareItemData(IPricingPlan $item): array
+    {
+        return array_merge(
+            $item->getData(),
+            [
+                IPricingPlan::PRICES => $item->getDataPrices(),
+            ]
+        );
     }
 
     /**

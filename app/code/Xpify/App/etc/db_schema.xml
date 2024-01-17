@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
-    <table name="xpify_apps" resource="default" engine="innodb" comment="Shopify Apps">
+    <table name="$xpify_apps" resource="default" engine="innodb" comment="Shopify Apps">
         <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true"
                 comment="Local App ID"/>
         <column xsi:type="varchar" name="remote_id" length="64" comment="Remote Real App ID"/>
@@ -11,8 +11,6 @@
         <column xsi:type="text" name="scopes" nullable="true" comment="App Scopes"/>
         <column xsi:type="varchar" name="api_version" length="32" nullable="true" comment="App Webhook Api Version"/>
         <column xsi:type="varchar" name="token" length="128" comment="App Internal Token Key"/>
-        <column xsi:type="smallint" name="billing_required" default="0" comment="Free App?"/>
-        <column xsi:type="varchar" name="billing_interval" length="16" nullable="false" default="ONE_TIME" comment="Billing Interval Type. ONE_TIME, EVERY_30_DAYS, ANNUAL"/>
 
         <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
                 comment="App Created Time"/>
@@ -20,7 +18,7 @@
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="entity_id"/>
         </constraint>
-        <constraint xsi:type="unique" referenceId="XPIFY_APPS_REMOTE_ID">
+        <constraint xsi:type="unique" referenceId="$XPIFY_APPS_REMOTE_ID">
             <column name="remote_id"/>
         </constraint>
     </table>

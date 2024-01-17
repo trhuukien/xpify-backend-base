@@ -1,11 +1,12 @@
+
 type Query {
     appPricingPlans(id: ID!): [PricingPlan] @doc(description: "Get all pricing plans for an app") @resolver(class: "Xpify\\PricingPlanGraphQl\\Model\\Resolver\\AppPricingPlanQuery")
 }
-type Mutation {}
 
 type PricingPlan {
     id: ID!
     status: Boolean!
+    code: String!
     name: String!
     price: Float!
     currency: String!

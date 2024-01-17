@@ -1,23 +1,21 @@
 {
-    "xpify_pricing_plans": {
+    "$xpify_pricing_plans": {
         "column": {
             "entity_id": true,
             "status": true,
             "name": true,
             "description": true,
-            "price": true,
-            "free_trial_days": true,
-            "enable_free_trial": true,
+            "prices": true,
             "sort_order": true,
             "app_id": true
         },
         "index": {
-            "XPIFY_PRICING_PLANS_ENTITY_ID": true,
-            "XPIFY_PRICING_PLANS_APP_ID": true
+            "$XPIFY_PRICING_PLANS_ENTITY_ID": true,
+            "$XPIFY_PRICING_PLANS_APP_ID": true
         },
         "constraint": {
-            "PRIMARY": true,
-            "XPIFY_PRICING_PLANS_APP_ID_XPIFY_APPS_ENTITY_ID": true
+            "$XPIFY_PRICING_PLANS_APP_ID_$XPIFY_APPS_ENTITY_ID": true,
+            "PRIMARY": true
         }
     }
 }

@@ -15,6 +15,7 @@ use Xpify\PricingPlan\Api\Data\PricingPlanInterface;
 
 class PricingPlan extends AbstractModel implements PricingPlanInterface
 {
+    private array $decodedPrices = [];
     private ?IApp $app = null;
 
     private AppRepositoryInterface $appRepository;
@@ -47,6 +48,22 @@ class PricingPlan extends AbstractModel implements PricingPlanInterface
         $this->_init(ResourceModel\PricingPlan::class);
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function getCode(): ?string
+    {
+        return $this->getData(self::CODE);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setCode(string $code): self
+    {
+        return $this->setData(self::CODE, $code);
+    }
+
     public function getStatus(): ?int
     {
         return (int) $this->getData(self::STATUS);
@@ -72,39 +89,76 @@ class PricingPlan extends AbstractModel implements PricingPlanInterface
         return $this->getData(self::DESCRIPTION);
     }
 
-    public function setDescription(string $description): self
+    public function setDescription(?string $description): self
     {
         return $this->setData(self::DESCRIPTION, $description);
     }
 
-    public function getPrice(): float
+    /**
+     * Get interval price as array
+     *
+     * array structure:
+     * [
+     *  [ interval: "ONE_TIME|EVERY_30_DAYS|ANNUAL", amount: 0.00 ]
+     * ]
+     * @return array
+     */
+    public function getDataPrices(): array
     {
-        return (float) $this->getData(self::PRICE);
+        if (empty($this->decodedPrices)) {
+            try {
+                $this->decodedPrices = json_decode($this->getData(self::PRICES), true);
+            } catch (\Exception $e) {
+                $this->decodedPrices = [];
+            }
+        }
+        return $this->decodedPrices;
     }
 
-    public function setPrice(mixed $price): self
+    /**
+     * Check if interval price is exist
+     *
+     * @param string $intervalKey
+     * @return bool
+     */
+    public function hasIntervalPrice(string $intervalKey) : bool
     {
-        return $this->setData(self::PRICE, $price);
+        // check if interval is exist in getDataPrices
+        return in_array($intervalKey, array_column($this->getDataPrices(), 'interval'));
     }
 
-    public function getFreeTrialDays(): ?int
+    /**
+     * @inheritDoc
+     */
+    public function setDataPrice(array $prices) : PricingPlanInterface
     {
-        return (int) $this->getData(self::FREE_TRIAL_DAYS);
+        $this->decodedPrices = [];
+        return $this->setData(self::PRICES, json_encode($prices));
     }
 
-    public function setFreeTrialDays(mixed $freeTrialDays): self
+    /**
+     * @inheritDoc
+     */
+    public function getIntervalPrice(string $key): ?array
     {
-        return $this->setData(self::FREE_TRIAL_DAYS, $freeTrialDays);
+        $prices = $this->getDataPrices();
+        foreach ($prices as $price) {
+            if ($price['interval'] === $key) {
+                return $price;
+            }
+        }
+        return null;
     }
 
-    public function isEnableFreeTrial(): bool
+    /**
+     * Retrive amount by interval
+     *
+     * @param string $interval
+     * @return float
+     */
+    public function getIntervalAmount(string $interval): float
     {
-        return (bool) $this->getEnableFreeTrial();
-    }
-
-    public function setEnableFreeTrial(mixed $enableFreeTrial): self
-    {
-        return $this->setData(self::ENABLE_FREE_TRIAL, $enableFreeTrial);
+        return (float) $this->getIntervalPrice($interval)['amount'] ?? 0.0;
     }
 
     public function getSortOrder(): ?int
@@ -125,11 +179,6 @@ class PricingPlan extends AbstractModel implements PricingPlanInterface
     public function setAppId(mixed $appId): self
     {
         return $this->setData(self::APP_ID, $appId);
-    }
-
-    public function getEnableFreeTrial(): ?int
-    {
-        return (int) $this->getData(self::ENABLE_FREE_TRIAL);
     }
 
     /**
