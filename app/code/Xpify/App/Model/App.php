@@ -125,22 +125,6 @@ class App extends AbstractModel implements IApp
         return $this->setData(self::UPDATED_AT, $updatedAt);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getBillingRequired(): ?int
-    {
-        return (int) $this->getData(self::BILLING_REQUIRED);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function isBillingRequired(): bool
-    {
-        return (bool) $this->getBillingRequired();
-    }
-
     public function getApiVersion(): ?string
     {
         return $this->getData(self::API_VERSION);
@@ -149,5 +133,21 @@ class App extends AbstractModel implements IApp
     public function setApiVersion(?string $version): IApp
     {
         return $this->setData(self::API_VERSION, $version);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isProd(): bool
+    {
+        return (bool) $this->getData(self::IS_PROD);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setIsProd(bool $isProd): IApp
+    {
+        return $this->setData(self::IS_PROD, $isProd);
     }
 }

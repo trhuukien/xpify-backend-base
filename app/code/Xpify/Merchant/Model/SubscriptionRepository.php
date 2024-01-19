@@ -8,7 +8,7 @@ use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Psr\Log\LoggerInterface;
 use Xpify\Merchant\Api\Data\MerchantSubscriptionInterface as ISubscription;
-use Xpify\Merchant\Api\Data\MerchantSubscriptionSearchResultsInterface as ISubscriptionSearchResults;
+use Xpify\Merchant\Api\Data\MerchantSubscriptionSearchResultsInterface as SubscriptionSearchResults;
 use Xpify\Merchant\Api\MerchantSubscriptionRepositoryInterface as ISubscriptionRepository;
 use Xpify\Merchant\Model\MerchantSubscriptionFactory as SubscriptionFactory;
 use Xpify\Merchant\Model\ResourceModel\MerchantSubscription as SubscriptionResource;
@@ -105,7 +105,7 @@ class SubscriptionRepository implements ISubscriptionRepository
     /**
      * @inheritDoc
      */
-    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $criteria): ISubscriptionSearchResults
+    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $criteria): SubscriptionSearchResults
     {
         $collection = $this->collectionFactory->create();
         $this->collectionProcessor->process($criteria, $collection);

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Xpify\App\Exception;
+namespace Xpify\Merchant\Exception;
 
 use Exception;
 

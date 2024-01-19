@@ -8,7 +8,7 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\Request\DataPersistorInterface;
 use Xpify\App\Api\AppRepositoryInterface;
-use Xpify\App\Api\Data\AppInterface;
+use Xpify\App\Api\Data\AppInterface as IApp;
 
 class Save extends Action implements HttpPostActionInterface
 {
@@ -56,12 +56,10 @@ class Save extends Action implements HttpPostActionInterface
             } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
                 $app = $this->appRepository->newInstance();
             }
-            if (isset($postData[AppInterface::CREATED_AT])) {
-                unset($postData[AppInterface::CREATED_AT]);
+            if (isset($postData[IApp::CREATED_AT])) {
+                unset($postData[IApp::CREATED_AT]);
             }
-            $app->setName($postData[AppInterface::NAME]);
-            $app->setApiKey($postData[AppInterface::API_KEY]);
-            $app->setSecretKey($postData[AppInterface::SECRET_KEY]);
+            $app->setIsProd((bool) $postData[IApp::IS_PROD]);
             $app = $this->appRepository->save($app);
             if (!$app->getId()) {
                 throw new \Magento\Framework\Exception\LocalizedException(__('Something went wrong while saving the app'));

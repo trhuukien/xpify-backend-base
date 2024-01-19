@@ -48,8 +48,33 @@
                 <visible>false</visible>
             </settings>
         </field>
+        <field name="is_prod" sortOrder="10" formElement="checkbox">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">block</item>
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Is Production?</label>
+                <dataScope>is_prod</dataScope>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
         <field name="remote_id" sortOrder="200" formElement="input">
             <settings>
+                <disabled>true</disabled>
                 <dataType>text</dataType>
                 <label translate="true">Shopify App ID</label>
                 <dataScope>remote_id</dataScope>
@@ -57,10 +82,12 @@
                     <rule name="required-entry" xsi:type="boolean">false</rule>
                     <rule name="max_text_length" xsi:type="number">255</rule>
                 </validation>
+                <notice translate="true">Auto sync when Shopify CLI dev/deploy</notice>
             </settings>
         </field>
         <field name="name" sortOrder="200" formElement="input">
             <settings>
+                <disabled>true</disabled>
                 <dataType>text</dataType>
                 <label translate="true">App Name</label>
                 <dataScope>name</dataScope>
@@ -68,10 +95,12 @@
                     <rule name="required-entry" xsi:type="boolean">true</rule>
                     <rule name="max_text_length" xsi:type="number">32</rule>
                 </validation>
+                <notice translate="true">Auto sync when Shopify CLI dev/deploy</notice>
             </settings>
         </field>
         <field name="api_key" sortOrder="300" formElement="input">
             <settings>
+                <disabled>true</disabled>
                 <dataType>text</dataType>
                 <label translate="true">API Key</label>
                 <dataScope>api_key</dataScope>
@@ -79,10 +108,12 @@
                     <rule name="required-entry" xsi:type="boolean">false</rule>
                     <rule name="max_text_length" xsi:type="number">255</rule>
                 </validation>
+                <notice translate="true">Auto sync when Shopify CLI dev/deploy</notice>
             </settings>
         </field>
         <field name="secret_key" sortOrder="400" formElement="input">
             <settings>
+                <disabled>true</disabled>
                 <dataType>text</dataType>
                 <label translate="true">Secret Key</label>
                 <dataScope>secret_key</dataScope>
@@ -90,17 +121,19 @@
                     <rule name="required-entry" xsi:type="boolean">false</rule>
                     <rule name="max_text_length" xsi:type="number">255</rule>
                 </validation>
+                <notice translate="true">Auto sync when Shopify CLI dev/deploy</notice>
             </settings>
         </field>
         <field name="scopes" sortOrder="500" formElement="input">
             <settings>
+                <disabled>true</disabled>
                 <dataType>text</dataType>
                 <label translate="true">Scopes</label>
                 <dataScope>scopes</dataScope>
                 <validation>
                     <rule name="required-entry" xsi:type="boolean">false</rule>
                 </validation>
-                <notice translate="true">Separate scopes with comma. Must same with scopes defined in shopify.app.toml</notice>
+                <notice translate="true">Auto sync when Shopify CLI dev/deploy</notice>
             </settings>
         </field>
         <field name="created_at" sortOrder="9900" formElement="date">

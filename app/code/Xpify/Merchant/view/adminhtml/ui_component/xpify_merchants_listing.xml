@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">xpify_merchants_listing.xpify_merchants_listing_data_source</item>
+        </item>
+        <item name="spinner" xsi:type="string">spinner_columns</item>
+    </argument>
+    <settings>
+        <spinner>spinner_columns</spinner>
+        <deps>
+            <dep>xpify_merchants_listing.xpify_merchants_listing_data_source</dep>
+        </deps>
+    </settings>
+    <listingToolbar name="listing_top">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="sticky" xsi:type="boolean">true</item>
+            </item>
+        </argument>
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filterSearch name="fulltext"/>
+        <filters name="listing_filters" />
+        <paging name="listing_paging"/>
+        <exportButton name="export_button"/>
+    </listingToolbar>
+    <dataSource name="xpify_merchants_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <filterUrlParams>
+                <param name="id">*</param>
+            </filterUrlParams>
+            <updateUrl path="mui/index/render"/>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">entity_id</param>
+            </storageConfig>
+        </settings>
+        <dataProvider name="xpify_merchants_listing_data_source" class="Xpify\Merchant\Ui\Component\Listing\MerchantDataProvider">
+            <settings>
+                <primaryFieldName>entity_id</primaryFieldName>
+                <requestFieldName>id</requestFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <columns name="spinner_columns">
+        <selectionsColumn name="ids">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="resizeEnabled" xsi:type="boolean">false</item>
+                    <item name="resizeDefaultWidth" xsi:type="string">55</item>
+                    <item name="indexField" xsi:type="string">entity_id</item>
+                </item>
+            </argument>
+        </selectionsColumn>
+        <column name="entity_id" sortOrder="10">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">textRange</item>
+                    <item name="sorting" xsi:type="string">asc</item>
+                    <item name="label" xsi:type="string" translate="true">ID</item>
+                </item>
+            </argument>
+        </column>
+        <column name="session_id" sortOrder="20">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Session ID</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <column name="app_id" sortOrder="30" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <options class="Xpify\PricingPlan\Model\Source\Apps"/>
+                <label translate="true">Installed App</label>
+                <filter>select</filter>
+                <dataType>select</dataType>
+            </settings>
+        </column>
+        <column name="shop" sortOrder="50">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Merchant Domain</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <column name="is_online" sortOrder="100" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <options class="Xpify\PricingPlan\Model\Source\YesNo"/>
+                <label translate="true">Is Online</label>
+                <filter>select</filter>
+                <dataType>select</dataType>
+            </settings>
+        </column>
+        <column name="scope" sortOrder="150">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Allowed Scopes</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <column name="access_token" sortOrder="200">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Access Token</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <column name="storefront_access_token" sortOrder="300">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Storefront Access Token</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <column name="online_access_info" component="Xpify_Merchant/js/ui/grid/online-access-info">
+            <settings>
+                <label translate="true">User Online Access Info</label>
+            </settings>
+        </column>
+        <column name="created_at" component="Magento_Ui/js/grid/columns/date" class="Magento\Ui\Component\Listing\Columns\Date" sortOrder="9999">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Installation Time</label>
+            </settings>
+        </column>
+    </columns>
+</listing>

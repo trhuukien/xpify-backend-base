@@ -138,7 +138,7 @@ class MerchantStorage implements SessionStorage
     {
         $app = $this->getCurrentApp->get();
         if (isset($this->runtimeCache[$this->getCachedId($sessId)])) {
-            return $this->runtimeCache[$sessId . "_{$app->getRemoteId()}"];
+            return $this->runtimeCache[$this->getCachedId($sessId)];
         }
         $this->searchCriteriaBuilder->addFilter(IMerchant::SESSION_ID, $sessId);
         $this->searchCriteriaBuilder->addFilter(IMerchant::APP_ID, $app->getId());

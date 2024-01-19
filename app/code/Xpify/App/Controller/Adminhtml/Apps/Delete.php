@@ -29,13 +29,14 @@ class Delete extends Action implements HttpPostActionInterface
      */
     public function execute()
     {
-        try {
-            $id = (int) $this->getRequest()->getParam('id');
-            $this->appRepository->deleteById($id);
-            $this->messageManager->addSuccessMessage(__('App has been deleted.'));
-        } catch (\Exception $e) {
-            $this->messageManager->addErrorMessage(__('An error occurred while deleting the app.'));
-        }
         return $this->resultRedirectFactory->create()->setPath('xpify/apps/', []);
+//        try {
+//            $id = (int) $this->getRequest()->getParam('id');
+//            $this->appRepository->deleteById($id);
+//            $this->messageManager->addSuccessMessage(__('App has been deleted.'));
+//        } catch (\Exception $e) {
+//            $this->messageManager->addErrorMessage(__('An error occurred while deleting the app.'));
+//        }
+//        return $this->resultRedirectFactory->create()->setPath('xpify/apps/', []);
     }
 }

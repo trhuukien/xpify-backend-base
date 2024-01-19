@@ -10,13 +10,13 @@ use Magento\Framework\Model\Context;
 use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Registry;
 use Xpify\Merchant\Api\Data\MerchantInterface as IMerchant;
-use Xpify\Merchant\Api\Data\MerchantSubscriptionInterface;
+use Xpify\Merchant\Api\Data\MerchantSubscriptionInterface as ISubscription;
 use Xpify\PricingPlan\Api\Data\PricingPlanInterface as IPricingPlan;
 use Xpify\PricingPlan\Model\Source\IntervalType;
 use Xpify\PricingPlan\Api\PricingPlanRepositoryInterface as IPricingPlanRepository;
 use Xpify\Merchant\Api\MerchantRepositoryInterface as IMerchantRepository;
 
-class MerchantSubscription extends AbstractModel implements MerchantSubscriptionInterface
+class MerchantSubscription extends AbstractModel implements ISubscription
 {
     private ?IMerchant $merchant = null;
     private ?IPricingPlan $planPricing = null;
@@ -58,14 +58,18 @@ class MerchantSubscription extends AbstractModel implements MerchantSubscription
      */
     public function getId() : ?int
     {
-        return (int) $this->getData(self::ID);
+        $id = $this->getData(self::ID);
+        return isset($id) ? (int) $id : null;
     }
 
     /**
      * @inheritDoc
      */
-    public function setId(mixed $value): MerchantSubscriptionInterface
+    public function setId(mixed $value): ISubscription
     {
+        if ($value !== null) {
+            $value = (int) $value;
+        }
         return $this->setData(self::ID, $value);
     }
 
@@ -80,7 +84,7 @@ class MerchantSubscription extends AbstractModel implements MerchantSubscription
     /**
      * @inheritDoc
      */
-    public function setMerchantId(int $merchantId): MerchantSubscriptionInterface
+    public function setMerchantId(int $merchantId): ISubscription
     {
         return $this->setData(self::MERCHANT_ID, $merchantId);
     }
@@ -96,7 +100,7 @@ class MerchantSubscription extends AbstractModel implements MerchantSubscription
     /**
      * @inheritDoc
      */
-    public function setPlanId(int $planId): MerchantSubscriptionInterface
+    public function setPlanId(int $planId): ISubscription
     {
         return $this->setData(self::PLAN_ID, $planId);
     }
@@ -112,7 +116,7 @@ class MerchantSubscription extends AbstractModel implements MerchantSubscription
     /**
      * @inheritDoc
      */
-    public function setAppId(int $appId): MerchantSubscriptionInterface
+    public function setAppId(int $appId): ISubscription
     {
         return $this->setData(self::APP_ID, $appId);
     }
@@ -128,7 +132,7 @@ class MerchantSubscription extends AbstractModel implements MerchantSubscription
     /**
      * @inheritDoc
      */
-    public function setCode(string $code): MerchantSubscriptionInterface
+    public function setCode(string $code): ISubscription
     {
         return $this->setData(self::CODE, $code);
     }
@@ -144,7 +148,7 @@ class MerchantSubscription extends AbstractModel implements MerchantSubscription
     /**
      * @inheritDoc
      */
-    public function setName(string $name): MerchantSubscriptionInterface
+    public function setName(string $name): ISubscription
     {
         return $this->setData(self::NAME, $name);
     }
@@ -160,7 +164,7 @@ class MerchantSubscription extends AbstractModel implements MerchantSubscription
     /**
      * @inheritDoc
      */
-    public function setDescription(?string $description): MerchantSubscriptionInterface
+    public function setDescription(?string $description): ISubscription
     {
         return $this->setData(self::DESCRIPTION, $description);
     }
@@ -176,7 +180,7 @@ class MerchantSubscription extends AbstractModel implements MerchantSubscription
     /**
      * @inheritDoc
      */
-    public function setPrice(float $price): MerchantSubscriptionInterface
+    public function setPrice(float $price): ISubscription
     {
         return $this->setData(self::PRICE, $price);
     }
@@ -192,7 +196,7 @@ class MerchantSubscription extends AbstractModel implements MerchantSubscription
     /**
      * @inheritDoc
      */
-    public function setInterval(string $interval): MerchantSubscriptionInterface
+    public function setInterval(string $interval): ISubscription
     {
         if (!IntervalType::isValidInterval($interval)) {
             throw new \InvalidArgumentException('Invalid interval');
@@ -211,7 +215,7 @@ class MerchantSubscription extends AbstractModel implements MerchantSubscription
     /**
      * @inheritDoc
      */
-    public function setCreatedAt(string $createdAt): MerchantSubscriptionInterface
+    public function setCreatedAt(string $createdAt): ISubscription
     {
         return $this->setData(self::CREATED_AT, $createdAt);
     }

@@ -6,17 +6,19 @@ namespace Xpify\PricingPlan\Api;
 use Magento\Framework\Exception\CouldNotDeleteException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Xpify\PricingPlan\Api\Data\PricingPlanInterface as IPricingPlan;
+use Xpify\PricingPlan\Api\Data\SearchResultsInterface as ISearchResults;
 
 interface PricingPlanRepositoryInterface
 {
     /**
      * Load by id
      *
-     * @param $id
+     * @param mixed $id
+     * @param bool $force
      * @return IPricingPlan
      * @throws NoSuchEntityException
      */
-    public function get($id): IPricingPlan;
+    public function get(mixed $id, bool $force = false): IPricingPlan;
 
     /**
      * Save
@@ -44,4 +46,12 @@ interface PricingPlanRepositoryInterface
      * @throws CouldNotDeleteException
      */
     public function deleteById($id): void;
+
+    /**
+     * Get list
+     *
+     * @param \Magento\Framework\Api\SearchCriteriaInterface $criteria
+     * @return ISearchResults
+     */
+    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $criteria): ISearchResults;
 }

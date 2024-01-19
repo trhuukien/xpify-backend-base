@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Xpify_Merchant::merchants" title="Merchants" module="Xpify_Merchant" sortOrder="50" action="xpify/merchants" resource="Xpify_Merchant::merchants" parent="Xpify_Core::xpify_management"/>
+    </menu>
+</config>

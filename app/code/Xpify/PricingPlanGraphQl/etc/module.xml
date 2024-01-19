@@ -5,6 +5,7 @@
         <sequence>
             <module name="Magento_GraphQl"/>
             <module name="Xpify_PricingPlan"/>
+            <module name="Xpify_AuthGraphQl"/>
         </sequence>
     </module>
 </config>

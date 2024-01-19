@@ -1,6 +1,11 @@
 
 type Query {
-    appPricingPlans(id: ID!): [PricingPlan] @doc(description: "Get all pricing plans for an app") @resolver(class: "Xpify\\PricingPlanGraphQl\\Model\\Resolver\\AppPricingPlanQuery")
+    pricingPlans: [PricingPlan] @doc(description: "Get all pricing plans for an app") @resolver(class: "Xpify\\PricingPlanGraphQl\\Model\\Resolver\\AppPricingPlanQuery")
+}
+
+type Interval {
+    interval: String! @doc(description: "Interval type. One of: ONE_TIME, EVERY_30_DAYS, ANNUAL")
+    amount: Float!
 }
 
 type PricingPlan {
@@ -8,10 +13,8 @@ type PricingPlan {
     status: Boolean!
     code: String!
     name: String!
-    price: Float!
-    currency: String!
+    prices: [Interval] @doc(description: "Prices for each interval")
+    currency: String! @doc(description: "Currency code. Currently only USD is supported")
     description: String
-    enable_free_trial: Boolean
-    free_trial_days: Int
     sort_order: Int
 }

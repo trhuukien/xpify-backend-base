@@ -1,0 +1,36 @@
+<!-- ko if: data = getData($row()) -->
+<div>
+    <div>
+        <label style="font-weight: 700">User ID: </label>
+        <label data-bind="text: data?.user_id || 'null', style: { 'font-style': !data?.user_id ? 'italic' : 'normal' }"></label>
+    </div>
+    <div>
+        <label style="font-weight: 700">User First Name: </label>
+        <label data-bind="text: data?.user_first_name || 'null', style: { 'font-style': !data?.user_first_name ? 'italic' : 'normal' }"></label>
+    </div>
+    <div>
+        <label style="font-weight: 700">User Last Name: </label>
+        <label data-bind="text: data?.user_last_name || 'null', style: { 'font-style': !data?.user_last_name ? 'italic' : 'normal' }"></label>
+    </div>
+    <div>
+        <label style="font-weight: 700">User Email: </label>
+        <label data-bind="text: data?.user_email || 'null', style: { 'font-style': !data?.user_email ? 'italic' : 'normal' }"></label>
+    </div>
+    <div>
+        <label style="font-weight: 700">User Email Verified: </label>
+        <label data-bind="text: (data?.user_email_verified || 'null') === 'null' ? 'null' : (data?.user_email_verified === '1' ? 'Yes' : 'No'), style: { 'font-style': !data?.user_email_verified ? 'italic' : 'normal' }"></label>
+    </div>
+    <div>
+        <label style="font-weight: 700">Account Owner: </label>
+        <label data-bind="text: (data?.account_owner || 'null') === 'null' ? 'null' : (data?.account_owner === '1' ? 'Yes' : 'No'), style: { 'font-style': !data?.account_owner ? 'italic' : 'normal' }"></label>
+    </div>
+    <div>
+        <label style="font-weight: 700">Locale: </label>
+        <label data-bind="text: data?.locale || 'null', style: { 'font-style': !data?.locale ? 'italic' : 'normal' }"></label>
+    </div>
+    <div>
+        <label style="font-weight: 700">Collaborator: </label>
+        <label data-bind="text: (data?.collaborator || 'null') === 'null' ? 'null' : (data?.collaborator === '1' ? 'Yes' : 'No'), style: { 'font-style': !data?.collaborator ? 'italic' : 'normal' }"></label>
+    </div>
+</div>
+<!-- /ko -->

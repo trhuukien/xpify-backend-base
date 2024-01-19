@@ -2,6 +2,7 @@
     "$xpify_apps": {
         "column": {
             "entity_id": true,
+            "is_prod": true,
             "remote_id": true,
             "name": true,
             "api_key": true,

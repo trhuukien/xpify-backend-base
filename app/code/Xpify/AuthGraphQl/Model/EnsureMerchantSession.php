@@ -5,6 +5,7 @@ namespace Xpify\AuthGraphQl\Model;
 
 use Magento\Framework\App\RequestInterface as IRequest;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\GraphQl\Exception\GraphQlNoSuchEntityException;
 use Psr\Log\LoggerInterface;
 use Shopify\Auth\Session;
 use Shopify\Context;
@@ -13,7 +14,10 @@ use Xpify\App\Api\Data\AppInterface as IApp;
 use Xpify\App\Service\GetCurrentApp;
 use Xpify\Auth\Service\AuthRedirection;
 use Xpify\AuthGraphQl\Exception\GraphQlShopifyReauthorizeRequiredException;
+use Xpify\Core\Model\Constants;
 use Xpify\Merchant\Api\Data\MerchantInterface as IMerchant;
+use Xpify\Merchant\Exception\ShopifyBillingException;
+use Xpify\Merchant\Service\Billing;
 use Xpify\Merchant\Service\MerchantStorage;
 
 class EnsureMerchantSession
@@ -35,6 +39,7 @@ class EnsureMerchantSession
     private MerchantStorage $merchantStorage;
     private GetCurrentApp $getCurrentApp;
     private \Psr\Log\LoggerInterface $logger;
+    private Billing $billing;
 
     /**
      * @param IRequest $request
@@ -42,19 +47,22 @@ class EnsureMerchantSession
      * @param MerchantStorage $merchantStorage
      * @param GetCurrentApp $getCurrentApp
      * @param LoggerInterface $logger
+     * @param Billing $billing
      */
     public function __construct(
         IRequest $request,
         AuthRedirection $authRedirection,
         MerchantStorage $merchantStorage,
         GetCurrentApp $getCurrentApp,
-        \Psr\Log\LoggerInterface $logger
+        \Psr\Log\LoggerInterface $logger,
+        Billing $billing
     ) {
         $this->request = $request;
         $this->authRedirection = $authRedirection;
         $this->merchantStorage = $merchantStorage;
         $this->getCurrentApp = $getCurrentApp;
         $this->logger = $logger;
+        $this->billing = $billing;
     }
     /**
      * @throws GraphQlShopifyReauthorizeRequiredException
@@ -71,7 +79,8 @@ class EnsureMerchantSession
         $app = $this->getCurrentApp->get();
 
         if (!$app) {
-            throw new \Exception("Something went wrong! Please contact us for support.");
+            $this->logger->debug(__("App not found. File: %1, Line: %2.", __FILE__, __LINE__));
+            throw new \Exception(Constants::INTERNAL_SYSTEM_ERROR_MESS);
         }
         $shop = Utils::sanitizeShopDomain($this->request->getParam('shop', ''));
         $session = Utils::loadCurrentSession($this->request->getHeaders()->toArray(), $_COOKIE, $isOnline);
@@ -84,15 +93,32 @@ class EnsureMerchantSession
 
         if ($session && $session->isValid()) {
             $authorizedMerchant = $this->merchantStorage->loadMerchantBySessionid($session->getId());
-            // make a request to ensure the access token still valid. otherwise, re-authenticate the user.
-            try {
-                $response = $authorizedMerchant->getGraphql()->query(static::TEST_GRAPHQL_QUERY);
-            } catch (\Throwable $e) {
-                $this->logger->debug($e);
-                // Unknown error. just throw error
-                throw new LocalizedException(__("Internal Server. Please report this issue to us."));
+            if ($this->billing->isBillingRequired($authorizedMerchant)) {
+                try {
+                    list($shouldPay, $payUrl) = $this->billing->check($session);
+                    $proceed = true;
+                    if ($shouldPay) {
+                        throw new GraphQlShopifyReauthorizeRequiredException(__("Payment required."), null, 0, true, $payUrl);
+                    }
+                } catch (GraphQlShopifyReauthorizeRequiredException $e) {
+                    throw $e;
+                } catch (ShopifyBillingException $e) {
+                    $proceed = false;
+                } catch (\Exception $e) {
+                    $this->logger->debug($e);
+                    throw new GraphQlNoSuchEntityException(__(Constants::INTERNAL_SYSTEM_ERROR_MESS));
+                }
+            } else {
+                // make a request to ensure the access token still valid. otherwise, re-authenticate the user.
+                try {
+                    $response = $authorizedMerchant->getGraphql()->query(static::TEST_GRAPHQL_QUERY);
+                } catch (\Throwable $e) {
+                    $this->logger->debug($e);
+                    // Unknown error. just throw error
+                    throw new LocalizedException(__(Constants::INTERNAL_SYSTEM_ERROR_MESS));
+                }
+                $proceed = $response->getStatusCode() === 200;
             }
-            $proceed = $response->getStatusCode() === 200;
             if ($proceed) {
                 $this->merchant = $authorizedMerchant;
                 $this->session = $session;

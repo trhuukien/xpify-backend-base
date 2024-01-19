@@ -11,9 +11,8 @@ use Shopify\Utils;
 use Shopify\Webhooks\Topics;
 use Xpify\App\Service\GetCurrentApp;
 use Xpify\Core\Helper\ShopifyContextInitializer;
+use Xpify\Merchant\Service\Billing;
 use Xpify\Webhook\Service\Webhook;
-use Xpify\App\Service\EnsureBilling;
-use Xpify\App\Api\Data\AppInterface as IApp;
 
 class Callback implements HttpGetActionInterface
 {
@@ -22,6 +21,7 @@ class Callback implements HttpGetActionInterface
     private RedirectFactory $resultRedirectFactory;
     private GetCurrentApp $getCurrentApp;
     private ShopifyContextInitializer $contextInitializer;
+    private Billing $billing;
 
     /**
      * @param IRequest $request
@@ -29,19 +29,22 @@ class Callback implements HttpGetActionInterface
      * @param RedirectFactory $resultRedirectFactory
      * @param ShopifyContextInitializer $contextInitializer
      * @param GetCurrentApp $getCurrentApp
+     * @param Billing $billing
      */
     public function __construct(
         IRequest $request,
         Webhook $webhookManager,
         RedirectFactory $resultRedirectFactory,
         ShopifyContextInitializer $contextInitializer,
-        GetCurrentApp $getCurrentApp
+        GetCurrentApp $getCurrentApp,
+        Billing $billing
     ) {
         $this->request = $request;
         $this->webhookManager = $webhookManager;
         $this->resultRedirectFactory = $resultRedirectFactory;
         $this->getCurrentApp = $getCurrentApp;
         $this->contextInitializer = $contextInitializer;
+        $this->billing = $billing;
     }
     /**
      * @inheritDoc
@@ -59,12 +62,9 @@ class Callback implements HttpGetActionInterface
         $shop = Utils::sanitizeShopDomain($this->getRequest()->getParam('shop'));
         $this->webhookManager->register(Topics::APP_UNINSTALLED, $shop, $session->getAccessToken(), $app);
         $redirectUrl = Utils::getEmbeddedAppUrl($host);
-        if ($app->isBillingRequired()) {
-            list($hasPayment, $confirmationUrl) = EnsureBilling::check($session, []);
-
-            if (!$hasPayment) {
-                $redirectUrl = $confirmationUrl;
-            }
+        list($shouldPayment, $payUrl) = $this->billing->check($session);
+        if ($shouldPayment) {
+            $redirectUrl = $payUrl;
         }
 
         return $this->resultRedirectFactory->create()->setUrl($redirectUrl);

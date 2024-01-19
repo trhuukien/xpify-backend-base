@@ -3,21 +3,11 @@ declare(strict_types=1);
 
 namespace Xpify\PricingPlanGraphQl\Model;
 
-use Magento\Framework\GraphQl\Query\Uid;
+use Xpify\Core\Helper\Utils;
 use Xpify\PricingPlan\Api\Data\PricingPlanInterface as IPricingPlan;
 
 class PricingPlanFormatter
 {
-    private Uid $uidEncoder;
-
-    /**
-     * @param Uid $uidEncoder
-     */
-    public function __construct(Uid $uidEncoder)
-    {
-        $this->uidEncoder = $uidEncoder;
-    }
-
     /**
      * Convert Pricing Plan to GraphQl output
      *
@@ -28,14 +18,13 @@ class PricingPlanFormatter
     {
         return [
             'model' => $pricingPlan,
-            'id' => $this->uidEncoder->encode((string) $pricingPlan->getId()),
+            'id' => Utils::idToUid((string) $pricingPlan->getId()),
             'currency' => IPricingPlan::BASE_CURRENCY,
             IPricingPlan::STATUS => (bool) $pricingPlan->getStatus(),
+            IPricingPlan::CODE => $pricingPlan->getCode(),
             IPricingPlan::NAME => $pricingPlan->getName(),
-            IPricingPlan::PRICE => $pricingPlan->getPrice(),
+            IPricingPlan::PRICES => $pricingPlan->getDataPrices(),
             IPricingPlan::DESCRIPTION => $pricingPlan->getDescription(),
-//            IPricingPlan::ENABLE_FREE_TRIAL => $pricingPlan->isEnableFreeTrial(),
-//            IPricingPlan::FREE_TRIAL_DAYS => $pricingPlan->getFreeTrialDays(),
             IPricingPlan::SORT_ORDER => $pricingPlan->getSortOrder(),
         ];
     }

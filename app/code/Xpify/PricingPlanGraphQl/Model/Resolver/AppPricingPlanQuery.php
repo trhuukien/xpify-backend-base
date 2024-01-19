@@ -3,14 +3,15 @@ declare(strict_types=1);
 
 namespace Xpify\PricingPlanGraphQl\Model\Resolver;
 
-use Magento\Framework\Exception\InputException;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Api\SortOrderBuilder;
 use Magento\Framework\GraphQl\Config\Element\Field;
-use Magento\Framework\GraphQl\Query\Uid;
+use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 use Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractResolver;
+use Xpify\Core\Model\Constants;
 use Xpify\PricingPlan\Api\Data\PricingPlanInterface;
 use Xpify\PricingPlan\Api\PricingPlanRepositoryInterface;
-use Magento\Framework\Api\SearchCriteriaBuilder;
 use Xpify\PricingPlanGraphQl\Model\PricingPlanFormatter;
 
 class AppPricingPlanQuery extends AuthSessionAbstractResolver implements \Magento\Framework\GraphQl\Query\ResolverInterface
@@ -19,26 +20,25 @@ class AppPricingPlanQuery extends AuthSessionAbstractResolver implements \Magent
 
     private SearchCriteriaBuilder $criteriaBuilder;
 
-    private Uid $uidEncoder;
-
     private PricingPlanFormatter $formatter;
+    private \Magento\Framework\Api\SortOrderBuilder $sorderBuilder;
 
     /**
      * @param SearchCriteriaBuilder $criteriaBuilder
      * @param PricingPlanRepositoryInterface $pricingPlanRepository
-     * @param Uid $uidEncoder
      * @param PricingPlanFormatter $formatter
+     * @param SortOrderBuilder $orderBuilder
      */
     public function __construct(
         SearchCriteriaBuilder $criteriaBuilder,
         PricingPlanRepositoryInterface $pricingPlanRepository,
-        Uid $uidEncoder,
-        PricingPlanFormatter $formatter
+        PricingPlanFormatter $formatter,
+        \Magento\Framework\Api\SortOrderBuilder $sorderBuilder
     ) {
         $this->pricingPlanRepository = $pricingPlanRepository;
         $this->criteriaBuilder = $criteriaBuilder;
-        $this->uidEncoder = $uidEncoder;
         $this->formatter = $formatter;
+        $this->sorderBuilder = $sorderBuilder;
     }
 
     /**
@@ -47,12 +47,14 @@ class AppPricingPlanQuery extends AuthSessionAbstractResolver implements \Magent
     public function execResolve(Field $field, $context, ResolveInfo $info, array $value = null, array $args = null)
     {
         try {
-            $merchant = $this->getMerchantSession()->getMerchant();
-            $id = $this->uidEncoder->decode($args['id']);
+            $id = $context->getExtensionAttributes()->getApp()?->getId();
             if ($id === null) {
-                throw new InputException(__('Invalid ID'));
+                throw new GraphQlInputException(__(Constants::INTERNAL_SYSTEM_ERROR_MESS));
             }
             $this->criteriaBuilder->addFilter(PricingPlanInterface::APP_ID, $id);
+            $this->sorderBuilder->setField(PricingPlanInterface::SORT_ORDER);
+            $this->sorderBuilder->setAscendingDirection();
+            $this->criteriaBuilder->addSortOrder($this->sorderBuilder->create());
             $searchResult = $this->pricingPlanRepository->getList($this->criteriaBuilder->create());
             $items = [];
             foreach ($searchResult->getItems() as $item) {
@@ -62,5 +64,12 @@ class AppPricingPlanQuery extends AuthSessionAbstractResolver implements \Magent
         } catch (\Exception $e) {
             return [];
         }
+    }
+
+    protected function pricingPlansRequired() : array
+    {
+        return [
+            'pro'
+        ];
     }
 }

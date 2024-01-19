@@ -113,6 +113,7 @@
                 <validation>
                     <rule name="required-entry" xsi:type="boolean">true</rule>
                 </validation>
+                <notice translate="true">This will become Shopify charge name</notice>
             </settings>
         </field>
 

@@ -8,13 +8,6 @@
         <item name="spinner" xsi:type="string">spinner_columns</item>
     </argument>
     <settings>
-        <buttons>
-            <button name="add">
-                <url path="*/*/new"/>
-                <class>primary</class>
-                <label translate="true">New App</label>
-            </button>
-        </buttons>
         <spinner>spinner_columns</spinner>
         <deps>
             <dep>xpify_apps_listing.xpify_apps_listing_data_source</dep>

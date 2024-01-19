@@ -32,6 +32,7 @@
             "entity_id": true,
             "merchant_id": true,
             "plan_id": true,
+            "app_id": true,
             "code": true,
             "name": true,
             "description": true,
@@ -41,6 +42,7 @@
         },
         "constraint": {
             "PRIMARY": true,
+            "$XPIFY_MERCHANT_SUBSCRIPTION_CODE_PLAN_ID": true,
             "FK_96B931D59CDDFBEF1B7DA83A3D9FE423": true
         }
     }

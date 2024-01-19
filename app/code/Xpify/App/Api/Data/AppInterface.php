@@ -17,6 +17,7 @@ interface AppInterface
     const DEFAULT_ACCESS_MODE = self::ACCESS_MODE_OFFLINE;
     const CURRENCY_CODE = 'USD'; // Currently only supports USD
     const ID = 'entity_id';
+    const IS_PROD = 'is_prod';
     const REMOTE_ID = 'remote_id';
     const NAME = 'name';
     const API_KEY = 'api_key';
@@ -25,26 +26,25 @@ interface AppInterface
     const API_VERSION = 'api_version';
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
-    const BILLING_REQUIRED = 'billing_required';
-    const BILLING_INTERVAL = 'billing_interval';
 
     public function getApiVersion(): ?string;
 
     public function setApiVersion(?string $version): self;
 
     /**
-     * Get billing required
-     *
-     * @return int|null
-     */
-    public function getBillingRequired(): ?int;
-
-    /**
-     * Check if app is billing required
+     * Get app is production or not
      *
      * @return bool
      */
-    public function isBillingRequired(): bool;
+    public function isProd(): bool;
+
+    /**
+     * Set app is production or not
+     *
+     * @param bool $isProd
+     * @return AppInterface
+     */
+    public function setIsProd(bool $isProd): self;
 
     /**
      * @return string|null

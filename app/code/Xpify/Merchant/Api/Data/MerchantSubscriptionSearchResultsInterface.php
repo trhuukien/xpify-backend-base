@@ -14,7 +14,7 @@ interface MerchantSubscriptionSearchResultsInterface extends SearchResultsInterf
      *
      * @return IMerchantSubscription[]
      */
-    public function getItems(): array;
+    public function getItems();
 
     /**
      * Set merchant subscription list.
@@ -22,5 +22,5 @@ interface MerchantSubscriptionSearchResultsInterface extends SearchResultsInterf
      * @param IMerchantSubscription[] $items
      * @return $this
      */
-    public function setItems(array $items): self;
+    public function setItems(array $items);
 }

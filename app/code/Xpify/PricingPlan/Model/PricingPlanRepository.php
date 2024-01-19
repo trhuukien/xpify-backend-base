@@ -7,13 +7,14 @@ use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
 use Psr\Log\LoggerInterface;
 use Xpify\PricingPlan\Api\Data;
 use Xpify\PricingPlan\Api\Data\PricingPlanInterface as IPricingPlan;
-use Xpify\PricingPlan\Api\Data\PricingPlanSearchResultsInterfaceFactory;
 use Xpify\PricingPlan\Api\PricingPlanRepositoryInterface;
 use Xpify\PricingPlan\Model\ResourceModel\PricingPlan;
 use Xpify\PricingPlan\Model\ResourceModel\PricingPlan\CollectionFactory;
+use Xpify\PricingPlan\Api\Data\SearchResultsInterface as ISearchResults;
 
 class PricingPlanRepository implements PricingPlanRepositoryInterface
 {
+    private array $plans = [];
     private PricingPlan $resource;
 
     private PricingPlanFactory $factory;
@@ -63,14 +64,19 @@ class PricingPlanRepository implements PricingPlanRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function get($id): IPricingPlan
+    public function get(mixed $id, bool $force = false): IPricingPlan
     {
-        $obj = $this->create();
-        $this->resource->load($obj, $id);
-        if (!$obj->getId()) {
-            throw new \Magento\Framework\Exception\NoSuchEntityException(__('Unable to find pricing plan with ID "%1"', $id));
+        $cId = 'pp_' . $id;
+        if ($force || !isset($this->plans[$cId])) {
+            $obj = $this->create();
+            $this->resource->load($obj, $id);
+            if (!$obj->getId()) {
+                throw new \Magento\Framework\Exception\NoSuchEntityException(__('Unable to find pricing plan with ID "%1"', $id));
+            }
+            $this->plans[$cId] = $obj;
         }
-        return $obj;
+
+        return $this->plans[$cId];
     }
 
     /**
@@ -115,7 +121,7 @@ class PricingPlanRepository implements PricingPlanRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $criteria)
+    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $criteria): ISearchResults
     {
         /** @var \Xpify\PricingPlan\Model\ResourceModel\PricingPlan\Collection $collection */
         $collection = $this->collectionFactory->create();

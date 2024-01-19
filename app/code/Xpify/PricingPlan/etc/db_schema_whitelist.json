@@ -3,6 +3,7 @@
         "column": {
             "entity_id": true,
             "status": true,
+            "code": true,
             "name": true,
             "description": true,
             "prices": true,
@@ -15,7 +16,8 @@
         },
         "constraint": {
             "$XPIFY_PRICING_PLANS_APP_ID_$XPIFY_APPS_ENTITY_ID": true,
-            "PRIMARY": true
+            "PRIMARY": true,
+            "$XPIFY_PRICING_PLANS_CODE_APP_ID": true
         }
     }
 }

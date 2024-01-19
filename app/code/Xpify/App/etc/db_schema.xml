@@ -4,6 +4,7 @@
     <table name="$xpify_apps" resource="default" engine="innodb" comment="Shopify Apps">
         <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true"
                 comment="Local App ID"/>
+        <column xsi:type="smallint" name="is_prod" unsigned="true" nullable="false" default="0" comment="Is Production?" />
         <column xsi:type="varchar" name="remote_id" length="64" comment="Remote Real App ID"/>
         <column xsi:type="varchar" name="name" length="32" nullable="false" comment="Shopify App Name"/>
         <column xsi:type="varchar" name="api_key" length="64" comment="App API Key"/>

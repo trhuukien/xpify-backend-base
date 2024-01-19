@@ -13,7 +13,6 @@ use Magento\Ui\Component\Listing\Columns\Column;
 class AppActions extends Column
 {
     const APP_PATH_EDIT = 'xpify/apps/edit';
-    const APP_PATH_DELETE = 'xpify/apps/delete';
 
     /**
      * @var UrlInterface
@@ -60,16 +59,6 @@ class AppActions extends Column
                     ),
                     'label' => __('Edit'),
                     'hidden' => false,
-                ];
-                $appName = $this->escaper->escapeHtml($item['name']);
-                $item[$this->getData('name')]['delete'] = [
-                    'href' => $this->urlBuilder->getUrl(static::APP_PATH_DELETE, ['id' => $item['entity_id']]),
-                    'label' => __('Delete'),
-                    'confirm' => [
-                        'title' => __('Delete %1', $appName),
-                        'message' => __('Are you sure you want to delete a %1 record?', $appName),
-                    ],
-                    'post' => true,
                 ];
             }
         }
