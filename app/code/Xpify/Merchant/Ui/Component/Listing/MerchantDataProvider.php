@@ -5,11 +5,16 @@ namespace Xpify\Merchant\Ui\Component\Listing;
 
 use Xpify\Merchant\Model\ResourceModel\Merchant\CollectionFactory as MerchantCollectionFactory;
 use Xpify\Merchant\Api\Data\MerchantInterface as IMerchant;
+use Magento\Framework\Api\Filter;
+use Xpify\App\Api\Data\AppInterface as IApp;
 
 class MerchantDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
 {
+    private \Xpify\App\Model\ResourceModel\App $resourceApp;
+
     public function __construct(
         MerchantCollectionFactory $factory,
+        \Xpify\App\Model\ResourceModel\App $resourceApp,
         $name,
         $primaryFieldName,
         $requestFieldName,
@@ -17,6 +22,7 @@ class MerchantDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
         array $data = []
     ) {
         $this->collection = $factory->create();
+        $this->resourceApp = $resourceApp;
         parent::__construct($name, $primaryFieldName, $requestFieldName, $meta, $data);
     }
 
@@ -52,5 +58,47 @@ class MerchantDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
             unset($i[$f]);
         }
         $i['online_access_info'] = $onlineAccessInfo;
+    }
+
+    public function addFilter(Filter $filter)
+    {
+        if ($filter->getField() !== 'fulltext') {
+            $this->getCollection()->addFieldToFilter(
+                $filter->getField(),
+                [$filter->getConditionType() => $filter->getValue()]
+            );
+        } else {
+            $value = trim($filter->getValue());
+            // define need fulltext fields
+            $fulltextFields = [
+                IMerchant::SESSION_ID,
+                IMerchant::SHOP,
+                IMerchant::SCOPE,
+                IMerchant::ACCESS_TOKEN,
+                IMerchant::STOREFRONT_ACCESS_TOKEN,
+                IMerchant::USER_FIRST_NAME,
+                IMerchant::USER_LAST_NAME,
+                IMerchant::USER_EMAIL,
+                IMerchant::LOCALE,
+            ];
+            // get all app ids by fulltext search term
+            $appConnection = $this->resourceApp->getConnection();
+            $select = $appConnection->select();
+            $select->from($this->resourceApp->getMainTable(), [IApp::ID]);
+            $select->where(IApp::NAME . ' LIKE ?', "%$value%");
+            $appIds = $appConnection->fetchCol($select);
+
+            // make filter
+            $filterFields = array_map(function ($f) {
+                return ['attribute' => $f];
+            }, $fulltextFields);
+            $filterFieldVales = array_fill(0, count($fulltextFields), ['like' => "%$value%"]);
+            $filterFields[] = ['attribute' => IMerchant::APP_ID];
+            $filterFieldVales[] = ['in' => implode(',', $appIds)];
+            $this->collection->addFieldToFilter(
+                $filterFields,
+                $filterFieldVales
+            );
+        }
     }
 }

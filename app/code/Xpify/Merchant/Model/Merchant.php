@@ -280,6 +280,22 @@ class Merchant extends AbstractModel implements IMerchant
     /**
      * @inheritDoc
      */
+    public function getStorefrontAccessToken(): ?string
+    {
+        return $this->getData(IMerchant::STOREFRONT_ACCESS_TOKEN);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setStorefrontAccessToken(?string $storefrontAccessToken): IMerchant
+    {
+        return $this->setData(IMerchant::STOREFRONT_ACCESS_TOKEN, $storefrontAccessToken);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getScope(): ?string
     {
         return (string) $this->getData(IMerchant::SCOPE);

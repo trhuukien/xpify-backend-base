@@ -17,6 +17,7 @@ interface MerchantInterface
     const STATE = 'state';
     const SCOPE = 'scope';
     const ACCESS_TOKEN = 'access_token';
+    const STOREFRONT_ACCESS_TOKEN = 'storefront_access_token';
     const EXPIRES_AT = 'expires_at';
     const USER_ID = 'user_id';
     const USER_FIRST_NAME = 'user_first_name';
@@ -313,6 +314,27 @@ interface MerchantInterface
      * @return self Returns the current instance of the class to allow method chaining
      */
     public function setAccessToken(?string $accessToken): self;
+
+    /**
+     * Get the storefront access token
+     *
+     * This method is used to get the storefront access token of the merchant.
+     * The return type is nullable string, meaning it can return a string or null.
+     *
+     * @return string|null The storefront access token of the merchant or null if not set
+     */
+    public function getStorefrontAccessToken(): ?string;
+
+    /**
+     * Set the storefront access token
+     *
+     * This method is used to set the storefront access token of the merchant.
+     * It accepts a nullable string as an argument, meaning you can pass a string or null.
+     *
+     * @param string|null $storefrontAccessToken The storefront access token of the merchant
+     * @return self Returns the current instance of the class to allow method chaining
+     */
+    public function setStorefrontAccessToken(?string $storefrontAccessToken): self;
 
     public function getGraphql(): ?Graphql;
 
