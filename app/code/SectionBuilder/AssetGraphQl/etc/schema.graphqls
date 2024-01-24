@@ -1,0 +1,33 @@
+type Query {
+    getAssets(theme_id: String!): [Asset]
+        @doc(description: "Retrieves a list of assets for a theme")
+        @resolver(class: "SectionBuilder\\AssetGraphQl\\Model\\Resolver\\AssetsQuery")
+    getAsset(theme_id: String!, asset: String!): Asset
+        @doc(description: "Retrieves a single asset for a theme")
+        @resolver(class: "SectionBuilder\\AssetGraphQl\\Model\\Resolver\\AssetQuery")
+}
+
+type Mutation {
+    updateAsset(theme_id: String!, asset: String!, value: String!): Asset
+        @doc(description: "Creates or updates an asset for a theme")
+        @resolver(class: "SectionBuilder\\AssetGraphQl\\Model\\Resolver\\UpdateAssetMutation")
+    deleteAsset(theme_id: String!, asset: String!): DeletionResponse
+        @doc(description: "Deletes an asset from a theme")
+        @resolver(class: "SectionBuilder\\AssetGraphQl\\Model\\Resolver\\DeleteAssetMutation")
+}
+
+type Asset @doc(description: "Follow response Shopify API") {
+    key: String
+    value: String
+    public_url: String
+    created_at: String
+    updated_at: String
+    content_type: String
+    size: Int
+    checksum: String
+    theme_id: String
+}
+
+type DeletionResponse @doc(description: "Follow response Shopify API") {
+    message: String
+}
