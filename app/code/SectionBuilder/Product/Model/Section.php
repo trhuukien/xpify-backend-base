@@ -17,7 +17,7 @@ class Section extends \Magento\Framework\Model\AbstractModel implements SectionI
         $this->_init(\SectionBuilder\Product\Model\ResourceModel\Section::class);
     }
 
-    public function getSectionId(): int
+    public function getSectionId(): int|string
     {
         return $this->getData(self::ID);
     }
@@ -25,6 +25,16 @@ class Section extends \Magento\Framework\Model\AbstractModel implements SectionI
     public function setSectionId(int|string $id): SectionInterface
     {
         return $this->setData(self::ID, $id);
+    }
+
+    public function getPlanIds(): string
+    {
+        return $this->getData(self::PLAN_IDS);
+    }
+
+    public function setPlanIds(string $planIds): SectionInterface
+    {
+        return $this->setData(self::PLAN_IDS, $planIds);
     }
 
     public function getName(): string
@@ -37,9 +47,19 @@ class Section extends \Magento\Framework\Model\AbstractModel implements SectionI
         return $this->setData(self::NAME, $name);
     }
 
+    public function getPrice(): float
+    {
+        return (float)$this->getData(self::PRICE);
+    }
+
+    public function setPrice(float $price): self
+    {
+        return $this->setData(self::PRICE, $price);
+    }
+
     public function getSrc(): string
     {
-        return $this->getData(self::NAME);
+        return $this->getData(self::SRC);
     }
 
     public function setSrc(string $src): SectionInterface

@@ -86,9 +86,9 @@ class Billing
             'interval' => $subscription->getInterval(),
         ];
 
-        if (!self::hasActivePayment($merchant, $config)) {
-            $shouldPayment=  true;
-            $billingUrl = self::requestPayment($merchant, $config);
+        if (!$this->hasActivePayment($merchant, $config)) {
+            $shouldPayment = true;
+            $billingUrl = $this->requestPayment($merchant, $config);
         }
 
         return [$shouldPayment, $billingUrl];
@@ -107,7 +107,7 @@ class Billing
      * @return string The confirmation URL
      * @throws ShopifyBillingException|NoSuchEntityException
      */
-    private static function requestPayment(IMerchant $merchant, array $config): string
+    public function requestPayment(IMerchant $merchant, array $config): string
     {
         $hostName = Context::$HOST_NAME;
         $shop = $merchant->getShop();
@@ -139,7 +139,7 @@ class Billing
      * @throws ShopifyBillingException
      * @throws NoSuchEntityException
      */
-    private static function hasActivePayment(IMerchant $merchant, array $config): bool
+    public function hasActivePayment(IMerchant $merchant, array $config): bool
     {
         if (self::isRecurring($config)) {
             return self::hasSubscription($merchant, $config);

@@ -45,9 +45,10 @@ class UpdateThemeMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionA
         $this->validation->validateArgs($args, ['id', 'role']);
 
         $apiVersion = \Shopify\Context::$API_VERSION;
+        $id = $args['id'];
 
         $response = $this->getMerchantSession()->getMerchant()->getRest()->put(
-            '/admin/api/' . $apiVersion . '/themes/' . $args['id'] . '.json',
+            "/admin/api/$apiVersion/themes/$id.json",
             [
                 'theme' => [
                     'id' => $args['id'],

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference for="SectionBuilder\Product\Api\Data\BuyInterface" type="SectionBuilder\Product\Model\Buy"/>
+    <preference for="SectionBuilder\Product\Api\Data\SectionInstallInterface" type="SectionBuilder\Product\Model\SectionInstall"/>
     <preference for="SectionBuilder\Product\Api\Data\SectionInterface" type="SectionBuilder\Product\Model\Section"/>
-<!--    <preference for="SectionBuilder\Product\Api\BuyRepositoryInterface" type="SectionBuilder\Product\Model\BuyRepository"/>-->
-<!--    <preference for="SectionBuilder\Product\Api\SectionRepositoryInterface" type="SectionBuilder\Product\Model\SectionRepository"/>-->
+    <preference for="SectionBuilder\Product\Api\SectionInstallRepositoryInterface" type="SectionBuilder\Product\Model\SectionInstallRepository"/>
+    <preference for="SectionBuilder\Product\Api\SectionRepositoryInterface" type="SectionBuilder\Product\Model\SectionRepository"/>
 </config>

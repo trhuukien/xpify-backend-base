@@ -7,11 +7,9 @@ use SectionBuilder\Product\Api\Data\SectionInterface;
 
 interface SectionRepositoryInterface
 {
-    public function getById(int|string $id);
+    public function get(string $field, int|string $value);
 
-    public function save(SectionInterface $buy);
+    public function save(SectionInterface $section);
 
-    public function delete(SectionInterface $buy);
-
-    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $criteria): SectionInterface;
+    public function delete(SectionInterface $section);
 }

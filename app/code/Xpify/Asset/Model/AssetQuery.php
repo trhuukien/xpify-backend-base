@@ -51,7 +51,7 @@ class AssetQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractRe
         $themeId = $args['theme_id'];
 
         $response = $this->getMerchantSession()->getMerchant()->getRest()->get(
-            '/admin/api/' . $apiVersion . '/themes/' . $themeId . '/assets.json',
+            "/admin/api/$apiVersion/themes/$themeId/assets.json",
             [],
             ['asset[key]' => $args['asset']]
         );

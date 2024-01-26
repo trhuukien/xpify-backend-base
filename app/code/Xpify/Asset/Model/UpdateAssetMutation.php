@@ -49,9 +49,10 @@ class UpdateAssetMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionA
         );
 
         $apiVersion = \Shopify\Context::$API_VERSION;
+        $themeId = $args['theme_id'];
 
         $response = $this->getMerchantSession()->getMerchant()->getRest()->put(
-            '/admin/api/' . $apiVersion . '/themes/' . $args['theme_id'] . '/assets.json',
+            "/admin/api/$apiVersion/themes/$themeId/assets.json",
             null,
             [],
             [

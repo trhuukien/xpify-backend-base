@@ -45,9 +45,10 @@ class DeleteThemeMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionA
         $this->validation->validateArgs($args, ['id']);
 
         $apiVersion = \Shopify\Context::$API_VERSION;
+        $id = $args['id'];
 
         $response = $this->getMerchantSession()->getMerchant()->getRest()->delete(
-            '/admin/api/' . $apiVersion . '/themes/' . $args['id'] . '.json'
+            "/admin/api/$apiVersion/themes/$id.json"
         );
 
         return $response->getDecodedBody();

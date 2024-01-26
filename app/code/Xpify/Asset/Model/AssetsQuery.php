@@ -48,9 +48,10 @@ class AssetsQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractR
         );
 
         $apiVersion = \Shopify\Context::$API_VERSION;
+        $themeId = $args['theme_id'];
 
         $response = $this->getMerchantSession()->getMerchant()->getRest()->get(
-            '/admin/api/' . $apiVersion . '/themes/' . $args['theme_id'] . '/assets.json'
+            "/admin/api/$apiVersion/themes/$themeId/assets.json"
         );
 
         return $response->getDecodedBody()['assets'] ?? [];

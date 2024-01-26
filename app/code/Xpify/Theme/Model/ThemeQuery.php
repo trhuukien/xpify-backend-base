@@ -48,9 +48,10 @@ class ThemeQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractRe
         );
 
         $apiVersion = \Shopify\Context::$API_VERSION;
+        $id = $args['id'];
 
         $response = $this->getMerchantSession()->getMerchant()->getRest()->get(
-            '/admin/api/' . $apiVersion . '/themes/' . $args['id'] . '.json'
+            "/admin/api/$apiVersion/themes/$id.json"
         );
 
         return $response->getDecodedBody()['theme'] ?? [];

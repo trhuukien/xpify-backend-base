@@ -5,14 +5,41 @@ namespace SectionBuilder\Core\Model\Auth;
 
 class Validation
 {
-    public function checkAuth($merchant)
+    protected $graphQl;
+
+    protected $billing;
+
+    public function __construct(
+        \SectionBuilder\Core\Model\Auth\GraphQl $graphQl,
+        \Xpify\Merchant\Service\Billing $billing
+    ) {
+        $this->graphQl = $graphQl;
+        $this->billing = $billing;
+    }
+
+    public function hasOneTime($merchant, $oneTimePurchaseKey)
     {
-        $subscription = \Xpify\Merchant\Helper\Subscription::getSubscription($merchant);
+        return $this->graphQl->hasOneTimePayment($merchant, $oneTimePurchaseKey);
+    }
 
-        if ($subscription === null) {
-            return false;
+    public function hasPlan($merchant, $planName)
+    {
+        return $this->graphQl->hasSubscription($merchant, $planName);
+    }
+
+    public function redirectPagePurchase($merchant, $config): void
+    {
+        if (!$this->billing->hasActivePayment($merchant, $config)) {
+            $billingUrl = $this->billing->requestPayment($merchant, $config);
+
+            /* Redirect to payment shopify app */
+            throw new \Xpify\AuthGraphQl\Exception\GraphQlShopifyReauthorizeRequiredException(
+                __("Payment required."),
+                null,
+                0,
+                true,
+                $billingUrl
+            );
         }
-
-        return true;
     }
 }

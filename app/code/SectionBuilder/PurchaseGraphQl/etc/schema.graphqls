@@ -1,0 +1,25 @@
+enum PricingPlanInterval {
+    ONE_TIME
+    EVERY_30_DAYS
+    ANNUAL
+}
+
+enum Status @doc(description: "") {
+    success
+    warning
+    error
+}
+
+type Mutation {
+    redirectBillingUrl(name: String!, interval: PricingPlanInterval!, is_plan: Boolean!): Message
+        @doc(description: "")
+        @resolver(class: "SectionBuilder\\PurchaseGraphQl\\Model\\Resolver\\BillingMutation")
+    cancelPlan(name: String!): Message
+        @doc(description: "")
+        @resolver(class: "SectionBuilder\\PurchaseGraphQl\\Model\\Resolver\\PlanCancelMutation")
+}
+
+type Message @doc(description: "") {
+    message: String
+    status: Status
+}

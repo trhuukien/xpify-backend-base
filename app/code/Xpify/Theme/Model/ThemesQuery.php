@@ -49,7 +49,7 @@ class ThemesQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractR
         $apiVersion = \Shopify\Context::$API_VERSION;
 
         $response = $this->getMerchantSession()->getMerchant()->getRest()->get(
-            '/admin/api/' . $apiVersion . '/themes.json'
+            "/admin/api/$apiVersion/themes.json"
         );
 
         return $response->getDecodedBody()['themes'] ?? [];

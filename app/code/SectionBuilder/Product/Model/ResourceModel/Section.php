@@ -6,7 +6,7 @@ namespace SectionBuilder\Product\Model\ResourceModel;
 class Section extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     const MAIN_TABLE = 'section_builder_product';
-    const FILE_BASE_CSS = 'sections/bss-section-builder.css';
+    const FILE_BASE_CSS = 'assets/bss-section-builder.css';
 
     /**
      * Init resource model

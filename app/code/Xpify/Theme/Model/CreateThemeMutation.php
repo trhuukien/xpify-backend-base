@@ -47,7 +47,7 @@ class CreateThemeMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionA
         $apiVersion = \Shopify\Context::$API_VERSION;
 
         $response = $this->getMerchantSession()->getMerchant()->getRest()->post(
-            '/admin/api/' . $apiVersion . '/themes.json',
+            "/admin/api/$apiVersion/themes.json",
             null,
             [],
             [

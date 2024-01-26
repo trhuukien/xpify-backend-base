@@ -1,0 +1,17 @@
+type Query {
+    getSection(name: String!): Section
+        @doc(description: "")
+        @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionQuery")
+}
+
+type Section @doc(description: "") {
+    entity_id : String
+    plan_ids : String
+    plan_need_subscribe : String
+    name: String
+    price: Float
+    src: String
+    is_show_install: Boolean
+    is_show_purchase: Boolean
+    is_show_plan: Boolean
+}

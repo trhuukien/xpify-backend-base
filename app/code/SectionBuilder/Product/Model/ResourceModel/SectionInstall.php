@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace SectionBuilder\Product\Model\ResourceModel;
 
-class Buy extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+class SectionInstall extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
-    const MAIN_TABLE = 'section_builder_bought';
+    const MAIN_TABLE = 'section_builder_install';
 
     /**
      * Init resource model
@@ -16,7 +16,7 @@ class Buy extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $this->_init(
             self::MAIN_TABLE,
-            \SectionBuilder\Product\Api\Data\BuyInterface::ID
+            \SectionBuilder\Product\Api\Data\SectionInstallInterface::ID
         );
     }
 }
