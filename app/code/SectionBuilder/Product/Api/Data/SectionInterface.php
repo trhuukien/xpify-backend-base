@@ -12,7 +12,7 @@ interface SectionInterface
     const SRC = 'src';
     const FILE_DATA = 'file_data';
 
-    public function getSectionId(): int|string;
+    public function getSectionId(): int;
 
     public function setSectionId(int|string $id): self;
 

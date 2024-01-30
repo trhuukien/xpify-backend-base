@@ -15,16 +15,20 @@ class SectionRepository implements \SectionBuilder\Product\Api\SectionRepository
 
     protected $collectionProcessor;
 
+    protected $searchResultsFactory;
+
     public function __construct(
         \SectionBuilder\Product\Model\ResourceModel\Section $section,
         \SectionBuilder\Product\Model\SectionFactory $sectionFactory,
         \SectionBuilder\Product\Model\ResourceModel\Section\CollectionFactory $collectionFactory,
-        \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface $collectionProcessor
+        \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface $collectionProcessor,
+        \SectionBuilder\Product\Api\Data\SectionSearchResultsInterfaceFactory $searchResultsFactory
     ) {
         $this->section = $section;
         $this->sectionFactory = $sectionFactory;
         $this->collectionFactory = $collectionFactory;
         $this->collectionProcessor = $collectionProcessor;
+        $this->searchResultsFactory = $searchResultsFactory;
     }
 
     public function create()
@@ -32,7 +36,7 @@ class SectionRepository implements \SectionBuilder\Product\Api\SectionRepository
         return $this->sectionFactory->create();
     }
 
-    public function get(string $field, int|string $value)
+    public function get(string $field, mixed $value)
     {
         try {
             $section = $this->create();
@@ -45,6 +49,17 @@ class SectionRepository implements \SectionBuilder\Product\Api\SectionRepository
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\NoSuchEntityException(__($e->getMessage()));
         }
+    }
+
+    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria)
+    {
+        $sectionCollection = $this->collectionFactory->create();
+        $this->collectionProcessor->process($searchCriteria, $sectionCollection);
+        $searchData = $this->searchResultsFactory->create();
+        $searchData->setSearchCriteria($searchCriteria);
+        $searchData->setItems($sectionCollection->getItems());
+        $searchData->setTotalCount($sectionCollection->getSize());
+        return $searchData;
     }
 
     public function save(SectionInterface $section)

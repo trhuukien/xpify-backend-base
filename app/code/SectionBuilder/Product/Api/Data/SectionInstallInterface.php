@@ -11,7 +11,7 @@ interface SectionInstallInterface
     const THEME_IDS = 'theme_ids';
     const BOUGHT = 'bought';
 
-    public function getSectionInstallId(): int|string;
+    public function getSectionInstallId(): int;
 
     public function setSectionInstallId(int|string $id): self;
 

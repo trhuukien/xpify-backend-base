@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="SectionBuilder_Tag::tag_management"
+             title="Tag"
+             translate="title"
+             module="SectionBuilder_Product"
+             sortOrder="30"
+             resource="SectionBuilder_Tag::tag_management"
+             action="section_builder/tag"
+             parent="SectionBuilder_Core::section_builder_management"
+        />
+    </menu>
+</config>

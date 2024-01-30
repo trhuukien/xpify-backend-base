@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="SectionBuilder\Tag\Api\Data\TagInterface" type="SectionBuilder\Tag\Model\Tag"/>
+    <preference for="SectionBuilder\Tag\Api\TagRepositoryInterface" type="SectionBuilder\Tag\Model\TagRepository"/>
+
+    <virtualType name="SectionBuilder\Tag\Model\ResourceModel\Tag\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="const">SectionBuilder\Tag\Model\ResourceModel\Tag::MAIN_TABLE</argument>
+            <argument name="resourceModel" xsi:type="string">SectionBuilder\Tag\Model\ResourceModel\Tag</argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="section_builder_tag_listing_data_source" xsi:type="string">SectionBuilder\Tag\Model\ResourceModel\Tag\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

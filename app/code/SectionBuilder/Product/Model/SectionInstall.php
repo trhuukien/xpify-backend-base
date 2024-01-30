@@ -17,7 +17,7 @@ class SectionInstall extends \Magento\Framework\Model\AbstractModel implements S
         $this->_init(\SectionBuilder\Product\Model\ResourceModel\SectionInstall::class);
     }
 
-    public function getSectionInstallId(): int|string
+    public function getSectionInstallId(): int
     {
         return $this->getData(self::ID);
     }

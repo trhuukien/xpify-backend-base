@@ -57,7 +57,7 @@ class HandleUpdate {
                 );
                 $baseCssData = $collection->getFirstItem()->getData();
 
-                if (isset($baseCssData['file_data'])) {
+                if (isset($baseCssData[\SectionBuilder\Product\Api\Data\SectionInterface::FILE_DATA])) {
                     $args['value'] = "{% style %}\n" .
                         $baseCssData[\SectionBuilder\Product\Api\Data\SectionInterface::FILE_DATA] .
                         "{% endstyle %}\n\n" .

@@ -122,16 +122,16 @@ class GraphQl
 
     private const CANCEL = <<<'QUERY'
     mutation AppSubscriptionCancel($id: ID!) {
-      appSubscriptionCancel(id: $id) {
-        userErrors {
-          field
-          message
+        appSubscriptionCancel(id: $id) {
+            userErrors {
+                field
+                message
+            }
+            appSubscription {
+                id
+                status
+            }
         }
-        appSubscription {
-          id
-          status
-        }
-      }
     }
     QUERY;
 }

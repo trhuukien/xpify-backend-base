@@ -17,7 +17,7 @@ class Section extends \Magento\Framework\Model\AbstractModel implements SectionI
         $this->_init(\SectionBuilder\Product\Model\ResourceModel\Section::class);
     }
 
-    public function getSectionId(): int|string
+    public function getSectionId(): int
     {
         return $this->getData(self::ID);
     }

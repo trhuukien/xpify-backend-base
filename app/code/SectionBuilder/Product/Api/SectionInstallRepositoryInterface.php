@@ -7,11 +7,9 @@ use SectionBuilder\Product\Api\Data\SectionInstallInterface;
 
 interface SectionInstallRepositoryInterface
 {
-    public function getById(int|string $id);
+    public function get(string $field, int|string $value);
 
     public function save(SectionInstallInterface $sectionInstall);
 
     public function delete(SectionInstallInterface $sectionInstall);
-
-    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $criteria): SectionInstallInterface;
 }

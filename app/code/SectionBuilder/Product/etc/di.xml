@@ -5,4 +5,18 @@
     <preference for="SectionBuilder\Product\Api\Data\SectionInterface" type="SectionBuilder\Product\Model\Section"/>
     <preference for="SectionBuilder\Product\Api\SectionInstallRepositoryInterface" type="SectionBuilder\Product\Model\SectionInstallRepository"/>
     <preference for="SectionBuilder\Product\Api\SectionRepositoryInterface" type="SectionBuilder\Product\Model\SectionRepository"/>
+
+    <virtualType name="SectionBuilder\Product\Model\ResourceModel\Product\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="const">SectionBuilder\Product\Model\ResourceModel\Section::MAIN_TABLE</argument>
+            <argument name="resourceModel" xsi:type="string">SectionBuilder\Product\Model\ResourceModel\Section</argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="section_builder_product_listing_data_source" xsi:type="string">SectionBuilder\Product\Model\ResourceModel\Product\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
 </config>
