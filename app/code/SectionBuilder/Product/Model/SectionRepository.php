@@ -51,17 +51,6 @@ class SectionRepository implements \SectionBuilder\Product\Api\SectionRepository
         }
     }
 
-    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria)
-    {
-        $sectionCollection = $this->collectionFactory->create();
-        $this->collectionProcessor->process($searchCriteria, $sectionCollection);
-        $searchData = $this->searchResultsFactory->create();
-        $searchData->setSearchCriteria($searchCriteria);
-        $searchData->setItems($sectionCollection->getItems());
-        $searchData->setTotalCount($sectionCollection->getSize());
-        return $searchData;
-    }
-
     public function save(SectionInterface $section)
     {
         try {
@@ -80,5 +69,16 @@ class SectionRepository implements \SectionBuilder\Product\Api\SectionRepository
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\CouldNotDeleteException(__($e->getMessage()));
         }
+    }
+
+    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria)
+    {
+        $sectionCollection = $this->collectionFactory->create();
+        $this->collectionProcessor->process($searchCriteria, $sectionCollection);
+        $searchData = $this->searchResultsFactory->create();
+        $searchData->setSearchCriteria($searchCriteria);
+        $searchData->setItems($sectionCollection->getItems());
+        $searchData->setTotalCount($sectionCollection->getSize());
+        return $searchData;
     }
 }

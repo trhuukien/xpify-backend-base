@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="SectionBuilder\Category\Api\Data\CategoryInterface" type="SectionBuilder\Category\Model\Category"/>
+    <preference for="SectionBuilder\Category\Api\CategoryRepositoryInterface" type="SectionBuilder\Category\Model\CategoryRepository"/>
+
+    <virtualType name="SectionBuilder\Category\Model\ResourceModel\Category\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="const">SectionBuilder\Category\Model\ResourceModel\Category::MAIN_TABLE</argument>
+            <argument name="resourceModel" xsi:type="string">SectionBuilder\Category\Model\ResourceModel\Category</argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="section_builder_category_listing_data_source" xsi:type="string">SectionBuilder\Category\Model\ResourceModel\Category\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">section_builder_category_form.section_builder_category_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Category Information</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="save" class="SectionBuilder\Core\Model\Block\Adminhtml\Form\SaveButton" />
+            <button name="back" class="Magento\Customer\Block\Adminhtml\Edit\BackButton" />
+        </buttons>
+        <layout>
+            <type>tabs</type>
+            <navContainerName>left</navContainerName>
+        </layout>
+        <deps>
+            <dep>section_builder_category_form.section_builder_category_form_data_source</dep>
+        </deps>
+        <dataScope>data</dataScope>
+        <namespace>section_builder_category_form</namespace>
+    </settings>
+
+    <dataSource name="section_builder_category_form_data_source" component="Magento_Ui/js/form/provider">
+        <settings>
+            <submitUrl path="section_builder/category/save"/>
+        </settings>
+        <dataProvider name="section_builder_category_form_data_source" class="SectionBuilder\Category\Ui\Component\Form\CategoryDataProvider">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <fieldset name="general">
+        <settings>
+            <label translate="true">General</label>
+            <dataScope />
+            <collapsible>false</collapsible>
+        </settings>
+
+        <field name="entity_id" sortOrder="0" formElement="hidden">
+            <settings>
+                <dataType>text</dataType>
+                <visible>false</visible>
+            </settings>
+        </field>
+        <field name="is_enable" sortOrder="10" formElement="checkbox">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">block</item>
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Enable</label>
+                <dataScope>is_enable</dataScope>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="name" sortOrder="20" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Category</label>
+                <dataScope>name</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+    </fieldset>
+</form>

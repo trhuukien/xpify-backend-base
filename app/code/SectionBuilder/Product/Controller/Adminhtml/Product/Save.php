@@ -12,21 +12,29 @@ class Save extends Action implements HttpPostActionInterface
 {
     public const ADMIN_RESOURCE = Edit::ADMIN_RESOURCE;
 
-    protected $dataPersistor;
-
     protected $sectionRepository;
+
+    protected $categoryProductResource;
+
+    protected $tagProductResource;
+
+    protected $dataPersistor;
 
     protected $messageManager;
 
     public function __construct(
         Context $context,
         \SectionBuilder\Product\Api\SectionRepositoryInterface $sectionRepository,
+        \SectionBuilder\Category\Model\ResourceModel\CategoryProduct $categoryProductResource,
+        \SectionBuilder\Tag\Model\ResourceModel\TagProduct $tagProductResource,
         DataPersistorInterface $dataPersistor,
         \Magento\Framework\Message\ManagerInterface $messageManager
     ) {
         parent::__construct($context);
-        $this->dataPersistor = $dataPersistor;
         $this->sectionRepository = $sectionRepository;
+        $this->categoryProductResource = $categoryProductResource;
+        $this->tagProductResource = $tagProductResource;
+        $this->dataPersistor = $dataPersistor;
         $this->messageManager = $messageManager;
     }
 
@@ -41,12 +49,15 @@ class Save extends Action implements HttpPostActionInterface
                 $section = $this->sectionRepository->get('entity_id', $postData['entity_id']);
             }
 
-            //$section->setIsEnable($postData['is_enable']);
+            $section->setIsEnable((int)$postData['is_enable']);
             $section->setName(trim($postData['name']));
             $section->setPrice((float)$postData['price']);
             $section->setSrc(trim($postData['src']));
             $section->setFileData($postData['file_data']);
             $this->sectionRepository->save($section);
+
+            $this->replaceCategories($section->getId(), $postData['categories'] ?? []);
+            $this->replaceTags($section->getId(), $postData['tags'] ?? []);
 
             $this->messageManager->addSuccessMessage(__('You saved the product.'));
             $redirectPath = 'section_builder/product/edit';
@@ -66,5 +77,51 @@ class Save extends Action implements HttpPostActionInterface
             $redirectPath,
             $redirectParams ?? []
         );
+    }
+
+    public function replaceCategories($productId, $categories)
+    {
+        $this->categoryProductResource->getConnection()->delete(
+            $this->categoryProductResource->getMainTable(),
+            ['product_id = ?' => $productId]
+        );
+
+        foreach ($categories as $categoryId) {
+            if ($categoryId) {
+                $dataToInsert[] = [
+                    'product_id' => $productId,
+                    'category_id' => $categoryId
+                ];
+            }
+        }
+        if (!empty($dataToInsert)) {
+            $this->categoryProductResource->getConnection()->insertMultiple(
+                $this->categoryProductResource->getMainTable(),
+                $dataToInsert
+            );
+        }
+    }
+
+    public function replaceTags($productId, $tagIds)
+    {
+        $this->tagProductResource->getConnection()->delete(
+            $this->tagProductResource->getMainTable(),
+            ['product_id = ?' => $productId]
+        );
+
+        foreach ($tagIds as $tagId) {
+            if ($tagId) {
+                $dataToInsert[] = [
+                    'product_id' => $productId,
+                    'tag_id' => $tagId
+                ];
+            }
+        }
+        if (!empty($dataToInsert)) {
+            $this->tagProductResource->getConnection()->insertMultiple(
+                $this->tagProductResource->getMainTable(),
+                $dataToInsert
+            );
+        }
     }
 }

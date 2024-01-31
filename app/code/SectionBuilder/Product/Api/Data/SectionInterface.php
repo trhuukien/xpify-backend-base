@@ -6,6 +6,7 @@ namespace SectionBuilder\Product\Api\Data;
 interface SectionInterface
 {
     const ID = 'entity_id';
+    const IS_ENABLE = 'is_enable';
     const PLAN_IDS = 'plan_ids';
     const NAME = 'name';
     const PRICE = 'price';
@@ -15,6 +16,10 @@ interface SectionInterface
     public function getSectionId(): int;
 
     public function setSectionId(int|string $id): self;
+
+    public function getIsEnable(): int;
+
+    public function setIsEnable(int $isEnable): self;
 
     public function getPlanIds(): string;
 

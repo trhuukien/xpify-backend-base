@@ -19,7 +19,7 @@ class Tag extends \Magento\Framework\Model\AbstractModel implements TagInterface
 
     public function getTagId(): int
     {
-        return $this->getData(self::ID);
+        return (int)$this->getData(self::ID);
     }
 
     public function setTagId(int|string $id): TagInterface
@@ -29,7 +29,7 @@ class Tag extends \Magento\Framework\Model\AbstractModel implements TagInterface
 
     public function getIsEnable(): int
     {
-        return $this->getData(self::IS_ENABLE);
+        return (int)$this->getData(self::IS_ENABLE);
     }
 
     public function setIsEnable(int|string $isEnable): TagInterface

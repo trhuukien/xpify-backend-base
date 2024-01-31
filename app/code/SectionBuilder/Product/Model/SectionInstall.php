@@ -19,7 +19,7 @@ class SectionInstall extends \Magento\Framework\Model\AbstractModel implements S
 
     public function getSectionInstallId(): int
     {
-        return $this->getData(self::ID);
+        return (int)$this->getData(self::ID);
     }
 
     public function setSectionInstallId(int|string $id): SectionInstallInterface

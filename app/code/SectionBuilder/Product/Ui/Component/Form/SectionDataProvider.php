@@ -5,7 +5,10 @@ use SectionBuilder\Product\Model\ResourceModel\Section\CollectionFactory;
 
 class SectionDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
 {
+    const EXPLODE_FIELDS = ['categories', 'tags'];
+
     protected $dataPersistor;
+
 
     public function __construct(
         $name,
@@ -16,7 +19,7 @@ class SectionDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
         array $meta = [],
         array $data = []
     ) {
-        $this->collection = $sectionCollectionFactory->create();
+        $this->collection = $sectionCollectionFactory->create()->joinListCategoryId()->joinListTagId();
         $this->dataPersistor = $dataPersistor;
         parent::__construct($name, $primaryFieldName, $requestFieldName, $meta, $data);
     }
@@ -40,6 +43,13 @@ class SectionDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
         } else {
             $items = $this->collection->getItems();
             foreach ($items as $item) {
+                foreach (self::EXPLODE_FIELDS as $field) {
+                    $data = $item->getData($field);
+                    if ($data !== null) {
+                        $item->setData($field, explode(',', $data));
+                    }
+                }
+
                 $this->loadedData[$item->getId()] = $item->getData();
             }
         }

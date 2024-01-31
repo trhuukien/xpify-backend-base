@@ -2,6 +2,7 @@
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
     <table name="section_builder_category" resource="default" engine="innodb" comment="">
         <column xsi:type="smallint" name="entity_id" padding="6" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="smallint" name="is_enable" unsigned="true" nullable="false" default="1" comment="Enable" />
         <column xsi:type="varchar" name="name" nullable="false" length="255" comment="Name"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="entity_id"/>
@@ -13,12 +14,16 @@
 
     <table name="section_builder_category_product" resource="default" engine="innodb" comment="">
         <column xsi:type="smallint" name="entity_id" padding="6" unsigned="true" nullable="false" identity="true" comment="ID"/>
-        <column xsi:type="varchar" name="name" nullable="false" length="255" comment="Name"/>
+        <column xsi:type="smallint" name="product_id" padding="6" unsigned="true" nullable="false" comment="Product Id"/>
+        <column xsi:type="smallint" name="category_id" padding="6" unsigned="true" nullable="false" comment="Category Id"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="entity_id"/>
         </constraint>
-        <constraint xsi:type="unique" referenceId="UNIQUE_NAME">
-            <column name="name"/>
+        <constraint xsi:type="foreign" referenceId="fk_sbcp_sbp" table="section_builder_category_product" column="product_id" referenceTable="section_builder_product" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="fk_sbcp_sbc" table="section_builder_category_product" column="category_id" referenceTable="section_builder_category" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <constraint xsi:type="unique" referenceId="UNIQUE_FK">
+            <column name="product_id"/>
+            <column name="category_id"/>
         </constraint>
     </table>
 </schema>

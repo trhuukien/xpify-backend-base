@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace SectionBuilder\Core\Block\Adminhtml\Form;
+namespace SectionBuilder\Core\Model\Block\Adminhtml\Form;
 
 use Magento\Customer\Block\Adminhtml\Edit\GenericButton;
 use Magento\Framework\View\Element\UiComponent\Control\ButtonProviderInterface;

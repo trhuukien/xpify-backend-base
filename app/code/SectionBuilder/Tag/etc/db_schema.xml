@@ -11,4 +11,19 @@
             <column name="name"/>
         </constraint>
     </table>
+
+    <table name="section_builder_tag_product" resource="default" engine="innodb" comment="">
+        <column xsi:type="smallint" name="entity_id" padding="6" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="smallint" name="product_id" padding="6" unsigned="true" nullable="false" comment="Product Id"/>
+        <column xsi:type="smallint" name="tag_id" padding="6" unsigned="true" nullable="false" comment="Tag Id"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="fk_sbpt_sbp" table="section_builder_tag_product" column="product_id" referenceTable="section_builder_product" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="fk_sbpt_sbt" table="section_builder_tag_product" column="tag_id" referenceTable="section_builder_tag" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <constraint xsi:type="unique" referenceId="UNIQUE_FK">
+            <column name="product_id"/>
+            <column name="tag_id"/>
+        </constraint>
+    </table>
 </schema>

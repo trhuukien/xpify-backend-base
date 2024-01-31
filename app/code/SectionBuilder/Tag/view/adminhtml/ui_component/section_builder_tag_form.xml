@@ -8,7 +8,7 @@
     </argument>
     <settings>
         <buttons>
-            <button name="save" class="SectionBuilder\Core\Block\Adminhtml\Form\SaveButton" />
+            <button name="save" class="SectionBuilder\Core\Model\Block\Adminhtml\Form\SaveButton" />
             <button name="back" class="Magento\Customer\Block\Adminhtml\Edit\BackButton" />
         </buttons>
         <layout>
@@ -41,7 +41,6 @@
             <collapsible>false</collapsible>
         </settings>
 
-        <!-- import hidden id field -->
         <field name="entity_id" sortOrder="0" formElement="hidden">
             <settings>
                 <dataType>text</dataType>

@@ -4,7 +4,7 @@
         <add id="SectionBuilder_Tag::tag_management"
              title="Tag"
              translate="title"
-             module="SectionBuilder_Product"
+             module="SectionBuilder_Tag"
              sortOrder="30"
              resource="SectionBuilder_Tag::tag_management"
              action="section_builder/tag"

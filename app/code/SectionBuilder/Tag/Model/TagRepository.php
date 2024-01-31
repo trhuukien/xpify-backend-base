@@ -51,17 +51,6 @@ class TagRepository implements \SectionBuilder\Tag\Api\TagRepositoryInterface
         }
     }
 
-    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria)
-    {
-        $tagCollection = $this->collectionFactory->create();
-        $this->collectionProcessor->process($searchCriteria, $tagCollection);
-        $searchData = $this->searchResultsFactory->create();
-        $searchData->setSearchCriteria($searchCriteria);
-        $searchData->setItems($tagCollection->getItems());
-        $searchData->setTotalCount($tagCollection->getSize());
-        return $searchData;
-    }
-
     public function save(TagInterface $tag)
     {
         try {
@@ -80,5 +69,16 @@ class TagRepository implements \SectionBuilder\Tag\Api\TagRepositoryInterface
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\CouldNotDeleteException(__($e->getMessage()));
         }
+    }
+
+    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria)
+    {
+        $tagCollection = $this->collectionFactory->create();
+        $this->collectionProcessor->process($searchCriteria, $tagCollection);
+        $searchData = $this->searchResultsFactory->create();
+        $searchData->setSearchCriteria($searchCriteria);
+        $searchData->setItems($tagCollection->getItems());
+        $searchData->setTotalCount($tagCollection->getSize());
+        return $searchData;
     }
 }

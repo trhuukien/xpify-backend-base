@@ -14,7 +14,7 @@
     </argument>
     <settings>
         <buttons>
-            <button name="save" class="SectionBuilder\Core\Block\Adminhtml\Form\SaveButton" />
+            <button name="save" class="SectionBuilder\Core\Model\Block\Adminhtml\Form\SaveButton" />
             <button name="back" class="Magento\Customer\Block\Adminhtml\Edit\BackButton" />
         </buttons>
     </settings>
@@ -22,7 +22,7 @@
         <argument name="dataProvider" xsi:type="configurableObject">
             <argument name="class" xsi:type="string">SectionBuilder\Product\Ui\Component\Form\SectionDataProvider</argument>
             <argument name="name" xsi:type="string">section_builder_product_form_data_source</argument>
-            <argument name="primaryFieldName" xsi:type="string">entity_id</argument>
+            <argument name="primaryFieldName" xsi:type="string">main_table.entity_id</argument>
             <argument name="requestFieldName" xsi:type="string">id</argument>
         </argument>
         <argument name="data" xsi:type="array">
@@ -97,13 +97,75 @@
                     <item name="label" xsi:type="string" translate="true">Price</item>
                     <item name="formElement" xsi:type="string">input</item>
                     <item name="dataScope" xsi:type="string">price</item>
+                    <item name="addbefore" xsi:type="string">$</item>
+                    <item name="additionalClasses" xsi:type="string">admin__field-small</item>
                 </item>
             </argument>
             <settings>
                 <validation>
                     <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="validate-number" xsi:type="boolean">true</rule>
+                    <rule name="validate-zero-or-greater" xsi:type="boolean">true</rule>
                 </validation>
             </settings>
+        </field>
+        <field name="categories" component="Magento_Ui/js/form/element/ui-select" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filterOptions" xsi:type="boolean">true</item>
+                    <item name="multiple" xsi:type="boolean">true</item>
+                    <item name="showCheckbox" xsi:type="boolean">true</item>
+                    <item name="disableLabel" xsi:type="boolean">true</item>
+                    <item name="filterPlaceholder" xsi:type="string" translate="true">Search Category...</item>
+                    <item name="emptyOptionsHtml" xsi:type="string" translate="true">Start typing to find Category</item>
+                </item>
+            </argument>
+            <settings>
+                <required>true</required>
+                <elementTmpl>ui/grid/filters/elements/ui-select</elementTmpl>
+                <label translate="true">Categories</label>
+                <dataScope>categories</dataScope>
+                <componentType>field</componentType>
+                <listens>
+                    <link name="${ $.namespace }.${ $.namespace }:responseData">setParsed</link>
+                </listens>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="SectionBuilder\Product\Ui\Component\Form\Category\OptionTree"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="tags" component="Magento_Ui/js/form/element/ui-select" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filterOptions" xsi:type="boolean">true</item>
+                    <item name="multiple" xsi:type="boolean">true</item>
+                    <item name="showCheckbox" xsi:type="boolean">true</item>
+                    <item name="disableLabel" xsi:type="boolean">true</item>
+                    <item name="filterPlaceholder" xsi:type="string" translate="true">Search Tag...</item>
+                    <item name="emptyOptionsHtml" xsi:type="string" translate="true">Start typing to find Tag</item>
+                </item>
+            </argument>
+            <settings>
+                <required>true</required>
+                <elementTmpl>ui/grid/filters/elements/ui-select</elementTmpl>
+                <label translate="true">Tags</label>
+                <dataScope>tags</dataScope>
+                <componentType>field</componentType>
+                <listens>
+                    <link name="${ $.namespace }.${ $.namespace }:responseData">setParsed</link>
+                </listens>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="SectionBuilder\Product\Ui\Component\Form\Tag\OptionTree"/>
+                    </settings>
+                </select>
+            </formElements>
         </field>
         <field name="src">
             <argument name="data" xsi:type="array">
