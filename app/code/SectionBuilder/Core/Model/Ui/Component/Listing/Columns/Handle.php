@@ -48,20 +48,4 @@ class Handle extends Column
 
         return $dataSource;
     }
-
-    public function handleStatus(array $dataSource)
-    {
-        if (isset($dataSource['data']['items'])) {
-            $fieldName = $this->getName();
-            foreach ($dataSource['data']['items'] as &$item) {
-                if ($item[$fieldName]) {
-                    $item[$fieldName] = __('Enable');
-                } else {
-                    $item[$fieldName] = __('Disable');
-                }
-            }
-        }
-
-        return $dataSource;
-    }
 }

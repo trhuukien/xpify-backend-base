@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="shopify" translate="label" sortOrder="100">
+            <label><![CDATA[Shopify App]]></label>
+        </tab>
+        <section id="section_builder" translate="label" sortOrder="10" showInDefault="1">
+            <label>Section Builder</label>
+            <tab>shopify</tab>
+            <resource>SectionBuilder_Core::config</resource>
+
+            <group id="file_management" translate="label" type="text" sortOrder="20" showInDefault="1">
+                <label>File Management</label>
+                <field id="src" translate="label comment" type="text" sortOrder="10" showInDefault="1" canRestore="1">
+                    <label>Src</label>
+                    <validate>required-entry</validate>
+                    <comment><![CDATA[This file will be processed when cron run.]]></comment>
+                </field>
+                <field id="frequency" translate="label" type="select" sortOrder="20" showInDefault="1">
+                    <label>Frequency</label>
+                    <source_model>Magento\Cron\Model\Config\Source\Frequency</source_model>
+                    <backend_model>SectionBuilder\FileModifier\Model\Config\Cron</backend_model>
+                </field>
+                <field id="time" translate="label comment" sortOrder="30" type="time" showInDefault="1">
+                    <label>Start Time</label>
+                </field>
+                <field id="run_cron" translate="label" sortOrder="30" showInDefault="1">
+                    <frontend_model>SectionBuilder\FileModifier\Block\System\Config\Button\RunCron</frontend_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

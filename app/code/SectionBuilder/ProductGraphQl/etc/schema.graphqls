@@ -1,12 +1,45 @@
 type Query {
+    getSections(
+        search: String,
+        filter: SectionFilterInput,
+        pageSize: Int = 20,
+        currentPage: Int = 1,
+        sort: SectionSortInput
+    ): Sections
+        @doc(description: "")
+        @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsQuery")
     getSection(name: String!): Section
         @doc(description: "")
         @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionQuery")
 }
 
+input SectionFilterInput @doc(description: "") {
+    category_id: [Int] @doc(description: "")
+    tag_id: [Int] @doc(description: "")
+}
+
+input SectionSortInput @doc(description: "")
+{
+    relevance: SortEnum @doc(description: "")
+    position: SortEnum @doc(description: "")
+}
+
+type Sections {
+    items: [Section]
+    total_count: Int
+    page_info: PageInfo
+}
+
+type PageInfo {
+    current_page: Int
+    page_size: Int
+    total_pages: Int
+}
+
 type Section @doc(description: "") {
     entity_id : String
-    plan_ids : String
+    is_enable: Boolean
+    plan_id : String
     plan_need_subscribe : String
     name: String
     price: Float

@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace SectionBuilder\FileModifier\Model\Asset;
 
-class HandleUpdate {
+class HandleUpdate
+{
     /**
      * @var \SectionBuilder\Core\Model\Auth\Validation
      */
@@ -32,7 +33,7 @@ class HandleUpdate {
         );
         $collection->join(
             ['xpp' => \Xpify\PricingPlan\Model\ResourceModel\PricingPlan::MAIN_TABLE],
-            'main_table.' . \SectionBuilder\Product\Api\Data\SectionInterface::PLAN_IDS .
+            'main_table.' . \SectionBuilder\Product\Api\Data\SectionInterface::PLAN_ID .
             ' = xpp.' . \Xpify\PricingPlan\Api\Data\PricingPlanInterface::ID,
             "xpp." . \Xpify\PricingPlan\Api\Data\PricingPlanInterface::NAME . " as $colCheckPlan"
         );

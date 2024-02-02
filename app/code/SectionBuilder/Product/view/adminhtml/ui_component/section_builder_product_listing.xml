@@ -82,9 +82,20 @@
         <column name="price" class="SectionBuilder\Product\Ui\Component\Listing\Columns\Price">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
+                    <item name="filter" xsi:type="string">textRange</item>
                     <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
                     <item name="label" xsi:type="string" translate="true">Price</item>
+                </item>
+            </argument>
+        </column>
+        <column name="plan_id">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">SectionBuilder\Core\Model\Config\Source\PricingPlans</item>
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">select</item>
+                    <item name="label" xsi:type="string" translate="true">Plan</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
+                    <item name="dataType" xsi:type="string">select</item>
                 </item>
             </argument>
         </column>
@@ -93,6 +104,17 @@
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">text</item>
                     <item name="label" xsi:type="string" translate="true">Src</item>
+                </item>
+            </argument>
+        </column>
+        <column name="is_enable">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">Magento\Config\Model\Config\Source\Enabledisable</item>
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">select</item>
+                    <item name="label" xsi:type="string" translate="true">Status</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
+                    <item name="dataType" xsi:type="string">select</item>
                 </item>
             </argument>
         </column>

@@ -1,0 +1,11 @@
+type Query {
+    getCategories: [Category]
+        @doc(description: "")
+        @resolver(class: "SectionBuilder\\CategoryGraphQl\\Model\\Resolver\\CategoriesQuery")
+}
+
+type Category @doc(description: "") {
+    entity_id : String
+    name: String
+    is_enable: Boolean
+}

@@ -37,14 +37,14 @@ class Section extends \Magento\Framework\Model\AbstractModel implements SectionI
         return $this->setData(self::IS_ENABLE, $isEnable);
     }
 
-    public function getPlanIds(): string
+    public function getPlanId(): string
     {
-        return $this->getData(self::PLAN_IDS);
+        return $this->getData(self::PLAN_ID);
     }
 
-    public function setPlanIds(string $planIds): SectionInterface
+    public function setPlanId(string $planId): SectionInterface
     {
-        return $this->setData(self::PLAN_IDS, $planIds);
+        return $this->setData(self::PLAN_ID, $planId);
     }
 
     public function getName(): string

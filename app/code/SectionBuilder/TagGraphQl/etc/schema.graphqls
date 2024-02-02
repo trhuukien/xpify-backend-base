@@ -1,0 +1,11 @@
+type Query {
+    getTags: [Tag]
+        @doc(description: "")
+        @resolver(class: "SectionBuilder\\TagGraphQl\\Model\\Resolver\\TagsQuery")
+}
+
+type Tag @doc(description: "") {
+    entity_id : String
+    name: String
+    is_enable: Boolean
+}

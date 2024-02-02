@@ -7,7 +7,7 @@ interface SectionInterface
 {
     const ID = 'entity_id';
     const IS_ENABLE = 'is_enable';
-    const PLAN_IDS = 'plan_ids';
+    const PLAN_ID = 'plan_id';
     const NAME = 'name';
     const PRICE = 'price';
     const SRC = 'src';
@@ -21,9 +21,9 @@ interface SectionInterface
 
     public function setIsEnable(int $isEnable): self;
 
-    public function getPlanIds(): string;
+    public function getPlanId(): string;
 
-    public function setPlanIds(string $planIds): self;
+    public function setPlanId(string $planId): self;
 
     public function getName(): string;
 

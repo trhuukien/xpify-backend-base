@@ -41,7 +41,7 @@ class Save extends Action implements HttpPostActionInterface
                 $tag = $this->tagRepository->get('entity_id', $postData['entity_id']);
             }
 
-            $tag->setIsEnable($postData['is_enable']);
+            $tag->setIsEnable((int)$postData['is_enable']);
             $tag->setName(trim($postData['name']));
             $this->tagRepository->save($tag);
 

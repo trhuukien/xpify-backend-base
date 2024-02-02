@@ -26,6 +26,7 @@ type Asset @doc(description: "Follow response Shopify API") {
     size: Int
     checksum: String
     theme_id: String
+    errors: String
 }
 
 type DeletionResponse @doc(description: "Follow response Shopify API") {

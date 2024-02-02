@@ -109,6 +109,18 @@
                 </validation>
             </settings>
         </field>
+        <field name="plan_id">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">SectionBuilder\Product\Ui\Component\Form\OptionTree\PricingPlan</item>
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Plan</item>
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="dataScope" xsi:type="string">plan_id</item>
+                    <item name="additionalClasses" xsi:type="string">admin__field-small</item>
+                </item>
+            </argument>
+        </field>
         <field name="categories" component="Magento_Ui/js/form/element/ui-select" formElement="select">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -133,7 +145,7 @@
             <formElements>
                 <select>
                     <settings>
-                        <options class="SectionBuilder\Product\Ui\Component\Form\Category\OptionTree"/>
+                        <options class="SectionBuilder\Product\Ui\Component\Form\OptionTree\Category"/>
                     </settings>
                 </select>
             </formElements>
@@ -162,7 +174,7 @@
             <formElements>
                 <select>
                     <settings>
-                        <options class="SectionBuilder\Product\Ui\Component\Form\Tag\OptionTree"/>
+                        <options class="SectionBuilder\Product\Ui\Component\Form\OptionTree\Tag"/>
                     </settings>
                 </select>
             </formElements>

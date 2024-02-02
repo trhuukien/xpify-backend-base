@@ -52,6 +52,7 @@ class Save extends Action implements HttpPostActionInterface
             $section->setIsEnable((int)$postData['is_enable']);
             $section->setName(trim($postData['name']));
             $section->setPrice((float)$postData['price']);
+            $section->setPlanId($postData['plan_id']);
             $section->setSrc(trim($postData['src']));
             $section->setFileData($postData['file_data']);
             $this->sectionRepository->save($section);
@@ -79,47 +80,57 @@ class Save extends Action implements HttpPostActionInterface
         );
     }
 
-    public function replaceCategories($productId, $categories)
+    public function replaceCategories($productId, $data)
     {
-        $this->categoryProductResource->getConnection()->delete(
-            $this->categoryProductResource->getMainTable(),
-            ['product_id = ?' => $productId]
+        $this->replaceData(
+            $this->categoryProductResource,
+            $data,
+            $productId,
+            'category_id'
         );
-
-        foreach ($categories as $categoryId) {
-            if ($categoryId) {
-                $dataToInsert[] = [
-                    'product_id' => $productId,
-                    'category_id' => $categoryId
-                ];
-            }
-        }
-        if (!empty($dataToInsert)) {
-            $this->categoryProductResource->getConnection()->insertMultiple(
-                $this->categoryProductResource->getMainTable(),
-                $dataToInsert
-            );
-        }
     }
 
-    public function replaceTags($productId, $tagIds)
+    public function replaceTags($productId, $data)
     {
-        $this->tagProductResource->getConnection()->delete(
-            $this->tagProductResource->getMainTable(),
-            ['product_id = ?' => $productId]
+        $this->replaceData(
+            $this->tagProductResource,
+            $data,
+            $productId,
+            'tag_id'
+        );
+    }
+
+    public function replaceData($resourceModel, $data, $productId, $key)
+    {
+        $tableName = $resourceModel->getMainTable();
+        $select = $resourceModel->getConnection()->select()
+            ->from($tableName)
+            ->where('product_id = ?', $productId);
+        $oldData = $resourceModel->getConnection()->fetchAll($select);
+        $oldData = array_column($oldData, $key);
+
+        $dataToRemove = array_diff($oldData, $data);
+        $dataToAdd = array_diff($data, $oldData);
+
+        $resourceModel->getConnection()->delete(
+            $tableName,
+            [
+                'product_id = ?' => $productId,
+                "$key IN (?)" => $dataToRemove
+            ]
         );
 
-        foreach ($tagIds as $tagId) {
-            if ($tagId) {
+        foreach ($dataToAdd as $id) {
+            if ($id) {
                 $dataToInsert[] = [
                     'product_id' => $productId,
-                    'tag_id' => $tagId
+                    "$key" => $id
                 ];
             }
         }
         if (!empty($dataToInsert)) {
-            $this->tagProductResource->getConnection()->insertMultiple(
-                $this->tagProductResource->getMainTable(),
+            $resourceModel->getConnection()->insertMultiple(
+                $tableName,
                 $dataToInsert
             );
         }

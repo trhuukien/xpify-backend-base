@@ -3,6 +3,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="SectionBuilder\Category\Api\Data\CategoryInterface" type="SectionBuilder\Category\Model\Category"/>
     <preference for="SectionBuilder\Category\Api\CategoryRepositoryInterface" type="SectionBuilder\Category\Model\CategoryRepository"/>
+    <preference for="SectionBuilder\Category\Api\Data\CategorySearchResultsInterface" type="SectionBuilder\Category\Model\CategorySearchResults"/>
 
     <virtualType name="SectionBuilder\Category\Model\ResourceModel\Category\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>

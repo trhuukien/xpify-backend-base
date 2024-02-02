@@ -36,4 +36,5 @@ type Theme @doc(description: "Follow response Shopify API") {
     previewable: Boolean
     processing: Boolean
     admin_graphql_api_id: String
+    errors: String
 }

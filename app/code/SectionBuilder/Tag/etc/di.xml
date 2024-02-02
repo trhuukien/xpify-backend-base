@@ -3,6 +3,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="SectionBuilder\Tag\Api\Data\TagInterface" type="SectionBuilder\Tag\Model\Tag"/>
     <preference for="SectionBuilder\Tag\Api\TagRepositoryInterface" type="SectionBuilder\Tag\Model\TagRepository"/>
+    <preference for="SectionBuilder\Tag\Api\Data\TagSearchResultsInterface" type="SectionBuilder\Tag\Model\TagSearchResults"/>
 
     <virtualType name="SectionBuilder\Tag\Model\ResourceModel\Tag\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>

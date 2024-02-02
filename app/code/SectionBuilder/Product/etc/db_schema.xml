@@ -3,7 +3,7 @@
     <table name="section_builder_product" resource="default" engine="innodb" comment="">
         <column xsi:type="smallint" name="entity_id" padding="6" unsigned="true" nullable="false" identity="true" comment="ID"/>
         <column xsi:type="smallint" name="is_enable" unsigned="true" nullable="false" default="1" comment="Enable product" />
-        <column xsi:type="varchar" name="plan_ids" nullable="false" length="255" comment="Plan need subscribe"/>
+        <column xsi:type="int" name="plan_id" padding="10" unsigned="true" nullable="true" comment="Plan need subscribe"/>
         <column xsi:type="varchar" name="name" nullable="false" length="255" comment="Name"/>
         <column xsi:type="decimal" name="price" scale="2" precision="20" unsigned="false" nullable="true" comment="Sections price" />
         <column xsi:type="varchar" name="src" nullable="false" length="255" comment="Src code"/>
@@ -14,14 +14,17 @@
         <constraint xsi:type="unique" referenceId="UNIQUE_NAME">
             <column name="name"/>
         </constraint>
+        <constraint xsi:type="unique" referenceId="UNIQUE_SRC">
+            <column name="src"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="fk_sbp_xpp" table="section_builder_product" column="plan_id" referenceTable="$xpify_pricing_plans" referenceColumn="entity_id" onDelete="SET NULL"/>
     </table>
 
     <table name="section_builder_install" resource="default" engine="innodb" comment="">
         <column xsi:type="smallint" name="entity_id" padding="6" unsigned="true" nullable="false" identity="true" comment="ID"/>
-        <column xsi:type="varchar" name="merchant_shop" nullable="false" length="255" comment="Merchant domain"/>
-        <column xsi:type="smallint" name="product_id" padding="6" nullable="false" comment="FK Product"/>
+        <column xsi:type="varchar" name="merchant_shop" nullable="false" length="255" comment="FK xpify_merchants"/>
+        <column xsi:type="smallint" name="product_id" padding="6" unsigned="true" nullable="false" comment="FK section_builder_product"/>
         <column xsi:type="varchar" name="theme_ids" nullable="false" length="255" comment="Install to themes"/>
-        <column xsi:type="smallint" name="bought" padding="6" nullable="false" default="0" comment="Section bought"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="entity_id"/>
         </constraint>
@@ -29,5 +32,6 @@
             <column name="merchant_shop"/>
             <column name="product_id"/>
         </constraint>
+        <constraint xsi:type="foreign" referenceId="fk_sbi_sbp" table="section_builder_install" column="product_id" referenceTable="section_builder_product" referenceColumn="entity_id" onDelete="CASCADE" />
     </table>
 </schema>

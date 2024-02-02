@@ -9,7 +9,6 @@ interface SectionInstallInterface
     const MERCHANT_SHOP = 'merchant_shop';
     const PRODUCT_ID = 'product_id';
     const THEME_IDS = 'theme_ids';
-    const BOUGHT = 'bought';
 
     public function getSectionInstallId(): int;
 
@@ -26,8 +25,4 @@ interface SectionInstallInterface
     public function getThemeIds(): int|string;
 
     public function setThemeIds(int|string $themeIds): self;
-
-    public function getBought(): int|string;
-
-    public function setBought(int|string $bought): self;
 }

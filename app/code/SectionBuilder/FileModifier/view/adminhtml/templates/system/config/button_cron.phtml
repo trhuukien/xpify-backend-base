@@ -1,0 +1,22 @@
+<?php
+/** @var $block \SectionBuilder\FileModifier\Block\System\Config\Button\RunCron */
+?>
+<div id="cron-messages">
+</div>
+
+<div class="pp-buttons-container">
+    <button id="handle_cron" class="action-primary" type="button">
+        <?= /* @noEscape */  __('Run Cron') ?>
+    </button>
+</div>
+
+<script type="text/x-magento-init">
+    {
+        "#handle_cron": {
+            "handle-cron": {
+                "url": "<?= /* @noEscape */ $block->getAjaxUrl(); ?>",
+                "form_key": "<?= /* @noEscape */ $block->getFormKey(); ?>"
+            }
+        }
+    }
+</script>

@@ -18,8 +18,7 @@ class Form extends Category
         }
 
         $page = $this->pageFactory->create();
-//        dd($page->getConfig()->getTitle());
-//        $page->getConfig()->getTitle()->prepend($title);
+        $page->getConfig()->getTitle()->prepend($title);
         return $page;
     }
 }

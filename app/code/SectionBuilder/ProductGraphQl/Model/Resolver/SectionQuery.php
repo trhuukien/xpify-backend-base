@@ -40,14 +40,18 @@ class SectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstract
         );
         $collection->join(
             ['xpp' => \Xpify\PricingPlan\Model\ResourceModel\PricingPlan::MAIN_TABLE],
-            'main_table.' . \SectionBuilder\Product\Api\Data\SectionInterface::PLAN_IDS . ' = xpp.' .
+            'main_table.' . \SectionBuilder\Product\Api\Data\SectionInterface::PLAN_ID . ' = xpp.' .
             \SectionBuilder\Product\Api\Data\SectionInterface::ID,
             "xpp." . \Xpify\PricingPlan\Api\Data\PricingPlanInterface::NAME . " as plan_need_subscribe"
         );
         $result = $collection->getFirstItem()->getData();
 
+        if (!$result) {
+            return $result;
+        }
+
         if (!$result[\SectionBuilder\Product\Api\Data\SectionInterface::PRICE]
-            && !$result[\SectionBuilder\Product\Api\Data\SectionInterface::PLAN_IDS]
+            && !$result[\SectionBuilder\Product\Api\Data\SectionInterface::PLAN_ID]
         ) { // Free
             $result['is_show_install'] = true;
             $result['is_show_purchase'] = false;

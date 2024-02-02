@@ -56,14 +56,4 @@ class SectionInstall extends \Magento\Framework\Model\AbstractModel implements S
     {
         return $this->setData(self::THEME_IDS, $themeIds);
     }
-
-    public function getBought(): int|string
-    {
-        return $this->getData(self::BOUGHT);
-    }
-
-    public function setBought(int|string $bought): SectionInstallInterface
-    {
-        return $this->setData(self::BOUGHT, $bought);
-    }
 }

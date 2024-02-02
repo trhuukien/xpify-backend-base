@@ -41,7 +41,7 @@ class Save extends Action implements HttpPostActionInterface
                 $category = $this->categoryRepository->get('entity_id', $postData['entity_id']);
             }
 
-            $category->setIsEnable($postData['is_enable']);
+            $category->setIsEnable((int)$postData['is_enable']);
             $category->setName(trim($postData['name']));
             $this->categoryRepository->save($category);
 

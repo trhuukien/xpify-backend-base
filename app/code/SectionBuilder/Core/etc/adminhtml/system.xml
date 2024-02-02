@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="shopify" translate="label" sortOrder="11">
+            <label><![CDATA[Shopify App]]></label>
+        </tab>
+        <section id="section_builder" translate="label" sortOrder="10" showInDefault="1">
+            <label>Section Builder</label>
+            <tab>shopify</tab>
+            <resource>SectionBuilder_Core::config</resource>
+
+            <group id="app" translate="label" type="text" sortOrder="10" showInDefault="1">
+                <label>App Configuration</label>
+                <field id="connecting" translate="label comment tooltip" type="select" sortOrder="10" showInDefault="1">
+                    <label>Connecting</label>
+                    <source_model>SectionBuilder\Core\Model\Config\Source\Apps</source_model>
+                    <comment><![CDATA[Select the App you want to connect to]]></comment>
+                    <tooltip>
+                        <![CDATA[You can only update once to avoid errors]]>
+                    </tooltip>
+                    <frontend_model>SectionBuilder\Core\Model\Block\Adminhtml\System\Config\Disable\ConnectingApp</frontend_model>
+                    <validate>required-entry</validate>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

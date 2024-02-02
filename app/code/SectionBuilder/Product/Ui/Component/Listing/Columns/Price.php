@@ -17,10 +17,9 @@ class Price extends Column
             $fieldName = $this->getName();
             foreach ($dataSource['data']['items'] as &$item) {
                 if (empty($item[$fieldName])) {
-                    $item[$fieldName] = __('Free');
-                    $item[$fieldName] = "<b>Free</b>";
+                    $item[$fieldName] = "<b style='color: green'>Free</b>";
                 } else {
-                    $item[$fieldName] = number_format($item[$fieldName], 2) . "$";
+                    $item[$fieldName] = "$" . number_format($item[$fieldName], 2);
                 }
             }
         }
