@@ -3,8 +3,20 @@ declare(strict_types=1);
 
 namespace SectionBuilder\AssetGraphQl\Model\Resolver;
 
-class AssetQuery extends \Xpify\Asset\Model\AssetQuery implements \Magento\Framework\GraphQl\Query\ResolverInterface
+class AssetQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractResolver implements \Magento\Framework\GraphQl\Query\ResolverInterface
 {
+    protected $validation;
+
+    protected $serviceQuery;
+
+    public function __construct(
+        \SectionBuilder\Core\Model\GraphQl\Validation $validation,
+        \Xpify\Asset\Model\AssetQuery $serviceQuery
+    ) {
+        $this->validation = $validation;
+        $this->serviceQuery = $serviceQuery;
+    }
+
     /**
      * @inheirtdoc
      */
@@ -15,6 +27,11 @@ class AssetQuery extends \Xpify\Asset\Model\AssetQuery implements \Magento\Frame
         array $value = null,
         array $args = null
     ) {
-        return parent::execResolve($field, $context, $info, $value, $args);
+        $this->validation->validateArgs(
+            $args,
+            ['theme_id', 'asset']
+        );
+        $merchant = $this->getMerchantSession()->getMerchant();
+        return $this->serviceQuery->resolve($merchant, $args);
     }
 }

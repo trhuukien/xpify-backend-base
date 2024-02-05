@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Xpify\Theme\Model;
+namespace SectionBuilder\Core\Model\GraphQl;
 
 class Validation
 {

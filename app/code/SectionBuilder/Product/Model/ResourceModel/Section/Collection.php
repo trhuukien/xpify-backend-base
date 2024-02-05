@@ -20,6 +20,21 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         );
     }
 
+    public function joinCategoryTable($fieldSelect = '*')
+    {
+        $this->getSelect()->joinLeft(
+            ['cp' => $this->getTable(\SectionBuilder\Category\Model\ResourceModel\CategoryProduct::MAIN_TABLE)],
+            'main_table.entity_id = cp.product_id',
+            'cp.category_id'
+        )->joinLeft(
+            ['c' => $this->getTable(\SectionBuilder\Category\Model\ResourceModel\Category::MAIN_TABLE)],
+            'c.entity_id = cp.category_id',
+            $fieldSelect
+        );
+
+        return $this;
+    }
+
     public function joinListCategoryId()
     {
         $this->getSelect()->joinLeft(
@@ -33,7 +48,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         )->where(
             'c.is_enable IS NULL OR c.is_enable = ?',
             1
-        )->group('main_table.entity_id');
+        );
 
         return $this;
     }
@@ -54,7 +69,22 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         )->where(
             'c.is_enable IS NULL OR c.is_enable = ?',
             1
-        )->group('main_table.entity_id');
+        );
+
+        return $this;
+    }
+
+    public function joinTagTable($fieldSelect = '*')
+    {
+        $this->getSelect()->joinLeft(
+            ['tp' => $this->getTable(\SectionBuilder\Tag\Model\ResourceModel\TagProduct::MAIN_TABLE)],
+            'main_table.entity_id = tp.product_id',
+            'tp.tag_id'
+        )->joinLeft(
+            ['t' => $this->getTable(\SectionBuilder\Tag\Model\ResourceModel\Tag::MAIN_TABLE)],
+            't.entity_id = tp.tag_id',
+            $fieldSelect
+        );
 
         return $this;
     }
@@ -62,17 +92,17 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     public function joinListTagId()
     {
         $this->getSelect()->joinLeft(
-            ['pt' => $this->getTable(\SectionBuilder\Tag\Model\ResourceModel\TagProduct::MAIN_TABLE)],
-            'main_table.entity_id = pt.product_id',
-            ['tags' => new \Zend_Db_Expr('GROUP_CONCAT(DISTINCT pt.tag_id SEPARATOR ",")')]
+            ['tp' => $this->getTable(\SectionBuilder\Tag\Model\ResourceModel\TagProduct::MAIN_TABLE)],
+            'main_table.entity_id = tp.product_id',
+            ['tags' => new \Zend_Db_Expr('GROUP_CONCAT(DISTINCT tp.tag_id SEPARATOR ",")')]
         )->joinLeft(
             ['t' => $this->getTable(\SectionBuilder\Tag\Model\ResourceModel\Tag::MAIN_TABLE)],
-            't.entity_id = pt.tag_id',
+            't.entity_id = tp.tag_id',
             ['tag_is_enable' => 't.is_enable']
         )->where(
             't.is_enable IS NULL OR t.is_enable = ?',
             1
-        )->group('main_table.entity_id');
+        );
 
         return $this;
     }
@@ -80,12 +110,12 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     public function joinListTagName()
     {
         $this->getSelect()->joinLeft(
-            ['pt' => $this->getTable(\SectionBuilder\Tag\Model\ResourceModel\TagProduct::MAIN_TABLE)],
-            'main_table.entity_id = pt.product_id',
+            ['tp' => $this->getTable(\SectionBuilder\Tag\Model\ResourceModel\TagProduct::MAIN_TABLE)],
+            'main_table.entity_id = tp.product_id',
             ['tag_id']
         )->joinLeft(
             ['t' => $this->getTable(\SectionBuilder\Tag\Model\ResourceModel\Tag::MAIN_TABLE)],
-            't.entity_id = pt.tag_id',
+            't.entity_id = tp.tag_id',
             [
                 ['tag_is_enable' => 't.is_enable'],
                 'tags' => new \Zend_Db_Expr('GROUP_CONCAT(DISTINCT t.name SEPARATOR ",")')
@@ -93,8 +123,14 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         )->where(
             't.is_enable IS NULL OR t.is_enable = ?',
             1
-        )->group('main_table.entity_id');
+        );
 
+        return $this;
+    }
+
+    public function groupById()
+    {
+        $this->getSelect()->group('main_table.entity_id');
         return $this;
     }
 }

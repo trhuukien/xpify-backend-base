@@ -25,6 +25,8 @@ use SectionBuilder\Product\Model\SectionFactory;
 
 class Product extends Action
 {
+    public const ADMIN_RESOURCE = 'SectionBuilder_Product::product_management';
+
     /**
      * @var \Magento\Backend\Model\View\Result\ForwardFactory
      */
@@ -81,6 +83,6 @@ class Product extends Action
      */
     protected function _isAllowed()
     {
-        return $this->_authorization->isAllowed('SectionBuilder_Product::product_management');
+        return $this->_authorization->isAllowed(self::ADMIN_RESOURCE);
     }
 }

@@ -46,6 +46,19 @@
 
         <filters name="listing_filters" />
 
+        <massaction name="listing_massaction">
+            <action name="update_credit">
+                <settings>
+                    <callback>
+                        <target>openModal</target>
+                        <provider>ns = customer_listing, index = companycredit_form_modal</provider>
+                    </callback>
+                    <type>update_creditt</type>
+                    <label translate="true">Update Attributes</label>
+                </settings>
+            </action>
+        </massaction>
+
         <paging name="listing_paging"/>
 
         <exportButton name="export_button"/>

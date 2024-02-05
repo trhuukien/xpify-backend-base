@@ -52,7 +52,7 @@ class Save extends Action implements HttpPostActionInterface
             $section->setIsEnable((int)$postData['is_enable']);
             $section->setName(trim($postData['name']));
             $section->setPrice((float)$postData['price']);
-            $section->setPlanId($postData['plan_id']);
+            $section->setPlanId($postData['plan_id'] ?: null);
             $section->setSrc(trim($postData['src']));
             $section->setFileData($postData['file_data']);
             $this->sectionRepository->save($section);

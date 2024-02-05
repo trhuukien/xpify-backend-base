@@ -3,8 +3,20 @@ declare(strict_types=1);
 
 namespace SectionBuilder\ThemeGraphQl\Model\Resolver;
 
-class CreateThemeMutation extends \Xpify\Theme\Model\CreateThemeMutation implements \Magento\Framework\GraphQl\Query\ResolverInterface
+class CreateThemeMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractResolver implements \Magento\Framework\GraphQl\Query\ResolverInterface
 {
+    protected $validation;
+
+    protected $serviceQuery;
+
+    public function __construct(
+        \SectionBuilder\Core\Model\GraphQl\Validation $validation,
+        \Xpify\Theme\Model\CreateThemeMutation $serviceQuery
+    ) {
+        $this->validation = $validation;
+        $this->serviceQuery = $serviceQuery;
+    }
+
     /**
      * @inheirtdoc
      */
@@ -15,6 +27,11 @@ class CreateThemeMutation extends \Xpify\Theme\Model\CreateThemeMutation impleme
         array $value = null,
         array $args = null
     ) {
-        return parent::execResolve($field, $context, $info, $value, $args);
+        $this->validation->validateArgs(
+            $args,
+            ['name', 'src', 'role']
+        );
+        $merchant = $this->getMerchantSession()->getMerchant();
+        return $this->serviceQuery->resolve($merchant, $args);
     }
 }

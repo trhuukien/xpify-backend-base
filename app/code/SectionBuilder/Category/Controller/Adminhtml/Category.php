@@ -8,6 +8,8 @@ use SectionBuilder\Category\Model\CategoryFactory;
 
 class Category extends Action
 {
+    public const ADMIN_RESOURCE = 'SectionBuilder_Category::category_management';
+
     /**
      * @var \Magento\Backend\Model\View\Result\ForwardFactory
      */
@@ -64,6 +66,6 @@ class Category extends Action
      */
     protected function _isAllowed()
     {
-        return $this->_authorization->isAllowed('SectionBuilder_Category::category_management');
+        return $this->_authorization->isAllowed(self::ADMIN_RESOURCE);
     }
 }

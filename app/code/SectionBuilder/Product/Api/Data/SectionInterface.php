@@ -21,9 +21,9 @@ interface SectionInterface
 
     public function setIsEnable(int $isEnable): self;
 
-    public function getPlanId(): string;
+    public function getPlanId(): ?string;
 
-    public function setPlanId(string $planId): self;
+    public function setPlanId(?string $planId): self;
 
     public function getName(): string;
 

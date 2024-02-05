@@ -19,7 +19,7 @@ class SectionDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
         array $meta = [],
         array $data = []
     ) {
-        $this->collection = $sectionCollectionFactory->create()->joinListCategoryId()->joinListTagId();
+        $this->collection = $sectionCollectionFactory->create()->joinListCategoryId()->joinListTagId()->groupById();
         $this->dataPersistor = $dataPersistor;
         parent::__construct($name, $primaryFieldName, $requestFieldName, $meta, $data);
     }

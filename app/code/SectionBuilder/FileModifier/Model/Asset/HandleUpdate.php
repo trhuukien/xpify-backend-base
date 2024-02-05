@@ -23,9 +23,10 @@ class HandleUpdate
         $this->sectionFactory = $sectionFactory;
     }
 
-    public function beforeUpdateAssetGraphql(&$args, $merchant): void
-    {
-        $colCheckPlan = 'plan_need_subscribe';
+    public function beforeUpdateAssetGraphql(
+        \Xpify\Merchant\Api\Data\MerchantInterface $merchant,
+        array &$args
+    ): void {
         $collection = $this->sectionFactory->create();
         $collection->addFieldToFilter(
             \SectionBuilder\Product\Api\Data\SectionInterface::SRC,
@@ -33,15 +34,14 @@ class HandleUpdate
         );
         $collection->join(
             ['xpp' => \Xpify\PricingPlan\Model\ResourceModel\PricingPlan::MAIN_TABLE],
-            'main_table.' . \SectionBuilder\Product\Api\Data\SectionInterface::PLAN_ID .
-            ' = xpp.' . \Xpify\PricingPlan\Api\Data\PricingPlanInterface::ID,
-            "xpp." . \Xpify\PricingPlan\Api\Data\PricingPlanInterface::NAME . " as $colCheckPlan"
+            'main_table.plan_id = xpp.entity_id',
+            "xpp.name as plan_need_subscribe"
         );
         $section = $collection->getFirstItem()->getData();
 
         if ($section) {
             $hasOneTime = $this->authValidation->hasOneTime($merchant, $section['name']);
-            $hasPlan = $this->authValidation->hasPlan($merchant, $section[$colCheckPlan]);
+            $hasPlan = $this->authValidation->hasPlan($merchant, $section['plan_need_subscribe']);
 
             if (!str_contains($args['asset'], ".liquid")
                 && ($hasOneTime || $hasPlan)
