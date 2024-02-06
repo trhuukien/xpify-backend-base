@@ -57,6 +57,16 @@ class Section extends \Magento\Framework\Model\AbstractModel implements SectionI
         return $this->setData(self::NAME, $name);
     }
 
+    public function getKey(): string
+    {
+        return $this->getData(self::KEY);
+    }
+
+    public function setKey(string $key): SectionInterface
+    {
+        return $this->setData(self::KEY, $key);
+    }
+
     public function getPrice(): float
     {
         return (float)$this->getData(self::PRICE);
@@ -85,5 +95,25 @@ class Section extends \Magento\Framework\Model\AbstractModel implements SectionI
     public function setFileData(?string $fileData): SectionInterface
     {
         return $this->setData(self::FILE_DATA, $fileData);
+    }
+
+    public function getMediaGallery(): ?string
+    {
+        return $this->getData(self::MEDIA_GALLERY);
+    }
+
+    public function setMediaGallery(?string $mediaGallery): SectionInterface
+    {
+        return $this->setData(self::MEDIA_GALLERY, $mediaGallery);
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->getData(self::DESCRIPTION);
+    }
+
+    public function setDescription(?string $description): SectionInterface
+    {
+        return $this->setData(self::DESCRIPTION, $description);
     }
 }

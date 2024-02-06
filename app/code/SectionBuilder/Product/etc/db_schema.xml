@@ -5,9 +5,12 @@
         <column xsi:type="smallint" name="is_enable" unsigned="true" nullable="false" default="1" comment="Enable product" />
         <column xsi:type="int" name="plan_id" padding="10" unsigned="true" nullable="true" comment="Plan need subscribe"/>
         <column xsi:type="varchar" name="name" nullable="false" length="255" comment="Name"/>
+        <column xsi:type="varchar" name="key" nullable="false" length="255" comment="Key"/>
         <column xsi:type="decimal" name="price" scale="2" precision="20" unsigned="false" nullable="true" comment="Sections price" />
         <column xsi:type="varchar" name="src" nullable="false" length="255" comment="Src code"/>
         <column xsi:type="text" name="file_data" nullable="true" comment="File Data"/>
+        <column xsi:type="text" name="media_gallery" nullable="true" comment="Media. Ex: section_builder/product/hokage.jpg;section_builder/product/kiz.png"/>
+        <column xsi:type="text" name="description" nullable="true" comment="Description"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="entity_id"/>
         </constraint>
@@ -16,6 +19,9 @@
         </constraint>
         <constraint xsi:type="unique" referenceId="UNIQUE_SRC">
             <column name="src"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="UNIQUE_KEY">
+            <column name="key"/>
         </constraint>
         <constraint xsi:type="foreign" referenceId="fk_sbp_xpp" table="section_builder_product" column="plan_id" referenceTable="$xpify_pricing_plans" referenceColumn="entity_id" onDelete="SET NULL"/>
     </table>

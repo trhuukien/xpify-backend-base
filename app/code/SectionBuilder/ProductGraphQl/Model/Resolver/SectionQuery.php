@@ -60,7 +60,7 @@ class SectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstract
             $merchant = $this->getMerchantSession()->getMerchant();
             $bought = $this->authValidation->hasOneTime(
                 $merchant,
-                $result[\SectionBuilder\Product\Api\Data\SectionInterface::NAME]
+                $result[\SectionBuilder\Product\Api\Data\SectionInterface::KEY]
             );
             $result['is_show_plan'] = !$this->authValidation->hasPlan($merchant, $result['plan_need_subscribe']);
             $result['is_show_install'] = !$result['is_show_plan'] || $bought;

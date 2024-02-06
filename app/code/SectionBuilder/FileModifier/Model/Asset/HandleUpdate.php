@@ -6,6 +6,11 @@ namespace SectionBuilder\FileModifier\Model\Asset;
 class HandleUpdate
 {
     /**
+     * @var \SectionBuilder\Core\Model\Config
+     */
+    protected $configData;
+
+    /**
      * @var \SectionBuilder\Core\Model\Auth\Validation
      */
     protected $authValidation;
@@ -16,9 +21,11 @@ class HandleUpdate
     protected $sectionFactory;
 
     public function __construct(
+        \SectionBuilder\Core\Model\Config $configData,
         \SectionBuilder\Core\Model\Auth\Validation $authValidation,
         \SectionBuilder\Product\Model\ResourceModel\Section\CollectionFactory $sectionFactory
     ) {
+        $this->configData = $configData;
         $this->authValidation = $authValidation;
         $this->sectionFactory = $sectionFactory;
     }
@@ -40,7 +47,7 @@ class HandleUpdate
         $section = $collection->getFirstItem()->getData();
 
         if ($section) {
-            $hasOneTime = $this->authValidation->hasOneTime($merchant, $section['name']);
+            $hasOneTime = $this->authValidation->hasOneTime($merchant, $section['key']);
             $hasPlan = $this->authValidation->hasPlan($merchant, $section['plan_need_subscribe']);
 
             if (!str_contains($args['asset'], ".liquid")
@@ -54,7 +61,7 @@ class HandleUpdate
                 $collection = $this->sectionFactory->create();
                 $collection->addFieldToFilter(
                     \SectionBuilder\Product\Api\Data\SectionInterface::SRC,
-                    \SectionBuilder\Product\Model\ResourceModel\Section::FILE_BASE_CSS
+                    $this->configData->getFileBaseSrc()
                 );
                 $baseCssData = $collection->getFirstItem()->getData();
 

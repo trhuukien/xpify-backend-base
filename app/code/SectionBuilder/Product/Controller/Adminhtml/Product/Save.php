@@ -6,7 +6,10 @@ namespace SectionBuilder\Product\Controller\Adminhtml\Product;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\Request\DataPersistorInterface;
+use Magento\Framework\Filesystem;
+use Magento\Framework\Filesystem\Driver\File;
 
 class Save extends Action implements HttpPostActionInterface
 {
@@ -28,7 +31,11 @@ class Save extends Action implements HttpPostActionInterface
         \SectionBuilder\Category\Model\ResourceModel\CategoryProduct $categoryProductResource,
         \SectionBuilder\Tag\Model\ResourceModel\TagProduct $tagProductResource,
         DataPersistorInterface $dataPersistor,
-        \Magento\Framework\Message\ManagerInterface $messageManager
+        \Magento\Framework\Message\ManagerInterface $messageManager,
+
+        File $fileDriver,
+        Filesystem $filesystem,
+        \Magento\MediaStorage\Helper\File\Storage\Database $coreFileStorageDatabase
     ) {
         parent::__construct($context);
         $this->sectionRepository = $sectionRepository;
@@ -36,6 +43,11 @@ class Save extends Action implements HttpPostActionInterface
         $this->tagProductResource = $tagProductResource;
         $this->dataPersistor = $dataPersistor;
         $this->messageManager = $messageManager;
+
+        $this->fileDriver = $fileDriver;
+        $this->filesystem = $filesystem;
+        $this->mediaDirectory = $filesystem->getDirectoryWrite(DirectoryList::MEDIA);
+        $this->coreFileStorageDatabase = $coreFileStorageDatabase;
     }
 
     public function execute()
@@ -51,25 +63,32 @@ class Save extends Action implements HttpPostActionInterface
 
             $section->setIsEnable((int)$postData['is_enable']);
             $section->setName(trim($postData['name']));
+            $section->setKey(trim($postData['key']));
             $section->setPrice((float)$postData['price']);
             $section->setPlanId($postData['plan_id'] ?: null);
             $section->setSrc(trim($postData['src']));
             $section->setFileData($postData['file_data']);
+            $section->setDescription($postData['description']);
+            $galleryArray = $this->uploadMediaGallery($postData);
+            if (!empty($galleryArray)) {
+                $mediaGallery = implode(\SectionBuilder\Product\Model\Helper\Image::SEPARATION, $galleryArray);
+                $section->setMediaGallery($mediaGallery);
+            }
             $this->sectionRepository->save($section);
 
             $this->replaceCategories($section->getId(), $postData['categories'] ?? []);
             $this->replaceTags($section->getId(), $postData['tags'] ?? []);
 
             $this->messageManager->addSuccessMessage(__('You saved the product.'));
-            $redirectPath = 'section_builder/product/edit';
+            $redirectPath = '*/*/edit';
             $redirectParams = ['id' => $section->getId()];
         } catch (\Exception $e) {
             $this->messageManager->addExceptionMessage($e);
             $this->dataPersistor->set('section_product_data', $postData);
             if (empty($postData['entity_id'])) {
-                $redirectPath = 'section_builder/product/add';
+                $redirectPath = '*/*/add';
             } else {
-                $redirectPath = 'section_builder/product/edit';
+                $redirectPath = '*/*/edit';
                 $redirectParams = ['id' => $postData['entity_id']];
             }
         }
@@ -78,6 +97,60 @@ class Save extends Action implements HttpPostActionInterface
             $redirectPath,
             $redirectParams ?? []
         );
+    }
+
+    public function uploadMediaGallery($data)
+    {
+        $bannerimageDirPath = $this->mediaDirectory->getAbsolutePath("section_builder/product");
+        $tmp = $this->mediaDirectory->getAbsolutePath(\SectionBuilder\Product\Model\Helper\Image::SUB_DIR . "tmp");
+        if (!$this->fileDriver->isExists($bannerimageDirPath)) {
+            $this->fileDriver->createDirectory($bannerimageDirPath);
+            $this->fileDriver->createDirectory($tmp);
+        }
+        $gallery = [];
+
+        if (!empty($data['media_gallery']['images'])) {
+            $images = $data['media_gallery']['images'];
+            foreach ($images as $image) {
+                if (empty($image['removed'])) {
+                    if (!empty($image['value_id'])) {
+                        $gallery[] = $image['value_id'];
+                    } elseif (!empty($image['file'])) {
+                        $originalImageName = $image['file'];
+                        $imageName = $originalImageName;
+                        $basePath = "section_builder/product";
+                        $baseTmpImagePath = "catalog/tmp/category/" . $imageName;
+                        $baseImagePath = $basePath . "/" . $imageName;
+                        $mediaPath = $this->filesystem->getDirectoryRead(DirectoryList::MEDIA)->getAbsolutePath();
+                        $baseImageAbsolutePath = $mediaPath . $baseImagePath;
+                        $i = 1;
+                        while (file_exists($baseImageAbsolutePath)) {
+                            $i++;
+                            $p = mb_strrpos($originalImageName, '.');
+                            if (false !== $p) {
+                                $imageName = mb_substr($originalImageName, 0, $p) . $i . mb_substr($originalImageName, $p);
+                            } else {
+                                $imageName = $originalImageName . $i;
+                            }
+                            $baseImagePath = $basePath . "/" . $imageName;
+                            $baseImageAbsolutePath = $mediaPath . $baseImagePath;
+                        }
+                        $this->coreFileStorageDatabase->copyFile(
+                            $baseTmpImagePath,
+                            $baseImagePath
+                        );
+                        $this->mediaDirectory->renameFile(
+                            $baseTmpImagePath,
+                            $baseImagePath
+                        );
+
+                        $gallery[] = $baseImagePath;
+                    }
+                }
+            }
+        }
+
+        return $gallery;
     }
 
     public function replaceCategories($productId, $data)

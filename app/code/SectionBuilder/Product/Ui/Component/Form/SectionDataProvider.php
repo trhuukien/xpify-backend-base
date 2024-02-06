@@ -39,6 +39,7 @@ class SectionDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
         $data = $this->dataPersistor->get('section_product_data');
         if (!empty($data)) {
             $this->loadedData[$data['entity_id'] ?? ""] = $data;
+            $this->loadedData[$data['entity_id'] ?? ""]['disable_field'] = false;
             $this->dataPersistor->clear('section_product_data');
         } else {
             $items = $this->collection->getItems();
@@ -51,6 +52,7 @@ class SectionDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
                 }
 
                 $this->loadedData[$item->getId()] = $item->getData();
+                $this->loadedData[$item->getId()]['disable_field'] = true;
             }
         }
 

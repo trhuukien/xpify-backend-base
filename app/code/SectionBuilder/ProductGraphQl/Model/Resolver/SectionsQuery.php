@@ -13,24 +13,16 @@ class SectionsQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstrac
 
     protected $collectionFactory;
 
-    protected $cpCollectionFactory;
-
-    protected $tpCollectionFactory;
-
     public function __construct(
         \SectionBuilder\Core\Model\Auth\Validation $authValidation,
         \SectionBuilder\Product\Model\SectionRepository $sectionRepository,
         \Magento\Framework\Api\SearchCriteriaBuilder $criteriaBuilder,
-        \SectionBuilder\Product\Model\ResourceModel\Section\CollectionFactory $collectionFactory,
-        \SectionBuilder\Category\Model\ResourceModel\CategoryProduct\CollectionFactory $cpCollectionFactory,
-        \SectionBuilder\Tag\Model\ResourceModel\TagProduct\CollectionFactory $tpCollectionFactory
+        \SectionBuilder\Product\Model\ResourceModel\Section\CollectionFactory $collectionFactory
     ) {
         $this->authValidation = $authValidation;
         $this->sectionRepository = $sectionRepository;
         $this->criteriaBuilder = $criteriaBuilder;
         $this->collectionFactory = $collectionFactory;
-        $this->cpCollectionFactory = $cpCollectionFactory;
-        $this->tpCollectionFactory = $tpCollectionFactory;
     }
 
     /**

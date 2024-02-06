@@ -46,15 +46,15 @@ class Save extends Action implements HttpPostActionInterface
             $this->categoryRepository->save($category);
 
             $this->messageManager->addSuccessMessage(__('You saved the category.'));
-            $redirectPath = 'section_builder/category/edit';
+            $redirectPath = '*/*/';
             $redirectParams = ['id' => $category->getId()];
         } catch (\Exception $e) {
             $this->messageManager->addExceptionMessage($e);
             $this->dataPersistor->set('section_category_data', $postData);
             if (empty($postData['entity_id'])) {
-                $redirectPath = 'section_builder/category/add';
+                $redirectPath = '*/*/add';
             } else {
-                $redirectPath = 'section_builder/category/edit';
+                $redirectPath = '*/*/';
                 $redirectParams = ['id' => $postData['entity_id']];
             }
         }

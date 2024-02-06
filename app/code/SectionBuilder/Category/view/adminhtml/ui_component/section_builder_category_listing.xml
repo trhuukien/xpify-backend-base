@@ -45,9 +45,7 @@
 
         <filters name="listing_filters" />
 
-        <massaction name="listing_massaction"
-                    component="Magento_Ui/js/grid/tree-massactions"
-                    class="\Magento\Catalog\Ui\Component\Product\MassAction">
+        <massaction name="listing_massaction" component="Magento_Ui/js/grid/tree-massactions" class="\Magento\Catalog\Ui\Component\Product\MassAction">
             <action name="delete">
                 <settings>
                     <confirm>
@@ -112,6 +110,13 @@
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">text</item>
                     <item name="label" xsi:type="string" translate="true">Name</item>
+                </item>
+            </argument>
+        </column>
+        <column name="product_apply" class="SectionBuilder\Category\Ui\Component\Listing\Columns\ProductApply">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Product Apply</item>
                 </item>
             </argument>
         </column>

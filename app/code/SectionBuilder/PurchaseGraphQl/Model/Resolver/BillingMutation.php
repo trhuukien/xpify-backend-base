@@ -49,8 +49,8 @@ class BillingMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstr
             }
         } else {
             $sectionRepository = $this->sectionRepository->get(
-                \SectionBuilder\Product\Api\Data\SectionInterface::NAME,
-                $args['name']
+                \SectionBuilder\Product\Api\Data\SectionInterface::KEY,
+                $args['key']
             );
             $price = $sectionRepository->getPrice();
         }
@@ -63,7 +63,7 @@ class BillingMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstr
         }
 
         $config = [
-            'chargeName' => $args['name'],
+            'chargeName' => $args['key'],
             'amount' => $price,
             'currencyCode' => \Xpify\App\Api\Data\AppInterface::CURRENCY_CODE,
             'interval' => $args['interval'],

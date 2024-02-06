@@ -46,15 +46,15 @@ class Save extends Action implements HttpPostActionInterface
             $this->tagRepository->save($tag);
 
             $this->messageManager->addSuccessMessage(__('You saved the tag.'));
-            $redirectPath = 'section_builder/tag/edit';
+            $redirectPath = '*/*/';
             $redirectParams = ['id' => $tag->getId()];
         } catch (\Exception $e) {
             $this->messageManager->addExceptionMessage($e);
             $this->dataPersistor->set('section_tag_data', $postData);
             if (empty($postData['entity_id'])) {
-                $redirectPath = 'section_builder/tag/add';
+                $redirectPath = '*/*/add';
             } else {
-                $redirectPath = 'section_builder/tag/edit';
+                $redirectPath = '*/*/';
                 $redirectParams = ['id' => $postData['entity_id']];
             }
         }

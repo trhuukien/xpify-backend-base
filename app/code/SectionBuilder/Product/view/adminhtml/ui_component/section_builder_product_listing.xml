@@ -46,15 +46,27 @@
 
         <filters name="listing_filters" />
 
-        <massaction name="listing_massaction">
-            <action name="update_credit">
+        <massaction name="listing_massaction" component="Magento_Ui/js/grid/tree-massactions" class="\Magento\Catalog\Ui\Component\Product\MassAction">
+            <action name="status">
                 <settings>
-                    <callback>
-                        <target>openModal</target>
-                        <provider>ns = customer_listing, index = companycredit_form_modal</provider>
-                    </callback>
-                    <type>update_creditt</type>
-                    <label translate="true">Update Attributes</label>
+                    <type>status</type>
+                    <label translate="true">Change status</label>
+                    <actions>
+                        <action name="0">
+                            <type>enable</type>
+                            <label translate="true">Enable</label>
+                            <url path="*/*/massStatus">
+                                <param name="status">1</param>
+                            </url>
+                        </action>
+                        <action name="1">
+                            <type>disable</type>
+                            <label translate="true">Disable</label>
+                            <url path="*/*/massStatus">
+                                <param name="status">0</param>
+                            </url>
+                        </action>
+                    </actions>
                 </settings>
             </action>
         </massaction>
@@ -81,6 +93,25 @@
                     <item name="filter" xsi:type="string">textRange</item>
                     <item name="sorting" xsi:type="string">desc</item>
                     <item name="label" xsi:type="string" translate="true">ID</item>
+                </item>
+            </argument>
+        </column>
+        <column name="gallery" class="SectionBuilder\Product\Ui\Component\Listing\Columns\Thumbnail">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/thumbnail</item>
+                    <item name="sortable" xsi:type="boolean">false</item>
+                    <item name="altField" xsi:type="string">name</item>
+                    <item name="has_preview" xsi:type="string">1</item>
+                    <item name="label" xsi:type="string" translate="true">Thumbnail</item>
+                </item>
+            </argument>
+        </column>
+        <column name="key">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Key</item>
                 </item>
             </argument>
         </column>
