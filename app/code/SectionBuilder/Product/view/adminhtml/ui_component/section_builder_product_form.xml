@@ -54,7 +54,7 @@
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="source" xsi:type="string">block</item>
-                    <item name="default" xsi:type="number">0</item>
+                    <item name="default" xsi:type="number">1</item>
                 </item>
             </argument>
             <settings>
@@ -89,18 +89,19 @@
             <settings>
                 <validation>
                     <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="max_text_length" xsi:type="number">255</rule>
                 </validation>
             </settings>
         </field>
-        <field name="key">
+        <field name="url_key">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="dataType" xsi:type="string">text</item>
                     <item name="label" xsi:type="string" translate="true">Key</item>
                     <item name="formElement" xsi:type="string">input</item>
-                    <item name="dataScope" xsi:type="string">key</item>
+                    <item name="dataScope" xsi:type="string">url_key</item>
                     <item name="tooltip" xsi:type="array">
-                        <item name="description" xsi:type="string" translate="true">Can't change after save! Because it is related to the merchant order.</item>
+                        <item name="description" xsi:type="string" translate="true">You can only update once to avoid affecting merchants using App.</item>
                     </item>
                 </item>
             </argument>
@@ -110,8 +111,10 @@
                 </imports>
                 <validation>
                     <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="max_text_length" xsi:type="number">255</rule>
                     <rule name="pattern" xsi:type="string">^[a-z][a-z0-9-]*[a-z0-9]$</rule>
                 </validation>
+                <notice translate="true">Please enter a-z, 0-9 and -</notice>
             </settings>
         </field>
         <field name="price">
@@ -144,6 +147,26 @@
                     <item name="additionalClasses" xsi:type="string">admin__field-small</item>
                 </item>
             </argument>
+        </field>
+        <field name="version">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Version</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="dataScope" xsi:type="string">version</item>
+                    <item name="addbefore" xsi:type="string">v</item>
+                    <item name="additionalClasses" xsi:type="string">admin__field-small</item>
+                </item>
+            </argument>
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="max_text_length" xsi:type="number">255</rule>
+                    <rule name="pattern" xsi:type="string">^[1-9]+\.[0-9]+\.[0-9]+$</rule>
+                </validation>
+                <notice translate="true">Please enter 0-9 and .</notice>
+            </settings>
         </field>
         <field name="categories" component="Magento_Ui/js/form/element/ui-select" formElement="select">
             <argument name="data" xsi:type="array">
@@ -203,6 +226,22 @@
                 </select>
             </formElements>
         </field>
+        <field name="demo_link">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">URL Demo</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="dataScope" xsi:type="string">demo_link</item>
+                </item>
+            </argument>
+            <settings>
+                <validation>
+                    <rule name="max_text_length" xsi:type="number">255</rule>
+                    <rule name="pattern" xsi:type="string">^http</rule>
+                </validation>
+            </settings>
+        </field>
     </fieldset>
     <fieldset name="content" sortOrder="20">
         <settings>
@@ -225,47 +264,24 @@
                 </item>
             </argument>
         </field>
-    </fieldset>
-    <fieldset name="file" sortOrder="30">
-        <settings>
-            <label translate="true">File Management</label>
-            <collapsible>true</collapsible>
-        </settings>
-        <field name="src">
+        <field name="release_note">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="dataType" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Src File</item>
-                    <item name="formElement" xsi:type="string">input</item>
-                    <item name="dataScope" xsi:type="string">src</item>
-                    <item name="tooltip" xsi:type="array">
-                        <item name="description" xsi:type="string" translate="true">Can't change after save! Because it is related to the merchant order.</item>
+                    <item name="formElement" xsi:type="string">wysiwyg</item>
+                    <item name="wysiwyg" xsi:type="boolean">true</item>
+                    <item name="wysiwygConfigData" xsi:type="array">
+                        <item name="is_pagebuilder_enabled" xsi:type="boolean">false</item>
                     </item>
-                </item>
-            </argument>
-            <settings>
-                <imports>
-                    <link name="disabled">${ $.provider}:data.disable_field</link>
-                </imports>
-                <validation>
-                    <rule name="required-entry" xsi:type="boolean">true</rule>
-                </validation>
-                <notice translate="true">Example: sections/bss-section-about01.liquid</notice>
-            </settings>
-        </field>
-        <field name="file_data">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="dataType" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">File Content</item>
-                    <item name="formElement" xsi:type="string">textarea</item>
-                    <item name="rows" xsi:type="number">20</item>
-                    <item name="dataScope" xsi:type="string">file_data</item>
+                    <item name="label" xsi:type="string">Release Note</item>
+                    <item name="template" xsi:type="string">ui/form/field</item>
+                    <item name="dataScope" xsi:type="string">release_note</item>
+                    <item name="rows" xsi:type="number">8</item>
                 </item>
             </argument>
         </field>
     </fieldset>
-    <fieldset name="gallery" sortOrder="40">
+    <fieldset name="gallery" sortOrder="30">
         <argument name="data" xsi:type="array">
             <item name="config" xsi:type="array">
                 <item name="collapsible" xsi:type="boolean">true</item>
@@ -287,5 +303,46 @@
                 </argument>
             </htmlContent>
         </container>
+    </fieldset>
+    <fieldset name="file" sortOrder="40">
+        <settings>
+            <label translate="true">File Management</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="src">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">File Src</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="dataScope" xsi:type="string">src</item>
+                    <item name="tooltip" xsi:type="array">
+                        <item name="description" xsi:type="string" translate="true">You can only update once to avoid affecting merchants using App.</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <imports>
+                    <link name="disabled">${ $.provider}:data.disable_field</link>
+                </imports>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="max_text_length" xsi:type="number">255</rule>
+                    <rule name="pattern" xsi:type="string">^[a-z]+\/[a-z0-9-]+\.[a-z]+$</rule>
+                </validation>
+                <notice translate="true">Ex: sections/bss-section-about01.liquid</notice>
+            </settings>
+        </field>
+        <field name="file_data">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">File Content</item>
+                    <item name="formElement" xsi:type="string">textarea</item>
+                    <item name="rows" xsi:type="number">20</item>
+                    <item name="dataScope" xsi:type="string">file_data</item>
+                </item>
+            </argument>
+        </field>
     </fieldset>
 </form>

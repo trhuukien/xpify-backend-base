@@ -47,6 +47,16 @@ class SectionInstall extends \Magento\Framework\Model\AbstractModel implements S
         return $this->setData(self::PRODUCT_ID, $productId);
     }
 
+    public function getProductVersion(): string
+    {
+        return $this->getData(self::PRODUCT_VERSION);
+    }
+
+    public function setProductVersion(string $productVersion): SectionInstallInterface
+    {
+        return $this->setData(self::PRODUCT_VERSION, $productVersion);
+    }
+
     public function getThemeIds(): int|string
     {
         return $this->getData(self::THEME_IDS);

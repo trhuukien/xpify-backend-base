@@ -46,6 +46,9 @@ class SectionsQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstrac
             $collection->joinTagTable('');
             $collection->addFieldToFilter('tag_id', $args['filter']['tag_id']);
         }
+        if (isset($args['filter']['plan_id']) && $args['filter']['plan_id']) {
+            $collection->addFieldToFilter('plan_id', $args['filter']['plan_id']);
+        }
         if (isset($args['search']) && $args['search']) {
             $collection->addFieldToFilter('main_table.name', ['like' => '%' . $args['search'] . '%']);
         }

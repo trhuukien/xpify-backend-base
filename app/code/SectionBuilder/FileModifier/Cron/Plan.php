@@ -63,6 +63,7 @@ class Plan
                 'plan_id'
             ];
             if ($canChange) {
+                $columnProduct[] = 'version';
                 $columnProduct[] = 'file_data';
             }
 
@@ -124,7 +125,7 @@ class Plan
                     $this->sectionInstallRepository->delete($installRepository);
                 }
             } else {
-                if ($canChange) {
+                if ($canChange && $item['version'] !== $item['product_version']) {
                     foreach ($themeInstall as $themeId) {
                         $response = $merchant->getRest()->put(
                             "/admin/api/$apiVersion/themes/$themeId/assets.json",

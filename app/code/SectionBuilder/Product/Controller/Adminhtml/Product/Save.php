@@ -63,12 +63,15 @@ class Save extends Action implements HttpPostActionInterface
 
             $section->setIsEnable((int)$postData['is_enable']);
             $section->setName(trim($postData['name']));
-            $section->setKey(trim($postData['key']));
+            $section->setKey(trim($postData['url_key']));
+            $section->setVersion(trim($postData['version']));
             $section->setPrice((float)$postData['price']);
             $section->setPlanId($postData['plan_id'] ?: null);
             $section->setSrc(trim($postData['src']));
             $section->setFileData($postData['file_data']);
             $section->setDescription($postData['description']);
+            $section->setReleaseNote($postData['release_note']);
+            $section->setDemoLink($postData['demo_link']);
             $galleryArray = $this->uploadMediaGallery($postData);
             if (!empty($galleryArray)) {
                 $mediaGallery = implode(\SectionBuilder\Product\Model\Helper\Image::SEPARATION, $galleryArray);

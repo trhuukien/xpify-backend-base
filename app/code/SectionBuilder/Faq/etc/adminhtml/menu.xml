@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="SectionBuilder_Faq::faq_management"
+             title="Faq"
+             translate="title"
+             module="SectionBuilder_Faq"
+             sortOrder="40"
+             resource="SectionBuilder_Faq::faq_management"
+             action="section_builder/faq"
+             parent="SectionBuilder_Core::section_builder_management"
+        />
+    </menu>
+</config>

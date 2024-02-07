@@ -3,8 +3,7 @@ type Query {
         search: String,
         filter: SectionFilterInput,
         pageSize: Int = 20,
-        currentPage: Int = 1,
-        sort: SectionSortInput
+        currentPage: Int = 1
     ): Sections
         @doc(description: "")
         @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsQuery")
@@ -16,12 +15,7 @@ type Query {
 input SectionFilterInput @doc(description: "") {
     category_id: [Int] @doc(description: "")
     tag_id: [Int] @doc(description: "")
-}
-
-input SectionSortInput @doc(description: "")
-{
-    relevance: SortEnum @doc(description: "")
-    position: SortEnum @doc(description: "")
+    plan_id: [Int] @doc(description: "")
 }
 
 type Sections {

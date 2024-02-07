@@ -15,7 +15,7 @@ interface CategoryInterface
 
     public function getIsEnable(): int;
 
-    public function setIsEnable(int|string $id): self;
+    public function setIsEnable(int|string $isEnable): self;
 
     public function getName(): string;
 

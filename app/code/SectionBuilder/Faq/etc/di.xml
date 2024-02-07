@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="SectionBuilder\Faq\Api\Data\FaqInterface" type="SectionBuilder\Faq\Model\Faq"/>
+    <preference for="SectionBuilder\Faq\Api\FaqRepositoryInterface" type="SectionBuilder\Faq\Model\FaqRepository"/>
+    <preference for="SectionBuilder\Faq\Api\Data\FaqSearchResultsInterface" type="SectionBuilder\Faq\Model\FaqSearchResults"/>
+
+    <virtualType name="SectionBuilder\Faq\Model\ResourceModel\Faq\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="const">SectionBuilder\Faq\Model\ResourceModel\Faq::MAIN_TABLE</argument>
+            <argument name="resourceModel" xsi:type="string">SectionBuilder\Faq\Model\ResourceModel\Faq</argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="section_builder_faq_listing_data_source" xsi:type="string">SectionBuilder\Faq\Model\ResourceModel\Faq\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

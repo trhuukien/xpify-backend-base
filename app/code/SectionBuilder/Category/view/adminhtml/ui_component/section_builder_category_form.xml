@@ -78,6 +78,7 @@
                 <dataScope>name</dataScope>
                 <validation>
                     <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="max_text_length" xsi:type="number">255</rule>
                 </validation>
             </settings>
         </field>

@@ -116,4 +116,54 @@ class Section extends \Magento\Framework\Model\AbstractModel implements SectionI
     {
         return $this->setData(self::DESCRIPTION, $description);
     }
+
+    public function getVersion(): string
+    {
+        return $this->getData(self::VERSION);
+    }
+
+    public function setVersion(string $version): SectionInterface
+    {
+        return $this->setData(self::VERSION, $version);
+    }
+
+    public function getReleaseNote(): ?string
+    {
+        return $this->getData(self::RELEASE_NOTE);
+    }
+
+    public function setReleaseNote(?string $releaseNote): SectionInterface
+    {
+        return $this->setData(self::RELEASE_NOTE, $releaseNote);
+    }
+
+    public function getDemoLink(): ?string
+    {
+        return $this->getData(self::DEMO_LINK);
+    }
+
+    public function setDemoLink(?string $demoLink): SectionInterface
+    {
+        return $this->setData(self::DEMO_LINK, $demoLink);
+    }
+
+    public function getCreatedAt(): ?string
+    {
+        return $this->getData(self::CREATED_AT);
+    }
+
+    public function setCreatedAt(?string $createdAt): SectionInterface
+    {
+        return $this->setData(self::CREATED_AT, $createdAt);
+    }
+
+    public function getUpdatedAt(): ?string
+    {
+        return $this->getData(self::UPDATED_AT);
+    }
+
+    public function setUpdatedAt(?string $updatedAt): SectionInterface
+    {
+        return $this->setData(self::UPDATED_AT, $updatedAt);
+    }
 }
