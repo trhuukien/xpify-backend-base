@@ -171,6 +171,22 @@
                 </item>
             </argument>
         </column>
+        <column name="qty_installed">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">textRange</item>
+                    <item name="label" xsi:type="string" translate="true">Installed</item>
+                </item>
+            </argument>
+        </column>
+        <column name="qty_sold">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">textRange</item>
+                    <item name="label" xsi:type="string" translate="true">Sold</item>
+                </item>
+            </argument>
+        </column>
 
         <actionsColumn name="actions" class="SectionBuilder\Product\Ui\Component\Listing\Columns\Action">
             <argument name="data" xsi:type="array">

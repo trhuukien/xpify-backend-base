@@ -9,7 +9,7 @@ class Plan
 
     protected $authValidation;
 
-    protected $sectionInstallCollectionFactory;
+    protected $sectionInstallFactory;
 
     protected $merchantRepository;
 
@@ -19,10 +19,14 @@ class Plan
 
     protected $contextInitializer;
 
+    protected $merchantList = [];
+
+    protected $hasPlanList = [];
+
     public function __construct(
         \SectionBuilder\Core\Model\Config $configData,
         \SectionBuilder\Core\Model\Auth\Validation $authValidation,
-        \SectionBuilder\Product\Model\ResourceModel\SectionInstall\CollectionFactory $sectionInstallCollectionFactory,
+        \SectionBuilder\Product\Model\ResourceModel\SectionInstall\CollectionFactory $sectionInstallFactory,
         \Xpify\Merchant\Api\MerchantRepositoryInterface $merchantRepository,
         \Xpify\App\Model\AppRepository $appRepository,
         \Xpify\Core\Helper\ShopifyContextInitializer $contextInitializer,
@@ -30,7 +34,7 @@ class Plan
     ) {
         $this->configData = $configData;
         $this->authValidation = $authValidation;
-        $this->sectionInstallCollectionFactory = $sectionInstallCollectionFactory;
+        $this->sectionInstallFactory = $sectionInstallFactory;
         $this->merchantRepository = $merchantRepository;
         $this->appRepository = $appRepository;
         $this->contextInitializer = $contextInitializer;
@@ -56,7 +60,7 @@ class Plan
         }
 
         try {
-            $collection = $this->sectionInstallCollectionFactory->create();
+            $collection = $this->sectionInstallFactory->create();
             $columnProduct = [
                 'src',
                 'product_name' => 'p.name',
@@ -82,7 +86,7 @@ class Plan
                 ['xpp' => \Xpify\PricingPlan\Model\ResourceModel\PricingPlan::MAIN_TABLE],
                 'p.plan_id = xpp.entity_id',
                 [
-                    'plan_name' => 'xpp.name'
+                    'plan_code' => 'xpp.code'
                 ]
             );
             $collection->addFieldToFilter('xm.app_id', $appId);
@@ -99,50 +103,49 @@ class Plan
         }
 
         foreach ($data as $item) {
-            $merchant = $this->merchantRepository->getById((int)$item['merchant_id']);
-            $hasPlan = $this->authValidation->hasPlan($merchant, $item['plan_name']);
-            $themeInstall = explode(",", $item['theme_ids'] ?? '');
+            $merchantId = (int)$item['merchant_id'];
+            $this->merchantList[$merchantId] = $this->merchantList[$merchantId]
+                ?? $this->merchantRepository->getById($merchantId);
+            $this->hasPlanList[$merchantId] = $this->hasPlanList[$merchantId]
+                ?? $this->authValidation->hasPlan($this->merchantList[$merchantId], $item['plan_code']);
 
-            if (!$hasPlan) {
-                $processDelete = true;
-                foreach ($themeInstall as $themeId) {
-                    $response = $merchant->getRest()->delete(
-                        '/admin/api/' . $apiVersion . '/themes/' . $themeId . '/assets.json',
-                        [],
-                        ['asset[key]' => $file]
-                    );
-                    $message = $response->getDecodedBody();
-                    if (isset($message['errors'])) {
-                        ++$result['error'];
-                        $processDelete = false;
-                    } else {
-                        ++$result['success'];
-                    }
-                }
+            if (!$this->hasPlanList[$merchantId]) {
+                $response = $this->merchantList[$merchantId]->getRest()->delete(
+                    '/admin/api/' . $apiVersion . '/themes/' . $item['theme_id'] . '/assets.json',
+                    [],
+                    ['asset[key]' => $file]
+                );
+                $message = $response->getDecodedBody();
+                if (isset($message['errors'])) {
+                    ++$result['error'];
+                } else {
+                    ++$result['success'];
 
-                if ($processDelete) {
                     $installRepository = $this->sectionInstallRepository->get('entity_id', (int)$item['entity_id']);
                     $this->sectionInstallRepository->delete($installRepository);
                 }
             } else {
                 if ($canChange && $item['version'] !== $item['product_version']) {
-                    foreach ($themeInstall as $themeId) {
-                        $response = $merchant->getRest()->put(
-                            "/admin/api/$apiVersion/themes/$themeId/assets.json",
-                            null,
-                            [],
-                            [
-                                'asset[key]' => $item['src'],
-                                'asset[value]' => $item['file_data']
-                            ]
-                        );
+                    $themeId = $item['theme_id'];
+                    $response = $this->merchantList[$merchantId]->getRest()->put(
+                        "/admin/api/$apiVersion/themes/$themeId/assets.json",
+                        null,
+                        [],
+                        [
+                            'asset[key]' => $item['src'],
+                            'asset[value]' => $item['file_data']
+                        ]
+                    );
 
-                        $message = $response->getDecodedBody();
-                        if (isset($message['errors'])) {
-                            ++$result['error'];
-                        } else {
-                            ++$result['success'];
-                        }
+                    $message = $response->getDecodedBody();
+                    if (isset($message['errors'])) {
+                        ++$result['error'];
+                    } else {
+                        ++$result['success'];
+
+                        $installRepository = $this->sectionInstallRepository->get('entity_id', (int)$item['entity_id']);
+                        $installRepository->setProductVersion($item['version']);
+                        $this->sectionInstallRepository->save($installRepository);
                     }
                 } else {
                     ++$result['not_handle'];

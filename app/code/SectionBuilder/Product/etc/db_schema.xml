@@ -12,6 +12,8 @@
         <column xsi:type="varchar" name="demo_link" nullable="false" length="255" comment="Link demo Shopify frontend"/>
         <column xsi:type="text" name="media_gallery" nullable="true" comment="Media. Ex: section_builder/product/hokage.jpg;section_builder/product/kiz.png"/>
         <column xsi:type="text" name="description" nullable="true" comment="Description"/>
+        <column xsi:type="smallint" name="qty_sold" unsigned="true" nullable="false" default="0" comment="Quantity Sold" />
+        <column xsi:type="smallint" name="qty_installed" unsigned="true" nullable="false" default="0" comment="Quantity Installed" />
         <column xsi:type="varchar" name="src" nullable="false" length="255" comment="Src code"/>
         <column xsi:type="text" name="file_data" nullable="true" comment="File Data"/>
         <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" comment=""/>
@@ -32,14 +34,15 @@
         <column xsi:type="smallint" name="entity_id" padding="6" unsigned="true" nullable="false" identity="true" comment="ID"/>
         <column xsi:type="varchar" name="merchant_shop" nullable="false" length="255" comment="FK xpify_merchants"/>
         <column xsi:type="smallint" name="product_id" padding="6" unsigned="true" nullable="false" comment="FK section_builder_product"/>
+        <column xsi:type="varchar" name="theme_id" nullable="false" length="255" comment="Theme installed"/>
         <column xsi:type="varchar" name="product_version" nullable="false" default="1.0.0" length="255" comment="Version"/>
-        <column xsi:type="varchar" name="theme_ids" nullable="false" length="255" comment="Install to themes"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="entity_id"/>
         </constraint>
-        <constraint xsi:type="unique" referenceId="UNIQUE_NAME">
+        <constraint xsi:type="unique" referenceId="UNIQUE_INSTALLED">
             <column name="merchant_shop"/>
             <column name="product_id"/>
+            <column name="theme_id"/>
         </constraint>
         <constraint xsi:type="foreign" referenceId="fk_sbi_sbp" table="section_builder_install" column="product_id" referenceTable="section_builder_product" referenceColumn="entity_id" onDelete="CASCADE" />
     </table>

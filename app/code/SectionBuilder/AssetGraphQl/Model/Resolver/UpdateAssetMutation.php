@@ -11,18 +11,22 @@ class UpdateAssetMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionA
 
     protected $handleUpdate;
 
-    protected $sectionInstallFactory;
+    protected $sectionFactory;
+
+    protected $sectionInstall;
 
     public function __construct(
         \SectionBuilder\Core\Model\GraphQl\Validation $validation,
         \Xpify\Asset\Model\UpdateAssetMutation $serviceQuery,
-        \SectionBuilder\FileModifier\Model\Asset\HandleUpdate $handleUpdate,
-        \SectionBuilder\Product\Model\ResourceModel\SectionInstall\CollectionFactory $sectionInstallFactory
+        \SectionBuilder\FileModifier\Model\Asset\HandleUpdateSections $handleUpdate,
+        \SectionBuilder\Product\Model\ResourceModel\Section\CollectionFactory $sectionFactory,
+        \SectionBuilder\Product\Model\ResourceModel\SectionInstall $sectionInstall
     ) {
         $this->validation = $validation;
         $this->serviceQuery = $serviceQuery;
         $this->handleUpdate = $handleUpdate;
-        $this->sectionInstallFactory = $sectionInstallFactory;
+        $this->sectionFactory = $sectionFactory;
+        $this->sectionInstall = $sectionInstall;
     }
 
     /**
@@ -35,14 +39,48 @@ class UpdateAssetMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionA
         array $value = null,
         array $args = null
     ) {
+        $result = [];
         $this->validation->validateArgs(
             $args,
             ['theme_id', 'asset'],
             ['value']
         );
 
-        $merchant = $this->getMerchantSession()->getMerchant();
-        $this->handleUpdate->beforeUpdateAssetGraphql($merchant, $args);
-        return $this->serviceQuery->resolve($merchant, $args);
+        $collection = $this->sectionFactory->create();
+        $collection->addFieldToFilter(
+            \SectionBuilder\Product\Api\Data\SectionInterface::SRC,
+            $args['asset']
+        );
+        $collection->getSelect()->joinLeft(
+            ['xpp' => \Xpify\PricingPlan\Model\ResourceModel\PricingPlan::MAIN_TABLE],
+            'main_table.plan_id = IFNULL(xpp.entity_id, main_table.plan_id)',
+            "xpp.code as plan_code"
+        );
+        $sectionItem = $collection->getFirstItem();
+        $section = $sectionItem->getData();
+
+        if ($section) {
+            $merchant = $this->getMerchantSession()->getMerchant();
+            $this->handleUpdate->beforeUpdateAssetGraphql($section, $merchant, $args);
+            $result = $this->serviceQuery->resolve($merchant, $args);
+
+            $this->sectionInstall->addRowUniqueKey(
+                [
+                    'merchant_shop' => $merchant->getShop(),
+                    'product_id' => $section['entity_id'],
+                    'theme_id' => $args['theme_id']
+                ],
+                [
+                    'product_version' => $section['version']
+                ]
+            );
+
+            if (!isset($result['errors'])) {
+                $section->setData('qty_installed', $section->getData('qty_installed') + 1);
+                $section->save();
+            }
+        }
+
+        return $result;
     }
 }

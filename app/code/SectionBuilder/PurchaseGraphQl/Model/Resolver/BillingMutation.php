@@ -39,7 +39,7 @@ class BillingMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstr
         if ($args['is_plan']) {
             $appId = $this->getMerchantSession()->getMerchant()->getAppId();
             $criteriaBuilder = $this->criteriaBuilder;
-            $criteriaBuilder->addFilter(\Xpify\PricingPlan\Api\Data\PricingPlanInterface::NAME, $args['name']);
+            $criteriaBuilder->addFilter(\Xpify\PricingPlan\Api\Data\PricingPlanInterface::CODE, $args['name']);
             $criteriaBuilder->addFilter(\Xpify\PricingPlan\Api\Data\PricingPlanInterface::STATUS, 1);
             $criteriaBuilder->addFilter(\Xpify\PricingPlan\Api\Data\PricingPlanInterface::APP_ID, $appId);
             $searchResults = $this->pricingPlanRepository->getList($criteriaBuilder->create());
@@ -50,7 +50,7 @@ class BillingMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstr
         } else {
             $sectionRepository = $this->sectionRepository->get(
                 \SectionBuilder\Product\Api\Data\SectionInterface::KEY,
-                $args['key']
+                $args['name']
             );
             $price = $sectionRepository->getPrice();
         }
@@ -63,7 +63,7 @@ class BillingMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstr
         }
 
         $config = [
-            'chargeName' => $args['key'],
+            'chargeName' => $args['name'],
             'amount' => $price,
             'currencyCode' => \Xpify\App\Api\Data\AppInterface::CURRENCY_CODE,
             'interval' => $args['interval'],

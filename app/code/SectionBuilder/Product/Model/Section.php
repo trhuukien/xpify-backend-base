@@ -117,6 +117,26 @@ class Section extends \Magento\Framework\Model\AbstractModel implements SectionI
         return $this->setData(self::DESCRIPTION, $description);
     }
 
+    public function getQtySold(): int
+    {
+        return $this->getData(self::QTY_SOLD);
+    }
+
+    public function setQtySold(int $qtySold): SectionInterface
+    {
+        return $this->setData(self::QTY_SOLD, $qtySold);
+    }
+
+    public function getQtyInstalled(): int
+    {
+        return $this->getData(self::QTY_INSTALLED);
+    }
+
+    public function setQtyInstalled(int $qtyInstall): SectionInterface
+    {
+        return $this->setData(self::QTY_INSTALLED, $qtyInstall);
+    }
+
     public function getVersion(): string
     {
         return $this->getData(self::VERSION);

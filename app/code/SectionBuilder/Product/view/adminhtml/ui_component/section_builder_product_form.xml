@@ -345,4 +345,24 @@
             </argument>
         </field>
     </fieldset>
+    <fieldset name="information" sortOrder="50">
+        <settings>
+            <label translate="true">Information</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="qty_installed" formElement="input">
+            <settings>
+                <label translate="true">Installed</label>
+                <dataScope>qty_installed</dataScope>
+                <elementTmpl>ui/form/element/text</elementTmpl>
+            </settings>
+        </field>
+        <field name="qty_sold" formElement="input">
+            <settings>
+                <label translate="true">Sold</label>
+                <dataScope>qty_sold</dataScope>
+                <elementTmpl>ui/form/element/text</elementTmpl>
+            </settings>
+        </field>
+    </fieldset>
 </form>

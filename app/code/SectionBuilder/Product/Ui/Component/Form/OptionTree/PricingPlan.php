@@ -7,16 +7,21 @@ class PricingPlan extends \SectionBuilder\Core\Model\Ui\Component\Form\OptionTre
 {
     protected $collectionFactory;
 
+    protected $config;
+
     public function __construct(
-        \Xpify\PricingPlan\Model\ResourceModel\PricingPlan\CollectionFactory $collectionFactory
+        \Xpify\PricingPlan\Model\ResourceModel\PricingPlan\CollectionFactory $collectionFactory,
+        \SectionBuilder\Core\Model\Config $config
     ) {
         $this->collectionFactory = $collectionFactory;
+        $this->config = $config;
     }
 
     public function toOptionArray()
     {
         $filters = [
-            ['field' => 'status', 'value' => 1]
+            ['field' => 'status', 'value' => 1],
+            ['field' => 'app_id', 'value' => $this->config->getAppConnectingId()]
         ];
 
         return $this->getOptionTree(

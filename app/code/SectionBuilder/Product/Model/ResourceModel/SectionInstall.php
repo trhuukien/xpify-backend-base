@@ -19,4 +19,23 @@ class SectionInstall extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
             \SectionBuilder\Product\Api\Data\SectionInstallInterface::ID
         );
     }
+
+    public function addRowUniqueKey($fieldToFilter, $fieldToAdd)
+    {
+        $connection = $this->getConnection();
+        $select = $connection->select()->from($this->getMainTable());
+
+        foreach ($fieldToFilter as $field => $value) {
+            $select->where("$field = ?", $value);
+        }
+
+        if ($connection->fetchRow($select)) {
+            $connection->update($this->getMainTable(), $fieldToAdd);
+        } else {
+            $fieldToAdd = array_merge($fieldToFilter, $fieldToAdd);
+            $connection->insert($this->getMainTable(), $fieldToAdd);
+        }
+
+        return $connection;
+    }
 }

@@ -7,7 +7,7 @@ type Query {
     ): Sections
         @doc(description: "")
         @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsQuery")
-    getSection(name: String!): Section
+    getSection(key: String!): Section
         @doc(description: "")
         @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionQuery")
 }
@@ -34,8 +34,8 @@ type Section @doc(description: "") {
     entity_id : String
     is_enable: Boolean
     plan_id : String
-    plan_need_subscribe : String
     name: String
+    url_key: String
     price: Float
     src: String
     is_show_install: Boolean

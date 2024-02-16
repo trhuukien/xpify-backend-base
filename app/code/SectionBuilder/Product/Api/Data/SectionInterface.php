@@ -15,6 +15,8 @@ interface SectionInterface
     const FILE_DATA = 'file_data';
     const MEDIA_GALLERY = 'media_gallery';
     const DESCRIPTION = 'description';
+    const QTY_SOLD = 'qty_sold';
+    const QTY_INSTALLED = 'qty_installed';
     const VERSION = 'version';
     const RELEASE_NOTE = 'release_note';
     const DEMO_LINK = 'demo_link';
@@ -60,6 +62,14 @@ interface SectionInterface
     public function getDescription(): ?string;
 
     public function setDescription(?string $description): self;
+
+    public function getQtySold(): int;
+
+    public function setQtySold(int $qtySold): self;
+
+    public function getQtyInstalled(): int;
+
+    public function setQtyInstalled(int $qtyInstall): self;
 
     public function getVersion(): string;
 

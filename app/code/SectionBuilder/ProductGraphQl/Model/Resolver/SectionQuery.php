@@ -35,24 +35,22 @@ class SectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstract
     ) {
         $collection = $this->sectionFactory->create();
         $collection->addFieldToFilter(
-            'main_table.' . \SectionBuilder\Product\Api\Data\SectionInterface::NAME,
-            $args['name']
+            'main_table.url_key',
+            $args['key']
         );
-        $collection->join(
-            ['xpp' => \Xpify\PricingPlan\Model\ResourceModel\PricingPlan::MAIN_TABLE],
-            'main_table.' . \SectionBuilder\Product\Api\Data\SectionInterface::PLAN_ID . ' = xpp.' .
-            \SectionBuilder\Product\Api\Data\SectionInterface::ID,
-            "xpp." . \Xpify\PricingPlan\Api\Data\PricingPlanInterface::NAME . " as plan_need_subscribe"
-        );
+//        $collection->join(
+//            ['xpp' => \Xpify\PricingPlan\Model\ResourceModel\PricingPlan::MAIN_TABLE],
+//            'main_table.' . \SectionBuilder\Product\Api\Data\SectionInterface::PLAN_ID . ' = xpp.' .
+//            \SectionBuilder\Product\Api\Data\SectionInterface::ID,
+//            "xpp." . \Xpify\PricingPlan\Api\Data\PricingPlanInterface::NAME . " as plan_need_subscribe"
+//        );
         $result = $collection->getFirstItem()->getData();
 
         if (!$result) {
             return $result;
         }
 
-        if (!$result[\SectionBuilder\Product\Api\Data\SectionInterface::PRICE]
-            && !$result[\SectionBuilder\Product\Api\Data\SectionInterface::PLAN_ID]
-        ) { // Free
+        if (1) { // Free
             $result['is_show_install'] = true;
             $result['is_show_purchase'] = false;
             $result['is_show_plan'] = false;
