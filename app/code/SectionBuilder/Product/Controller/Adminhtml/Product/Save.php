@@ -25,6 +25,16 @@ class Save extends Action implements HttpPostActionInterface
 
     protected $messageManager;
 
+    protected $serializer;
+
+    protected $fileDriver;
+
+    protected $filesystem;
+
+    protected $mediaDirectory;
+
+    protected $coreFileStorageDatabase;
+
     public function __construct(
         Context $context,
         \SectionBuilder\Product\Api\SectionRepositoryInterface $sectionRepository,
@@ -32,7 +42,7 @@ class Save extends Action implements HttpPostActionInterface
         \SectionBuilder\Tag\Model\ResourceModel\TagProduct $tagProductResource,
         DataPersistorInterface $dataPersistor,
         \Magento\Framework\Message\ManagerInterface $messageManager,
-
+        \Magento\Framework\Serialize\SerializerInterface $serializer,
         File $fileDriver,
         Filesystem $filesystem,
         \Magento\MediaStorage\Helper\File\Storage\Database $coreFileStorageDatabase
@@ -43,7 +53,7 @@ class Save extends Action implements HttpPostActionInterface
         $this->tagProductResource = $tagProductResource;
         $this->dataPersistor = $dataPersistor;
         $this->messageManager = $messageManager;
-
+        $this->serializer = $serializer;
         $this->fileDriver = $fileDriver;
         $this->filesystem = $filesystem;
         $this->mediaDirectory = $filesystem->getDirectoryWrite(DirectoryList::MEDIA);
@@ -53,7 +63,6 @@ class Save extends Action implements HttpPostActionInterface
     public function execute()
     {
         $postData = $this->getRequest()->getPost()->toArray();
-
         try {
             if (empty($postData['entity_id'])) {
                 $section = $this->sectionRepository->create();
@@ -64,19 +73,32 @@ class Save extends Action implements HttpPostActionInterface
             $section->setIsEnable((int)$postData['is_enable']);
             $section->setName(trim($postData['name']));
             $section->setKey(trim($postData['url_key']));
-            $section->setVersion(trim($postData['version']));
             $section->setPrice((float)$postData['price']);
-            $section->setPlanId($postData['plan_id'] ?: null);
-            $section->setSrc(trim($postData['src']));
-            $section->setFileData($postData['file_data']);
             $section->setDescription($postData['description']);
-            $section->setReleaseNote($postData['release_note']);
-            $section->setDemoLink($postData['demo_link']);
             $galleryArray = $this->uploadMediaGallery($postData);
-            if (!empty($galleryArray)) {
-                $mediaGallery = implode(\SectionBuilder\Product\Model\Helper\Image::SEPARATION, $galleryArray);
-                $section->setMediaGallery($mediaGallery);
+            $mediaGallery = implode(\SectionBuilder\Product\Model\Helper\Image::SEPARATION, $galleryArray);
+            $section->setMediaGallery($mediaGallery);
+
+            if (!$postData['is_group_product']) {
+                $section->setTypeId(1);
+                $section->setVersion(trim($postData['version']));
+                $section->setPlanId($postData['plan_id'] ?: null);
+                $section->setSrc($postData['src'] ?: null);
+                $section->setFileData($postData['file_data']);
+                $section->setReleaseNote($postData['release_note']);
+                $section->setDemoLink($postData['demo_link']);
+            } else {
+                $section->setTypeId(2);
+                $childIdsArr = $this->serializer->unserialize($postData['group_products']);
+                $childIds = [];
+                foreach ($childIdsArr as $entityId => $isSelected) {
+                    if ($isSelected) {
+                        $childIds[] = $entityId;
+                    }
+                }
+                $section->setChildIds(implode(",", $childIds));
             }
+
             $this->sectionRepository->save($section);
 
             $this->replaceCategories($section->getId(), $postData['categories'] ?? []);

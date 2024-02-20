@@ -117,6 +117,26 @@ class Section extends \Magento\Framework\Model\AbstractModel implements SectionI
         return $this->setData(self::DESCRIPTION, $description);
     }
 
+    public function getTypeId(): int
+    {
+        return (int)$this->getData(self::TYPE_ID);
+    }
+
+    public function setTypeId(int $typeId): SectionInterface
+    {
+        return $this->setData(self::TYPE_ID, $typeId);
+    }
+
+    public function getChildIds(): ?string
+    {
+        return $this->getData(self::CHILD_IDS);
+    }
+
+    public function setChildIds(?string $childIds): SectionInterface
+    {
+        return $this->setData(self::CHILD_IDS, $childIds);
+    }
+
     public function getQtySold(): int
     {
         return $this->getData(self::QTY_SOLD);

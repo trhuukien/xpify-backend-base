@@ -15,12 +15,16 @@ class SectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstract
      */
     protected $sectionFactory;
 
+    protected $imageHelper;
+
     public function __construct(
         \SectionBuilder\Core\Model\Auth\Validation $authValidation,
-        \SectionBuilder\Product\Model\ResourceModel\Section\CollectionFactory $sectionFactory
+        \SectionBuilder\Product\Model\ResourceModel\Section\CollectionFactory $sectionFactory,
+        \SectionBuilder\Product\Model\Helper\Image $imageHelper
     ) {
         $this->authValidation = $authValidation;
         $this->sectionFactory = $sectionFactory;
+        $this->imageHelper = $imageHelper;
     }
 
     /**
@@ -49,6 +53,15 @@ class SectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstract
         if (!$result) {
             return $result;
         }
+
+        $mediaGallery = explode(\SectionBuilder\Product\Model\Helper\Image::SEPARATION, $result['media_gallery'] ?? "");
+        $images = [];
+        foreach ($mediaGallery as $image) {
+            $filename = str_replace(\SectionBuilder\Product\Model\Helper\Image::SUB_DIR, "", $image)
+                ?: \SectionBuilder\Product\Model\Helper\Image::EMPTY_THUMBNAIL;
+            $images[] = ['src' => $this->imageHelper->getBaseUrl() . $filename];
+        }
+        $result['images'] = $images;
 
         if (1) { // Free
             $result['is_show_install'] = true;

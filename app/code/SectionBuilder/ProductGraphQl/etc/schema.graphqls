@@ -35,10 +35,15 @@ type Section @doc(description: "") {
     is_enable: Boolean
     plan_id : String
     name: String
+    images: [Image]
     url_key: String
     price: Float
     src: String
     is_show_install: Boolean
     is_show_purchase: Boolean
     is_show_plan: Boolean
+}
+
+type Image @doc(description: "") {
+    src: String
 }

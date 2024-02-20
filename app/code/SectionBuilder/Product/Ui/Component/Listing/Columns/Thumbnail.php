@@ -9,7 +9,7 @@ class Thumbnail extends \Magento\Ui\Component\Listing\Columns\Column
     const NAME = 'thumbnail';
 
     /**
-     * @var \Webkul\Blog\Model\Hello\Image
+     * @var \SectionBuilder\Product\Model\Helper\Image
      */
     protected $imageHelper;
 

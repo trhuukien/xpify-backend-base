@@ -1,0 +1,19 @@
+<?php
+/** @var $block \SectionBuilder\Product\Block\Adminhtml\AssignProducts */
+?>
+
+<?= /* @escapeNotVerified */ $block->getGridHtml() ?>
+<input type="hidden" name="group_products" data-form-part="section_builder_product_form" id="group_products" value=""  />
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "SectionBuilder_Product/js/assign-products": {
+                "selectedProducts": <?= /* @escapeNotVerified */ $block->getProductsJson() ?>,
+                "gridJsObjectName": <?= /* @escapeNotVerified */ '"' . $block->getBlockGrid()->getJsObjectName() . '"' ?: '{}' ?>
+            }
+        }
+    }
+</script>
+<script>
+    require('mage/apply/main').apply();
+</script>

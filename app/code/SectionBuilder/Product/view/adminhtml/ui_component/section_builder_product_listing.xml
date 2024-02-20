@@ -7,6 +7,13 @@
         </item>
         <item name="spinner" xsi:type="string">spinner_columns</item>
         <item name="buttons" xsi:type="array">
+            <item name="add_group" xsi:type="array">
+                <item name="name" xsi:type="string">group</item>
+                <item name="label" xsi:type="string" translate="true">Add Group</item>
+                <item name="url" xsi:type="url" path="*/*/add">
+                    <param name="type_id">2</param>
+                </item>
+            </item>
             <item name="add" xsi:type="array">
                 <item name="name" xsi:type="string">add</item>
                 <item name="label" xsi:type="string" translate="true">Add Section</item>
@@ -33,7 +40,6 @@
             </argument>
         </argument>
     </dataSource>
-
 
     <listingToolbar name="listing_top">
         <argument name="data" xsi:type="array">
@@ -152,11 +158,14 @@
                 </item>
             </argument>
         </column>
-        <column name="src">
+        <column name="type_id">
             <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">SectionBuilder\Product\Model\Config\Source\ProductType</item>
                 <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Src</item>
+                    <item name="filter" xsi:type="string">select</item>
+                    <item name="label" xsi:type="string" translate="true">Type</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
+                    <item name="dataType" xsi:type="string">select</item>
                 </item>
             </argument>
         </column>

@@ -83,7 +83,7 @@ class Gallery extends \Magento\Framework\View\Element\AbstractBlock
         if (!$content) {
             $content = $this->getLayout()->createBlock(
                 \SectionBuilder\Product\Block\Adminhtml\Listing\Helper\Form\Gallery\Content::class,
-                '',
+                'sb.gallery',
                 [
                     'config' => [
                         'parentComponent' => 'section_builder_product_form.section_builder_product_form.block_gallery.block_gallery'

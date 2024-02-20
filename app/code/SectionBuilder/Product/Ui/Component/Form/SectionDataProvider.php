@@ -9,6 +9,7 @@ class SectionDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
 
     protected $dataPersistor;
 
+    protected $request;
 
     public function __construct(
         $name,
@@ -16,11 +17,13 @@ class SectionDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
         $requestFieldName,
         CollectionFactory $sectionCollectionFactory,
         \Magento\Framework\App\Request\DataPersistorInterface $dataPersistor,
+        \Magento\Framework\App\Request\Http $request,
         array $meta = [],
         array $data = []
     ) {
         $this->collection = $sectionCollectionFactory->create()->joinListCategoryId()->joinListTagId()->groupById();
         $this->dataPersistor = $dataPersistor;
+        $this->request = $request;
         parent::__construct($name, $primaryFieldName, $requestFieldName, $meta, $data);
     }
 
@@ -37,9 +40,20 @@ class SectionDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
 
         $this->loadedData = [];
         $data = $this->dataPersistor->get('section_product_data');
+
+
+        $this->loadedData[$data['entity_id'] ?? ""]['is_group_product']
+            = $isGroup
+            = $this->request->getParam('type_id') == \SectionBuilder\Product\Model\Config\Source\ProductType::GROUP_TYPE_ID;
+
         if (!empty($data)) {
-            $this->loadedData[$data['entity_id'] ?? ""] = $data;
-            $this->loadedData[$data['entity_id'] ?? ""]['disable_field'] = false;
+            if (isset($data['entity_id'])) {
+                $this->loadedData[$data['entity_id']] = $data;
+            } else {
+                $this->loadedData[""] = $data;
+                $this->loadedData[""]['is_disable'] = false;
+            }
+
             $this->dataPersistor->clear('section_product_data');
         } else {
             $items = $this->collection->getItems();
@@ -52,7 +66,9 @@ class SectionDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
                 }
 
                 $this->loadedData[$item->getId()] = $item->getData();
-                $this->loadedData[$item->getId()]['disable_field'] = true;
+                $this->loadedData[$item->getId()]['is_disable'] = true;
+                $this->loadedData[$item->getId()]['is_group_product']
+                    = $isGroup || $item->getData('type_id') == \SectionBuilder\Product\Model\Config\Source\ProductType::GROUP_TYPE_ID;
             }
         }
 
