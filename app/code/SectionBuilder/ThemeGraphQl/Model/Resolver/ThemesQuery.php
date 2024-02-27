@@ -27,10 +27,6 @@ class ThemesQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractR
         array $value = null,
         array $args = null
     ) {
-        $this->validation->validateArgs(
-            $args,
-            ['id', 'role']
-        );
         $merchant = $this->getMerchantSession()->getMerchant();
         return $this->serviceQuery->resolve($merchant, $args);
     }

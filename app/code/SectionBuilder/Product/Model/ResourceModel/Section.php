@@ -6,6 +6,7 @@ namespace SectionBuilder\Product\Model\ResourceModel;
 class Section extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     const MAIN_TABLE = 'section_builder_product';
+    const SEPARATION = ";";
 
     protected $dateTimeFactory;
 

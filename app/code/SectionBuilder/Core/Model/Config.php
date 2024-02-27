@@ -16,13 +16,13 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         $this->messageManager = $messageManager;
     }
 
-    public function getAppConnectingId($alert = false)
+    public function getAppConnectingId($throw = false)
     {
         $appId = (int)$this->scopeConfig->getValue(
             self::SYSTEM_XML_APP_CONNECTING
         );
 
-        if (!$appId && $alert) {
+        if (!$appId && $throw) {
             $this->messageManager->addErrorMessage(__("Please config app connecting in Stores > Configuration > Shopify App > App > Connecting"));
         }
 

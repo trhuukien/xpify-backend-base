@@ -80,7 +80,7 @@ class Save extends Action implements HttpPostActionInterface
             $section->setMediaGallery($mediaGallery);
 
             if (!$postData['is_group_product']) {
-                $section->setTypeId(1);
+                $section->setTypeId(\SectionBuilder\Product\Model\Config\Source\ProductType::SIMPLE_TYPE_ID);
                 $section->setVersion(trim($postData['version']));
                 $section->setPlanId($postData['plan_id'] ?: null);
                 $section->setSrc($postData['src'] ?: null);
@@ -88,7 +88,7 @@ class Save extends Action implements HttpPostActionInterface
                 $section->setReleaseNote($postData['release_note']);
                 $section->setDemoLink($postData['demo_link']);
             } else {
-                $section->setTypeId(2);
+                $section->setTypeId(\SectionBuilder\Product\Model\Config\Source\ProductType::GROUP_TYPE_ID);
                 $childIdsArr = $this->serializer->unserialize($postData['group_products']);
                 $childIds = [];
                 foreach ($childIdsArr as $entityId => $isSelected) {

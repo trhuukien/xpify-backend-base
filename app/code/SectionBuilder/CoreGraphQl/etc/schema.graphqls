@@ -1,0 +1,21 @@
+type Query {
+    getPricingPlans: [PricingPlan]
+        @doc(description: "")
+        @resolver(class: "SectionBuilder\\CoreGraphQl\\Model\\Resolver\\PricingPlansQuery")
+    getSortOptions: [SortOption]
+        @doc(description: "")
+        @resolver(class: "SectionBuilder\\CoreGraphQl\\Model\\Resolver\\SortOptionsQuery")
+}
+
+type PricingPlan {
+    entity_id: ID
+    name: String
+    code: String
+    status: Boolean
+}
+
+type SortOption {
+    label: String
+    value: String
+    directionLabel: String
+}

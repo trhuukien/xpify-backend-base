@@ -40,7 +40,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         $this->getSelect()->joinLeft(
             ['cp' => $this->getTable(\SectionBuilder\Category\Model\ResourceModel\CategoryProduct::MAIN_TABLE)],
             'main_table.entity_id = cp.product_id',
-            ['categories' => new \Zend_Db_Expr('GROUP_CONCAT(DISTINCT cp.category_id SEPARATOR ",")')]
+            ['categories' => new \Zend_Db_Expr("GROUP_CONCAT(DISTINCT cp.category_id SEPARATOR ',')")]
         )->joinLeft(
             ['c' => $this->getTable(\SectionBuilder\Category\Model\ResourceModel\Category::MAIN_TABLE)],
             'c.entity_id = cp.category_id',
@@ -55,16 +55,18 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
     public function joinListCategoryName()
     {
+        $separation = \SectionBuilder\Product\Model\ResourceModel\Section::SEPARATION;
+
         $this->getSelect()->joinLeft(
             ['cp' => $this->getTable(\SectionBuilder\Category\Model\ResourceModel\CategoryProduct::MAIN_TABLE)],
             'main_table.entity_id = cp.product_id',
-            ['category_id']
+            'category_id'
         )->joinLeft(
             ['c' => $this->getTable(\SectionBuilder\Category\Model\ResourceModel\Category::MAIN_TABLE)],
             'c.entity_id = cp.category_id',
             [
-                ['category_is_enable' => 'c.is_enable'],
-                'categories' => new \Zend_Db_Expr('GROUP_CONCAT(DISTINCT c.name SEPARATOR ",")')
+                'category_is_enable' => 'c.is_enable',
+                'categories' => new \Zend_Db_Expr("GROUP_CONCAT(DISTINCT c.name SEPARATOR '$separation')")
             ]
         )->where(
             'c.is_enable IS NULL OR c.is_enable = ?',
@@ -94,7 +96,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         $this->getSelect()->joinLeft(
             ['tp' => $this->getTable(\SectionBuilder\Tag\Model\ResourceModel\TagProduct::MAIN_TABLE)],
             'main_table.entity_id = tp.product_id',
-            ['tags' => new \Zend_Db_Expr('GROUP_CONCAT(DISTINCT tp.tag_id SEPARATOR ",")')]
+            ['tags' => new \Zend_Db_Expr("GROUP_CONCAT(DISTINCT tp.tag_id SEPARATOR ',')")]
         )->joinLeft(
             ['t' => $this->getTable(\SectionBuilder\Tag\Model\ResourceModel\Tag::MAIN_TABLE)],
             't.entity_id = tp.tag_id',
@@ -109,6 +111,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
     public function joinListTagName()
     {
+        $separation = \SectionBuilder\Product\Model\ResourceModel\Section::SEPARATION;
+
         $this->getSelect()->joinLeft(
             ['tp' => $this->getTable(\SectionBuilder\Tag\Model\ResourceModel\TagProduct::MAIN_TABLE)],
             'main_table.entity_id = tp.product_id',
@@ -117,8 +121,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             ['t' => $this->getTable(\SectionBuilder\Tag\Model\ResourceModel\Tag::MAIN_TABLE)],
             't.entity_id = tp.tag_id',
             [
-                ['tag_is_enable' => 't.is_enable'],
-                'tags' => new \Zend_Db_Expr('GROUP_CONCAT(DISTINCT t.name SEPARATOR ",")')
+                'tag_is_enable' => 't.is_enable',
+                'tags' => new \Zend_Db_Expr("GROUP_CONCAT(DISTINCT t.name SEPARATOR '$separation')")
             ]
         )->where(
             't.is_enable IS NULL OR t.is_enable = ?',

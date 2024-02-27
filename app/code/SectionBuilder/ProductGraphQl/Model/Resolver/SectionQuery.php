@@ -37,29 +37,56 @@ class SectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstract
         array $value = null,
         array $args = null
     ) {
+        if (!$args['key']) {
+            return [];
+        }
+
         $collection = $this->sectionFactory->create();
         $collection->addFieldToFilter(
             'main_table.url_key',
             $args['key']
         );
-//        $collection->join(
-//            ['xpp' => \Xpify\PricingPlan\Model\ResourceModel\PricingPlan::MAIN_TABLE],
-//            'main_table.' . \SectionBuilder\Product\Api\Data\SectionInterface::PLAN_ID . ' = xpp.' .
-//            \SectionBuilder\Product\Api\Data\SectionInterface::ID,
-//            "xpp." . \Xpify\PricingPlan\Api\Data\PricingPlanInterface::NAME . " as plan_need_subscribe"
-//        );
+        $collection->join(
+            ['xpp' => \Xpify\PricingPlan\Model\ResourceModel\PricingPlan::MAIN_TABLE],
+            'main_table.plan_id = xpp.entity_id',
+            [
+                'xpp_id' => 'xpp.entity_id',
+                'xpp_name' => 'xpp.name',
+                'xpp_code' => 'xpp.code',
+                'xpp_status' => 'xpp.status'
+            ]
+        );
+        $collection->joinListCategoryName();
+        $collection->joinListTagName();
+
         $result = $collection->getFirstItem()->getData();
 
         if (!$result) {
             return $result;
         }
 
+        if (isset($result['xpp_id'])) {
+            $result['pricing_plan'] = [
+                'entity_id' => $result['xpp_id'],
+                'name' => $result['xpp_name'],
+                'code' => $result['xpp_code'],
+                'status' => $result['xpp_status']
+            ];
+        }
+        if (isset($result['categories'])) {
+            $result['categories'] = explode(\SectionBuilder\Product\Model\ResourceModel\Section::SEPARATION, $result['categories']);
+        }
+        if (isset($result['tags'])) {
+            $result['tags'] = explode(\SectionBuilder\Product\Model\ResourceModel\Section::SEPARATION, $result['tags']);
+        }
+
         $mediaGallery = explode(\SectionBuilder\Product\Model\Helper\Image::SEPARATION, $result['media_gallery'] ?? "");
+        $baseUrl = $this->imageHelper->getBaseUrl();
         $images = [];
         foreach ($mediaGallery as $image) {
             $filename = str_replace(\SectionBuilder\Product\Model\Helper\Image::SUB_DIR, "", $image)
                 ?: \SectionBuilder\Product\Model\Helper\Image::EMPTY_THUMBNAIL;
-            $images[] = ['src' => $this->imageHelper->getBaseUrl() . $filename];
+            $images[] = ['src' => $baseUrl . $filename];
         }
         $result['images'] = $images;
 

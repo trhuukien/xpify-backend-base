@@ -1,7 +1,13 @@
+enum SortEnum @doc(description: "") {
+    asc @doc(description:"")
+    desc @doc(description:"")
+}
+
 type Query {
     getSections(
         search: String,
         filter: SectionFilterInput,
+        sort: SectionSortInput,
         pageSize: Int = 20,
         currentPage: Int = 1
     ): Sections
@@ -16,12 +22,23 @@ input SectionFilterInput @doc(description: "") {
     category_id: [Int] @doc(description: "")
     tag_id: [Int] @doc(description: "")
     plan_id: [Int] @doc(description: "")
+    price: PriceFilter
 }
 
 type Sections {
     items: [Section]
     total_count: Int
     page_info: PageInfo
+}
+
+input SectionSortInput @doc(description: "") {
+    column: String @doc(description: "")
+    order: SortEnum @doc(description: "")
+}
+
+input PriceFilter @doc(description: "") {
+    min: Int @doc(description: "")
+    max: Int @doc(description: "")
 }
 
 type PageInfo {
@@ -39,6 +56,13 @@ type Section @doc(description: "") {
     url_key: String
     price: Float
     src: String
+    version: String
+    description: String
+    release_note: String
+    demo_link: String
+    pricing_plan: PricingPlan
+    categories: [String]
+    tags: [String]
     is_show_install: Boolean
     is_show_purchase: Boolean
     is_show_plan: Boolean
