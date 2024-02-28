@@ -3,6 +3,6 @@ use Magento\Framework\Component\ComponentRegistrar;
 
 ComponentRegistrar::register(
     ComponentRegistrar::MODULE,
-    'Xpify_AssetGraphQl',
+    'Xpify_Theme',
     __DIR__
 );

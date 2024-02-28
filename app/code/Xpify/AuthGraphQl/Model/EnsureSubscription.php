@@ -38,7 +38,8 @@ class EnsureSubscription
                 $msg = __("You need upgrade your subscription to one of these plans: %1 to access this resource!", implode(', ', $listPlanName));
             } else {
                 $pl = reset($plans);
-                $msg = __("You need upgrade your subscription to {$pl->getName()} to access this resource!");
+                $name = $pl?->getName() ?? implode(',', $codes);
+                $msg = __("You need upgrade your subscription to {$name} to access this resource!");
             }
             throw new AuthorizationException($msg);
         }
