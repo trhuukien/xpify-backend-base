@@ -31,4 +31,23 @@ interface WebhookTopicInterface
      * @return IHandler The handler of the webhook
      */
     public function getHandler(): IHandler;
+
+    /**
+     * An optional array of top-level resource fields that should be serialized and sent in the webhook message. If null, then all fields will be sent.
+     */
+    public function getIncludeFields(): array;
+
+    /**
+     * Optional array of namespaces for any metafields that should be included in the webhook subscription.
+     */
+    public function getMetafieldNamespaces(): array;
+
+    /**
+     * Get the app name
+     * Which app is this webhook should be registered to
+     * if null, it will be registered to all apps
+     *
+     * @return string|null
+     */
+    public function getAppName(): ?string;
 }

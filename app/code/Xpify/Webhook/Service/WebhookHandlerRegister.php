@@ -29,6 +29,29 @@ class WebhookHandlerRegister implements IObserver
     }
 
     /**
+     * Get webhook registry
+     *
+     * @param string $appName
+     * @return IWebhookTopic[]
+     */
+    public function getWebhookRegistry(string $appName): array
+    {
+        $webhookTopics = $this->webhookTopics;
+
+        // Filter webhooks by app name if it's not null
+        // null means it will be registered to all apps
+        $webhooksByApp = array_filter($webhookTopics, function ($webhook) use ($appName) {
+            return !$webhook->getAppName() || $webhook->getAppName() === $appName;
+        });
+
+        // mapping webhook registry by uppercase array key of each registry, eg current $webhooksByApp structure is ['key' => $webhook, ...]
+        // the key will be combined by the $webhook->getTopic()
+        return array_combine(array_map(function ($webhook) {
+            return $webhook->topicForStorage();
+        }, $webhooksByApp), $webhooksByApp);
+    }
+
+    /**
      * Add webhook handlers, using di.xml to inject them
      *
      * List topics @see \Shopify\Webhooks\Topics and https://shopify.dev/docs/api/admin-graphql/latest/enums/webhooksubscriptiontopic
