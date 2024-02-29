@@ -31,10 +31,10 @@ class Image
      *
      * @return string
      */
-    public function getBaseUrl()
+    public function getBaseUrl($urlSuffix = self::SUB_DIR)
     {
         return $this->urlBuilder->getBaseUrl(
             ['_type' => UrlInterface::URL_TYPE_MEDIA]
-        ) . self::SUB_DIR;
+        ) . $urlSuffix;
     }
 }

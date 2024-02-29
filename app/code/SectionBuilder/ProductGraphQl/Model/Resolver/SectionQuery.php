@@ -41,43 +41,40 @@ class SectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstract
             return [];
         }
 
+        $merchant = $this->getMerchantSession()->getMerchant();
         $collection = $this->sectionFactory->create();
         $collection->addFieldToFilter(
             'main_table.url_key',
             $args['key']
         );
-        $collection->join(
-            ['xpp' => \Xpify\PricingPlan\Model\ResourceModel\PricingPlan::MAIN_TABLE],
-            'main_table.plan_id = xpp.entity_id',
-            [
-                'xpp_id' => 'xpp.entity_id',
-                'xpp_name' => 'xpp.name',
-                'xpp_code' => 'xpp.code',
-                'xpp_status' => 'xpp.status'
-            ]
-        );
+
         $collection->joinListCategoryName();
         $collection->joinListTagName();
+        $collection->joinPricingPlan(['xpp.entity_id IS NULL or xpp.entity_id = main_table.plan_id']);
+        $collection->joinListInstalled(['i.merchant_shop IS NULL or i.merchant_shop = ?', $merchant->getShop()]);
 
         $result = $collection->getFirstItem()->getData();
-
         if (!$result) {
             return $result;
         }
 
+        $separation = \SectionBuilder\Product\Model\ResourceModel\Section::SEPARATION;
         if (isset($result['xpp_id'])) {
             $result['pricing_plan'] = [
                 'entity_id' => $result['xpp_id'],
                 'name' => $result['xpp_name'],
                 'code' => $result['xpp_code'],
-                'status' => $result['xpp_status']
+                'status' => $result['xpp_status'],
+                'prices' => $result['xpp_prices'] ? json_decode($result['xpp_prices'], true) : [],
+                'currency' => \Xpify\PricingPlan\Api\Data\PricingPlanInterface::BASE_CURRENCY,
+                'description' => $result['xpp_description']
             ];
         }
         if (isset($result['categories'])) {
-            $result['categories'] = explode(\SectionBuilder\Product\Model\ResourceModel\Section::SEPARATION, $result['categories']);
+            $result['categories'] = explode($separation, $result['categories']);
         }
         if (isset($result['tags'])) {
-            $result['tags'] = explode(\SectionBuilder\Product\Model\ResourceModel\Section::SEPARATION, $result['tags']);
+            $result['tags'] = explode($separation, $result['tags']);
         }
 
         $mediaGallery = explode(\SectionBuilder\Product\Model\Helper\Image::SEPARATION, $result['media_gallery'] ?? "");
@@ -90,20 +87,28 @@ class SectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstract
         }
         $result['images'] = $images;
 
-        if (1) { // Free
-            $result['is_show_install'] = true;
-            $result['is_show_purchase'] = false;
-            $result['is_show_plan'] = false;
-        } else {
-            $merchant = $this->getMerchantSession()->getMerchant();
-            $bought = $this->authValidation->hasOneTime(
-                $merchant,
-                $result[\SectionBuilder\Product\Api\Data\SectionInterface::KEY]
-            );
-            $result['is_show_plan'] = !$this->authValidation->hasPlan($merchant, $result['plan_need_subscribe']);
-            $result['is_show_install'] = !$result['is_show_plan'] || $bought;
-            $result['is_show_purchase'] = !$bought;
+        if ($result['installed']) {
+            $installs = explode($separation, $result['installed']);
+            foreach ($installs as $key => $install) {
+                list($arrInstall[$key]['theme_id'], $arrInstall[$key]['product_version']) = explode(":", $install);
+            }
+            $result['installed'] = $arrInstall ?? [];
         }
+
+        $hasOneTime = $this->authValidation->hasOneTime(
+            $merchant,
+            $result[\SectionBuilder\Product\Api\Data\SectionInterface::KEY]
+        );
+        $hasPlan = !isset($result['pricing_plan']) || $this->authValidation->hasPlan(
+            $merchant,
+            $result['pricing_plan']['code']
+        );
+
+        $result['actions'] = [
+            'install' => $result['price'] == 0 || $hasOneTime || $hasPlan,
+            'purchase' => $result['price'] > 0 && !$hasOneTime,
+            'plan' => !$hasPlan
+        ];
 
         return $result;
     }

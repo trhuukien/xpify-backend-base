@@ -9,12 +9,20 @@ class DeleteAssetMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionA
 
     protected $serviceQuery;
 
+    protected $sectionFactory;
+
+    protected $sectionInstall;
+
     public function __construct(
         \SectionBuilder\Core\Model\GraphQl\Validation $validation,
-        \Xpify\Asset\Model\DeleteAssetMutation $serviceQuery
+        \Xpify\Asset\Model\DeleteAssetMutation $serviceQuery,
+        \SectionBuilder\Product\Model\ResourceModel\Section\CollectionFactory $sectionFactory,
+        \SectionBuilder\Product\Model\ResourceModel\SectionInstall $sectionInstall
     ) {
         $this->validation = $validation;
         $this->serviceQuery = $serviceQuery;
+        $this->sectionFactory = $sectionFactory;
+        $this->sectionInstall = $sectionInstall;
     }
 
     /**
@@ -31,7 +39,28 @@ class DeleteAssetMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionA
             $args,
             ['theme_id', 'asset']
         );
+
+        $collection = $this->sectionFactory->create();
+        $collection->addFieldToFilter(
+            \SectionBuilder\Product\Api\Data\SectionInterface::SRC,
+            $args['asset']
+        );
+        $sectionItem = $collection->getFirstItem();
+        $section = $sectionItem->getData();
+
         $merchant = $this->getMerchantSession()->getMerchant();
-        return $this->serviceQuery->resolve($merchant, $args);
+        $result = $this->serviceQuery->resolve($merchant, $args);
+
+        if (isset($result['message'])) {
+            $this->sectionInstall->deleteRow(
+                [
+                    'merchant_shop = ?' => $merchant->getShop(),
+                    'product_id = ?' => $section['entity_id'],
+                    'theme_id = ?' => $args['theme_id']
+                ]
+            );
+        }
+
+        return $result;
     }
 }

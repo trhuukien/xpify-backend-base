@@ -63,11 +63,21 @@ type Section @doc(description: "") {
     pricing_plan: PricingPlan
     categories: [String]
     tags: [String]
-    is_show_install: Boolean
-    is_show_purchase: Boolean
-    is_show_plan: Boolean
+    actions: Action
+    installed: [Install]
 }
 
 type Image @doc(description: "") {
     src: String
+}
+
+type Action @doc(description: "Show button") {
+    install: Boolean
+    purchase: Boolean
+    plan: Boolean
+}
+
+type Install @doc(description: "") {
+    theme_id: String
+    product_version: String
 }

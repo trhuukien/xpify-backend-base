@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace SectionBuilder\PurchaseGraphQl\Model\Resolver;
+namespace SectionBuilder\CoreGraphQl\Model\Resolver;
 
 class BillingMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractResolver implements \Magento\Framework\GraphQl\Query\ResolverInterface
 {
@@ -58,7 +58,7 @@ class BillingMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstr
         if (empty($price)) {
             return [
                 'message' => 'Da xay ra loi',
-                'status' => 'warning'
+                'tone' => 'warning'
             ];
         }
 
@@ -73,7 +73,7 @@ class BillingMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstr
 
         return [
             'message' => 'Da purchase roi',
-            'status' => 'warning'
+            'tone' => 'warning'
         ];
     }
 }

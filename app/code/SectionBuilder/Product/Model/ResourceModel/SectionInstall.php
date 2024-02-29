@@ -20,22 +20,29 @@ class SectionInstall extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
         );
     }
 
-    public function addRowUniqueKey($fieldToFilter, $fieldToAdd)
+    public function replaceRow($condition, $fieldToAdd)
     {
         $connection = $this->getConnection();
         $select = $connection->select()->from($this->getMainTable());
 
-        foreach ($fieldToFilter as $field => $value) {
+        foreach ($condition as $field => $value) {
             $select->where("$field = ?", $value);
         }
 
         if ($connection->fetchRow($select)) {
             $connection->update($this->getMainTable(), $fieldToAdd);
         } else {
-            $fieldToAdd = array_merge($fieldToFilter, $fieldToAdd);
+            $fieldToAdd = array_merge($condition, $fieldToAdd);
             $connection->insert($this->getMainTable(), $fieldToAdd);
         }
 
+        return $connection;
+    }
+
+    public function deleteRow($condition)
+    {
+        $connection = $this->getConnection();
+        $connection->delete($this->getMainTable(), $condition);
         return $connection;
     }
 }

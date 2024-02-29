@@ -1,3 +1,10 @@
+enum Tone @doc(description: "Tone in polaris") {
+    success
+    warning
+    critical
+    #    ...
+}
+
 type Query {
     getPricingPlans: [PricingPlan]
         @doc(description: "")
@@ -7,15 +14,22 @@ type Query {
         @resolver(class: "SectionBuilder\\CoreGraphQl\\Model\\Resolver\\SortOptionsQuery")
 }
 
-type PricingPlan {
-    entity_id: ID
-    name: String
-    code: String
-    status: Boolean
+type Mutation {
+    redirectBillingUrl(name: String!, interval: PricingPlanInterval!, is_plan: Boolean!): Message
+        @doc(description: "")
+        @resolver(class: "SectionBuilder\\CoreGraphQl\\Model\\Resolver\\BillingMutation")
+    cancelPlan(name: String!): Message
+        @doc(description: "")
+        @resolver(class: "SectionBuilder\\CoreGraphQl\\Model\\Resolver\\PlanCancelMutation")
 }
 
 type SortOption {
     label: String
     value: String
     directionLabel: String
+}
+
+type Message @doc(description: "") {
+    message: String
+    tone: Tone
 }

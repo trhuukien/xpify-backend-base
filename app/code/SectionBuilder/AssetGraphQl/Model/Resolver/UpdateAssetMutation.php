@@ -64,21 +64,23 @@ class UpdateAssetMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionA
             $this->handleUpdate->beforeUpdateAssetGraphql($section, $merchant, $args);
             $result = $this->serviceQuery->resolve($merchant, $args);
 
-            $this->sectionInstall->addRowUniqueKey(
-                [
-                    'merchant_shop' => $merchant->getShop(),
-                    'product_id' => $section['entity_id'],
-                    'theme_id' => $args['theme_id']
-                ],
-                [
-                    'product_version' => $section['version']
-                ]
-            );
-
-            if (!isset($result['errors'])) {
-                $section->setData('qty_installed', $section->getData('qty_installed') + 1);
-                $section->save();
+            if (!isset($result['errors']) && isset($result['key'])) {
+                $this->sectionInstall->replaceRow(
+                    [
+                        'merchant_shop' => $merchant->getShop(),
+                        'product_id' => $section['entity_id'],
+                        'theme_id' => $args['theme_id']
+                    ],
+                    [
+                        'product_version' => $section['version']
+                    ]
+                );
             }
+
+//            if (!isset($result['errors'])) {
+//                $section->setData('qty_installed', $section->getData('qty_installed') + 1);
+//                $section->save();
+//            }
         }
 
         return $result;

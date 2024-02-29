@@ -75,8 +75,12 @@ class Save extends Action implements HttpPostActionInterface
             $section->setKey(trim($postData['url_key']));
             $section->setPrice((float)$postData['price']);
             $section->setDescription($postData['description']);
-            $galleryArray = $this->uploadMediaGallery($postData);
-            $mediaGallery = implode(\SectionBuilder\Product\Model\Helper\Image::SEPARATION, $galleryArray);
+
+            $mediaGallery = $postData['media_gallery'];
+            if (is_array($postData['media_gallery'])) {
+                $galleryArray = $this->uploadMediaGallery($postData['media_gallery']);
+                $mediaGallery = implode(\SectionBuilder\Product\Model\Helper\Image::SEPARATION, $galleryArray);
+            }
             $section->setMediaGallery($mediaGallery);
 
             if (!$postData['is_group_product']) {
@@ -124,18 +128,18 @@ class Save extends Action implements HttpPostActionInterface
         );
     }
 
-    public function uploadMediaGallery($data)
+    public function uploadMediaGallery($media)
     {
-        $bannerimageDirPath = $this->mediaDirectory->getAbsolutePath("section_builder/product");
-        $tmp = $this->mediaDirectory->getAbsolutePath(\SectionBuilder\Product\Model\Helper\Image::SUB_DIR . "tmp");
-        if (!$this->fileDriver->isExists($bannerimageDirPath)) {
-            $this->fileDriver->createDirectory($bannerimageDirPath);
-            $this->fileDriver->createDirectory($tmp);
-        }
         $gallery = [];
 
-        if (!empty($data['media_gallery']['images'])) {
-            $images = $data['media_gallery']['images'];
+        if (!empty($media['images'])) {
+            $images = $media['images'];
+            $bannerimageDirPath = $this->mediaDirectory->getAbsolutePath("section_builder/product");
+            $tmp = $this->mediaDirectory->getAbsolutePath(\SectionBuilder\Product\Model\Helper\Image::SUB_DIR . "tmp");
+            if (!$this->fileDriver->isExists($bannerimageDirPath)) {
+                $this->fileDriver->createDirectory($bannerimageDirPath);
+                $this->fileDriver->createDirectory($tmp);
+            }
             foreach ($images as $image) {
                 if (empty($image['removed'])) {
                     if (!empty($image['value_id'])) {

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace SectionBuilder\PurchaseGraphQl\Model\Resolver;
+namespace SectionBuilder\CoreGraphQl\Model\Resolver;
 
 class PlanCancelMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractResolver implements \Magento\Framework\GraphQl\Query\ResolverInterface
 {
@@ -30,12 +30,12 @@ class PlanCancelMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAb
 
             return [
                 'message' => 'Thanh cong',
-                'status' => 'success'
+                'tone' => 'success'
             ];
         } catch (\Exception $e) {
             return [
                 'message' => $e->getMessage(),
-                'status' => 'error'
+                'tone' => 'critical'
             ];
         }
     }

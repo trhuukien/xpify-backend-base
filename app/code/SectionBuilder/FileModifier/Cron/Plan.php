@@ -50,6 +50,7 @@ class Plan
             'success' => 0,
             'error' => 0
         ];
+        return $result;
 
         $appId = $this->configData->getAppConnectingId();
         $file = $this->configData->getFileBaseSrc();

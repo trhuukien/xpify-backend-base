@@ -132,6 +132,47 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         return $this;
     }
 
+    public function joinPricingPlan($condition = [])
+    {
+        $this->getSelect()->joinLeft(
+            ['xpp' => \Xpify\PricingPlan\Model\ResourceModel\PricingPlan::MAIN_TABLE],
+            'main_table.plan_id = xpp.entity_id',
+            [
+                'xpp_id' => 'xpp.entity_id',
+                'xpp_code' => 'xpp.code',
+                'xpp_status' => 'xpp.status',
+                'xpp_name' => 'xpp.name',
+                'xpp_prices' => 'xpp.prices',
+                'xpp_description' => 'xpp.description'
+            ]
+        );
+
+        if ($condition) {
+            $this->getSelect()->where(...$condition);
+        }
+
+        return $this;
+    }
+
+    public function joinListInstalled($condition = [])
+    {
+        $separation = \SectionBuilder\Product\Model\ResourceModel\Section::SEPARATION;
+
+        $this->getSelect()->joinLeft(
+            ['i' => $this->getTable(\SectionBuilder\Product\Model\ResourceModel\SectionInstall::MAIN_TABLE)],
+            'main_table.entity_id = i.product_id',
+            [
+                'installed' => new \Zend_Db_Expr("GROUP_CONCAT(DISTINCT CONCAT(i.theme_id, ':', i.product_version) SEPARATOR '$separation')")
+            ]
+        );
+
+        if ($condition) {
+            $this->getSelect()->where(...$condition);
+        }
+
+        return $this;
+    }
+
     public function groupById()
     {
         $this->getSelect()->group('main_table.entity_id');
