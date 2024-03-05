@@ -62,10 +62,7 @@ class GraphQl
         $subscriptions = $responseBody["data"]["currentAppInstallation"]["activeSubscriptions"];
 
         foreach ($subscriptions as $subscription) {
-            if (
-                $subscription["name"] === $planName &&
-                (1 || !$subscription["test"])
-            ) {
+            if ($subscription["name"] === $planName && (1 || !$subscription["test"])) {
                 return true;
             }
         }

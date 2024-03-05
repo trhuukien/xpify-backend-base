@@ -5,7 +5,7 @@ type Query {
 }
 
 type Faq @doc(description: "") {
-    entity_id : String
+    entity_id: ID
     is_enable: Boolean
     title: String
     content: String

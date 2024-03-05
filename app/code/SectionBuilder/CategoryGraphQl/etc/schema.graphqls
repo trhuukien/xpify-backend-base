@@ -5,7 +5,7 @@ type Query {
 }
 
 type Category @doc(description: "") {
-    entity_id : String
+    entity_id : ID
     name: String
     is_enable: Boolean
 }

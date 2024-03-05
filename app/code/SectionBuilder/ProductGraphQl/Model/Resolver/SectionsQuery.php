@@ -43,9 +43,16 @@ class SectionsQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstrac
         $collection->setPageSize($args['pageSize']);
         $collection->setCurPage($args['currentPage']);
         $collection->addFieldToFilter('main_table.is_enable', 1);
+        $collection->addFieldToFilter(
+            'main_table.type_id',
+            \SectionBuilder\Product\Model\Config\Source\ProductType::SIMPLE_TYPE_ID
+        );
 
         if (isset($args['search']) && $args['search']) {
             $collection->addFieldToFilter('main_table.name', ['like' => '%' . $args['search'] . '%']);
+        }
+        if (isset($args['filter']['product_id']) && $args['filter']['product_id']) {
+            $collection->addFieldToFilter('entity_id', $args['filter']['product_id']);
         }
         if (isset($args['filter']['category_id']) && $args['filter']['category_id']) {
             $collection->joinCategoryTable('');

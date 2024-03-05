@@ -6,7 +6,7 @@ enum Tone @doc(description: "Tone in polaris") {
 }
 
 type Query {
-    getPricingPlans: [PricingPlan]
+    getPricingPlans: [PricingPlans]
         @doc(description: "")
         @resolver(class: "SectionBuilder\\CoreGraphQl\\Model\\Resolver\\PricingPlansQuery")
     getSortOptions: [SortOption]
@@ -21,6 +21,17 @@ type Mutation {
     cancelPlan(name: String!): Message
         @doc(description: "")
         @resolver(class: "SectionBuilder\\CoreGraphQl\\Model\\Resolver\\PlanCancelMutation")
+}
+
+type PricingPlans @doc(description: "") {
+    plan: PricingPlan
+    information: Information
+}
+
+type Information @doc(description: "") {
+    name: String
+    currentPeriodEnd: String
+    trialDays: String
 }
 
 type SortOption {
