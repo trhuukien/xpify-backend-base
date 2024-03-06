@@ -31,17 +31,17 @@ class WebhookHandlerRegister implements IObserver
     /**
      * Get webhook registry
      *
-     * @param string $appName
+     * @param int $appId
      * @return IWebhookTopic[]
      */
-    public function getWebhookRegistry(string $appName): array
+    public function getWebhookRegistry(int $appId): array
     {
         $webhookTopics = $this->webhookTopics;
 
         // Filter webhooks by app name if it's not null
         // null means it will be registered to all apps
-        $webhooksByApp = array_filter($webhookTopics, function ($webhook) use ($appName) {
-            return !$webhook->getAppName() || $webhook->getAppName() === $appName;
+        $webhooksByApp = array_filter($webhookTopics, function ($webhook) use ($appId) {
+            return !$webhook->getAppId() || $webhook->getAppId() === $appId;
         });
 
         // mapping webhook registry by uppercase array key of each registry, eg current $webhooksByApp structure is ['key' => $webhook, ...]

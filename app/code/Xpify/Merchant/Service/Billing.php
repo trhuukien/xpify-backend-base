@@ -88,7 +88,7 @@ class Billing
 
         if (!$this->hasActivePayment($merchant, $config)) {
             $shouldPayment = true;
-            $billingUrl = $this->requestPayment($merchant, $config);
+            [$billingUrl] = $this->requestPayment($merchant, $config);
         }
 
         return [$shouldPayment, $billingUrl];
@@ -104,30 +104,32 @@ class Billing
      *                         - "currencyCode": string
      *                         - "interval": one of the INTERVAL_* consts
      *
-     * @return string The confirmation URL
+     * @return array - the confirmationUrl and the AppSubscription or AppPurchaseOneTime object
      * @throws ShopifyBillingException|NoSuchEntityException
      */
-    public function requestPayment(IMerchant $merchant, array $config): string
+    public function requestPayment(IMerchant $merchant, array $config): array
     {
         $hostName = Context::$HOST_NAME;
         $shop = $merchant->getShop();
         $host = base64_encode("$shop/admin");
-        $returnUrl = "https://$hostName?shop={$shop}&host=$host";
+        $returnUrl = $config['return_url'] ?? "https://$hostName?shop={$shop}&host=$host";
 
+        $objectKey = 'appSubscription';
         if (self::isRecurring($config)) {
             $data = self::requestRecurringPayment($merchant, $config, $returnUrl);
             $data = $data["data"]["appSubscriptionCreate"];
         } else {
             $data = self::requestOneTimePayment($merchant, $config, $returnUrl);
             $data = $data["data"]["appPurchaseOneTimeCreate"];
+            $objectKey = "appPurchaseOneTime";
         }
 
         if (!empty($data["userErrors"])) {
             self::getLogger()->debug(__("User response error: %1", json_encode($data["userErrors"]))->render());
-            throw new ShopifyBillingException("Error while billing the store", $data["userErrors"]);
+            throw new ShopifyBillingException("Error while billing the store. Please contact us!", $data["userErrors"]);
         }
 
-        return $data["confirmationUrl"];
+        return [$data["confirmationUrl"], $data[$objectKey]];
     }
 
     /**
@@ -252,7 +254,7 @@ class Billing
      * @return bool
      * @throws ShopifyBillingException|NoSuchEntityException
      */
-    private static function hasSubscription(IMerchant $merchant, array $config): bool
+    public static function hasSubscription(IMerchant $merchant, array $config): bool
     {
         $responseBody = self::queryOrException($merchant, self::RECURRING_PURCHASES_QUERY);
         $subscriptions = $responseBody["data"]["currentAppInstallation"]["activeSubscriptions"];
@@ -405,6 +407,7 @@ class Billing
             returnUrl: $returnUrl
             test: $test
         ) {
+            appPurchaseOneTime { id status createdAt }
             confirmationUrl
             userErrors {
                 field, message

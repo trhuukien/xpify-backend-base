@@ -6,6 +6,7 @@ namespace Xpify\Auth\Service\Webhooks;
 use Shopify\Webhooks\Handler;
 use Xpify\App\Service\GetCurrentApp;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Xpify\Core\Model\Logger;
 use Xpify\Merchant\Api\Data\MerchantInterface as IMerchant;
 use Xpify\Merchant\Api\MerchantRepositoryInterface as IMerchantRepository;
 
@@ -14,6 +15,7 @@ class AppUninstalled implements Handler
     private IMerchantRepository $merchantRepository;
     private GetCurrentApp $currentApp;
     private SearchCriteriaBuilder $searchCriteriaBuilder;
+    private $logger;
 
     /**
      * @param IMerchantRepository $merchantRepository
@@ -59,10 +61,7 @@ class AppUninstalled implements Handler
     private function getLogger(): ?\Zend_Log
     {
         try {
-            $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/app_uninstalled.log');
-            $logger = new \Zend_Log();
-            $logger->addWriter($writer);
-            return $logger;
+            return Logger::getLogger('app_uninstalled.log');
         } catch (\Throwable $e) {
             return null;
         }

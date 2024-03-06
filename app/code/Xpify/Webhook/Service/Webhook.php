@@ -15,6 +15,7 @@ use Xpify\App\Api\AppRepositoryInterface as IAppRepository;
 use Xpify\App\Api\Data\AppInterface as IApp;
 use Xpify\App\Service\GetCurrentApp;
 use Xpify\Core\Helper\ShopifyContextInitializer;
+use Xpify\Core\Model\Logger;
 use Xpify\Merchant\Api\Data\MerchantInterface as IMerchant;
 use Xpify\Merchant\Api\MerchantRepositoryInterface;
 use Xpify\Webhook\Model\WebhookTopicInterface as IWebhookTopic;
@@ -111,7 +112,7 @@ class Webhook
             throw new \Exception('Merchant not found');
         }
         $merchant = current($result->getItems());
-        $webhookRegistry = $this->webhookHandlerRegister->getWebhookRegistry($app->getName());
+        $webhookRegistry = $this->webhookHandlerRegister->getWebhookRegistry((int) $app->getId());
 
         $existingHandlers = $this->getExistingWebhookHandlers($merchant);
         $privacyTopics = [
@@ -166,7 +167,7 @@ class Webhook
                 'operation' => 'delete',
                 'id' => $handler['id'],
             ];
-            $query = $this->buildWebhookMutation($topic, $app);
+            $query = $this->buildWebhookMutation($topic);
             $client = $merchant->getGraphql();
             $isSuccess = function ($body) {
                 return !empty($result['data'][$this->getMutationName(null, $topic['operation'])]['deletedWebhookSubscriptionId']);
@@ -208,7 +209,7 @@ class Webhook
         };
         foreach ($handlers as $handler) {
             try {
-                $query = $this->buildWebhookMutation($handler, $app);
+                $query = $this->buildWebhookMutation($handler);
                 $response = $client->query(data: $query);
                 $statusCode = $response->getStatusCode();
                 $body = $response->getDecodedBody();
@@ -276,7 +277,7 @@ class Webhook
         } catch (ShopifyException $e) {
             throw $e;
         } catch (\Throwable $e) {
-            $this->getLogger()?->debug(__("Failed to get existing webhook handlers for shop %1: %2", $merchant->getShop(), $e->getMessage())->render());
+            $this->getLogger('webhook_register.log')?->debug(__("Failed to get existing webhook handlers for shop %1: %2. %3", $merchant->getShop(), $e->getMessage(), $e->getTraceAsString())->render());
             throw new ShopifyException(__("Failed to get existing webhook handlers for shop %1", $merchant->getShop())->render());
         }
     }
@@ -290,9 +291,6 @@ class Webhook
                 $handler = [
                     'delivery_method' => Registry::DELIVERY_METHOD_HTTP,
                     'callback_url' => $endpoint['callbackUrl'],
-                    // This is a dummy for now because we don't really care about it
-                    'callback' => function () {
-                    },
                 ];
                 break;
             case 'WebhookEventBridgeEndpoint':
@@ -381,10 +379,7 @@ class Webhook
     private function getLogger(?string $fileName = 'webhook_process.log'): ?\Zend_Log
     {
         try {
-            $writer = new \Zend_Log_Writer_Stream(BP . "/var/log/$fileName");
-            $logger = new \Zend_Log();
-            $logger->addWriter($writer);
-            return $logger;
+            return Logger::getLogger($fileName);
         } catch (\Throwable $e) {
             return null;
         }

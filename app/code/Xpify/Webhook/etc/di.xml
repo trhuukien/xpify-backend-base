@@ -2,4 +2,11 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Xpify\Webhook\Model\WebhookTopicInterface" type="Xpify\Webhook\Model\WebhookTopic"/>
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="Bss_CustomPricing::create_price_rule" xsi:type="object">Xpify\Webhook\Console\WebhookInstallation</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

@@ -5,6 +5,7 @@ namespace Xpify\Webhook\Model;
 
 use Shopify\Webhooks\Handler as IHandler;
 use Xpify\Webhook\Model\WebhookTopicInterface as IWebhookTopic;
+use Xpify\Webhook\Model\WebhookAppResolverInterface as IWebhookAppResolver;
 
 class WebhookTopic implements IWebhookTopic
 {
@@ -24,7 +25,7 @@ class WebhookTopic implements IWebhookTopic
      */
     protected array $includeFields = [];
 
-    protected ?string $appName;
+    protected ?IWebhookAppResolver $appIdResolver;
     protected array $metafieldNamespaces = [];
 
     /**
@@ -32,16 +33,17 @@ class WebhookTopic implements IWebhookTopic
      *
      * @param string $topic
      * @param IHandler $handler
-     * @param string|null $appName
+     * @param IWebhookAppResolver|null $appIdResolver
      * @param array $includeFields
+     * @param array $metafieldNamespaces
      */
-    public function __construct(string $topic, IHandler $handler, ?string $appName = null, array $includeFields = [], array $metafieldNamespaces = [])
+    public function __construct(string $topic, IHandler $handler, ?IWebhookAppResolver $appIdResolver = null, array $includeFields = [], array $metafieldNamespaces = [])
     {
         $this->topic = $topic;
         $this->handler = $handler;
         sort($includeFields);
         $this->includeFields = $includeFields;
-        $this->appName = $appName;
+        $this->appIdResolver = $appIdResolver;
         sort($metafieldNamespaces);
         $this->metafieldNamespaces = $metafieldNamespaces;
     }
@@ -94,8 +96,8 @@ class WebhookTopic implements IWebhookTopic
     /**
      * @inheritDoc
      */
-    public function getAppName(): ?string
+    public function getAppId(): ?int
     {
-        return $this->appName;
+        return $this->appIdResolver?->getAppId();
     }
 }

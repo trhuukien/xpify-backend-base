@@ -43,11 +43,11 @@ interface WebhookTopicInterface
     public function getMetafieldNamespaces(): array;
 
     /**
-     * Get the app name
+     * Get the app id
      * Which app is this webhook should be registered to
      * if null, it will be registered to all apps
      *
-     * @return string|null
+     * @return int|null
      */
-    public function getAppName(): ?string;
+    public function getAppId(): ?int;
 }

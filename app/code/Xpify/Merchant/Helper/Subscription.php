@@ -11,6 +11,13 @@ use Xpify\Merchant\Api\Data\MerchantInterface as IMerchant;
 final class Subscription
 {
     private static array $subscriptions = [];
+
+    /**
+     * Store list existed subscriptions of each merchant
+     *
+     * @var ISubscription[]
+     */
+    private static array $subscriptionList = [];
     private static ?ISubscriptionRepository $subscriptionRepository = null;
 
     /**
@@ -47,6 +54,26 @@ final class Subscription
             }
         }
         return self::$subscriptions[$merchant->getId()] ?? null;
+    }
+
+    /**
+     * Get list existed subscriptions of the given merchant
+     *
+     * @param IMerchant $merchant
+     * @return ISubscription[]
+     */
+    public static function getSubscriptions(IMerchant $merchant): array
+    {
+        if (!isset(self::$subscriptionList[$merchant->getId()])) {
+            $criteriaBuilder = self::getSearchCriteriaBuilder();
+            $criteriaBuilder->addFilter(ISubscription::MERCHANT_ID, $merchant->getId());
+            $criteriaBuilder->addFilter(ISubscription::APP_ID, $merchant->getAppId());
+            $searchResults = self::getSubscriptionRepository()->getList($criteriaBuilder->create());
+            if ($searchResults->getTotalCount() > 0) {
+                self::$subscriptionList[$merchant->getId()] = $searchResults->getItems();
+            }
+        }
+        return self::$subscriptionList[$merchant->getId()] ?? [];
     }
 
     /**
