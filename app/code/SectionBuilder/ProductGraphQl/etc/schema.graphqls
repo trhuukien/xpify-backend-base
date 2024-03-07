@@ -16,15 +16,18 @@ type Query {
     getSection(key: String!): Section
         @doc(description: "")
         @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionQuery")
-    getSectionsInstall(merchant_shop: String): [SectionInstall]
-        @doc(description: "")
-        @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsInstallQuery")
     getGroupSections: [GroupSection]
         @doc(description: "")
         @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\GroupSectionsQuery")
     getGroupSection(key: String!): GroupSection
         @doc(description: "")
         @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\GroupSectionQuery")
+    getSectionsBuy(merchant_shop: String): [SectionLite]
+        @doc(description: "")
+        @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsBuyQuery")
+    getSectionsInstall(merchant_shop: String): [SectionLite]
+        @doc(description: "")
+        @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsInstallQuery")
 }
 
 input SectionFilterInput @doc(description: "") {
@@ -92,7 +95,7 @@ type Install @doc(description: "") {
     product_version: String
 }
 
-type SectionInstall @doc(description: "") {
+type SectionLite @doc(description: "") {
     product_id: String
     name: String
     price: String

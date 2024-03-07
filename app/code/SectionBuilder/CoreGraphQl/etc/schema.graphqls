@@ -15,9 +15,6 @@ type Query {
 }
 
 type Mutation {
-    redirectBillingUrl(name: String!, interval: PricingPlanInterval!, is_plan: Boolean!): Message
-        @doc(description: "")
-        @resolver(class: "SectionBuilder\\CoreGraphQl\\Model\\Resolver\\BillingMutation")
     cancelPlan(name: String!): Message
         @doc(description: "")
         @resolver(class: "SectionBuilder\\CoreGraphQl\\Model\\Resolver\\PlanCancelMutation")

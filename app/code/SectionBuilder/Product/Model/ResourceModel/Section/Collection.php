@@ -154,6 +154,22 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         return $this;
     }
 
+    public function joinListBought($condition = [])
+    {
+        $separation = \SectionBuilder\Product\Model\ResourceModel\Section::SEPARATION;
+
+        $this->getSelect()->joinLeft(
+            ['b' => $this->getTable(\SectionBuilder\Product\Model\ResourceModel\SectionBuy::MAIN_TABLE)],
+            'main_table.entity_id = b.product_id',
+        );
+
+        if ($condition) {
+            $this->getSelect()->where(...$condition);
+        }
+
+        return $this;
+    }
+
     public function joinListInstalled($condition = [])
     {
         $separation = \SectionBuilder\Product\Model\ResourceModel\Section::SEPARATION;

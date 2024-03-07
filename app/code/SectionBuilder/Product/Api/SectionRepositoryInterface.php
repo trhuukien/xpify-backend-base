@@ -7,7 +7,7 @@ use SectionBuilder\Product\Api\Data\SectionInterface;
 
 interface SectionRepositoryInterface
 {
-    public function get(string $field, mixed $value);
+    public function get(string $field, mixed $value): SectionInterface;
 
     public function save(SectionInterface $section);
 

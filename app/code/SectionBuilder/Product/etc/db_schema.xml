@@ -32,12 +32,31 @@
         <constraint xsi:type="foreign" referenceId="fk_sbp_xpp" table="section_builder_product" column="plan_id" referenceTable="$xpify_pricing_plans" referenceColumn="entity_id" onDelete="SET NULL"/>
     </table>
 
+    <table name="section_builder_buy" resource="default" engine="innodb" comment="">
+        <column xsi:type="smallint" name="entity_id" padding="6" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="varchar" name="merchant_shop" nullable="false" length="255" comment="FK xpify_merchants"/>
+        <column xsi:type="smallint" name="product_id" padding="6" unsigned="true" nullable="false" comment="FK section_builder_product"/>
+        <column xsi:type="text" name="details" comment="Purchase details"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" comment=""/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="true" comment=""/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="UNIQUE_BOUGHT">
+            <column name="merchant_shop"/>
+            <column name="product_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="fk_sbb_sbp" table="section_builder_buy" column="product_id" referenceTable="section_builder_product" referenceColumn="entity_id" onDelete="CASCADE" />
+    </table>
+
     <table name="section_builder_install" resource="default" engine="innodb" comment="">
         <column xsi:type="smallint" name="entity_id" padding="6" unsigned="true" nullable="false" identity="true" comment="ID"/>
         <column xsi:type="varchar" name="merchant_shop" nullable="false" length="255" comment="FK xpify_merchants"/>
         <column xsi:type="smallint" name="product_id" padding="6" unsigned="true" nullable="false" comment="FK section_builder_product"/>
         <column xsi:type="varchar" name="theme_id" nullable="false" length="255" comment="Theme installed"/>
         <column xsi:type="varchar" name="product_version" nullable="false" default="1.0.0" length="255" comment="Version"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" comment=""/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="true" comment=""/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="entity_id"/>
         </constraint>

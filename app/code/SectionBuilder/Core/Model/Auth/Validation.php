@@ -30,7 +30,7 @@ class Validation
     public function redirectPagePurchase($merchant, $config): void
     {
         if (!$this->billing->hasActivePayment($merchant, $config)) {
-            $billingUrl = $this->billing->requestPayment($merchant, $config);
+            [$billingUrl] = $this->billing->requestPayment($merchant, $config);
 
             /* Redirect to payment shopify app */
             throw new \Xpify\AuthGraphQl\Exception\GraphQlShopifyReauthorizeRequiredException(

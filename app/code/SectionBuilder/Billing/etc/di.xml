@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <virtualType name="Shopify_Webhooks_Topics_AppSubscriptionUpdate" type="Xpify\Webhook\Model\WebhookTopic">
+        <arguments>
+            <argument name="topic" xsi:type="const">Shopify\Webhooks\Topics::APP_SUBSCRIPTIONS_UPDATE</argument>
+            <argument name="handler" xsi:type="object">SectionBuilder\Billing\Service\Webhooks\AppSubscriptionUpdate</argument>
+            <argument name="appIdResolver" xsi:type="object">SectionBuilder\Billing\Service\Webhooks\AppIdResolver</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Shopify_Webhooks_Topics_APP_PURCHASES_ONE_TIME_UPDATE" type="Xpify\Webhook\Model\WebhookTopic">
+        <arguments>
+            <argument name="topic" xsi:type="const">Shopify\Webhooks\Topics::APP_PURCHASES_ONE_TIME_UPDATE</argument>
+            <argument name="handler" xsi:type="object">SectionBuilder\Billing\Service\Webhooks\AppSubscriptionUpdate</argument>
+            <argument name="appIdResolver" xsi:type="object">SectionBuilder\Billing\Service\Webhooks\AppIdResolver</argument>
+        </arguments>
+    </virtualType>
+    <type name="Xpify\Webhook\Service\WebhookHandlerRegister">
+        <arguments>
+            <argument name="webhookTopics" xsi:type="array">
+                <item name="app_subscriptions/update" xsi:type="object">Shopify_Webhooks_Topics_AppSubscriptionUpdate</item>
+                <item name="Shopify_Webhooks_Topics_APP_PURCHASES_ONE_TIME_UPDATE" xsi:type="object">Shopify_Webhooks_Topics_APP_PURCHASES_ONE_TIME_UPDATE</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

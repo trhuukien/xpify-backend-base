@@ -3,68 +3,67 @@ declare(strict_types=1);
 
 namespace SectionBuilder\Product\Model;
 
-use SectionBuilder\Product\Api\Data\SectionInterface;
+use SectionBuilder\Product\Api\Data\SectionBuyInterface;
 
-class SectionRepository implements \SectionBuilder\Product\Api\SectionRepositoryInterface
+class SectionBuyRepository implements \SectionBuilder\Product\Api\SectionBuyRepositoryInterface
 {
-    protected $section;
+    protected $sectionBuy;
 
-    protected $sectionFactory;
+    protected $sectionBuyFactory;
 
     protected $collectionFactory;
 
     protected $collectionProcessor;
-
-    protected $searchResultsFactory;
+    private \SectionBuilder\Product\Api\Data\PurchasedSectionSearchResultsInterfaceFactory $searchResultsFactory;
 
     public function __construct(
-        \SectionBuilder\Product\Model\ResourceModel\Section $section,
-        \SectionBuilder\Product\Model\SectionFactory $sectionFactory,
-        \SectionBuilder\Product\Model\ResourceModel\Section\CollectionFactory $collectionFactory,
+        \SectionBuilder\Product\Model\ResourceModel\SectionBuy $sectionBuy,
+        \SectionBuilder\Product\Model\SectionBuyFactory $sectionBuyFactory,
+        \SectionBuilder\Product\Model\ResourceModel\SectionBuy\CollectionFactory $collectionFactory,
         \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface $collectionProcessor,
-        \SectionBuilder\Product\Api\Data\SectionSearchResultsInterfaceFactory $searchResultsFactory
+        \SectionBuilder\Product\Api\Data\PurchasedSectionSearchResultsInterfaceFactory $searchResultsFactory
     ) {
-        $this->section = $section;
-        $this->sectionFactory = $sectionFactory;
+        $this->sectionBuy = $sectionBuy;
+        $this->sectionBuyFactory = $sectionBuyFactory;
         $this->collectionFactory = $collectionFactory;
         $this->collectionProcessor = $collectionProcessor;
         $this->searchResultsFactory = $searchResultsFactory;
     }
 
-    public function create()
+    public function create(): SectionBuyInterface
     {
-        return $this->sectionFactory->create();
+        return $this->sectionBuyFactory->create();
     }
 
-    public function get(string $field, mixed $value): SectionInterface
+    public function get(string $field, int|string $value)
     {
         try {
-            $section = $this->create();
-            $this->section->load($section, $value, $field);
+            $sectionBuy = $this->create();
+            $this->sectionBuy->load($sectionBuy, $value, $field);
 
-            if (!$section->getId()) {
-                throw new \Magento\Framework\Exception\NoSuchEntityException(__('Section does not exist.'));
+            if (!$sectionBuy->getId()) {
+                throw new \Magento\Framework\Exception\NoSuchEntityException(__('Section Buy does not exist.'));
             }
-            return $section;
+            return $sectionBuy;
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\NoSuchEntityException(__($e->getMessage()));
         }
     }
 
-    public function save(SectionInterface $section)
+    public function save(SectionBuyInterface $sectionBuy)
     {
         try {
-            $this->section->save($section);
-            return $section;
+            $this->sectionBuy->save($sectionBuy);
+            return $sectionBuy;
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\CouldNotSaveException(__($e->getMessage()));
         }
     }
 
-    public function delete(SectionInterface $section)
+    public function delete(SectionBuyInterface $sectionBuy)
     {
         try {
-            $this->section->delete($section);
+            $this->sectionBuy->delete($sectionBuy);
             return true;
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\CouldNotDeleteException(__($e->getMessage()));

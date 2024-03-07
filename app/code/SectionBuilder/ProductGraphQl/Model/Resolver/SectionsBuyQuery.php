@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace SectionBuilder\ProductGraphQl\Model\Resolver;
 
-class SectionsInstallQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractResolver implements \Magento\Framework\GraphQl\Query\ResolverInterface
+class SectionsBuyQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractResolver implements \Magento\Framework\GraphQl\Query\ResolverInterface
 {
     protected $authValidation;
 
@@ -42,14 +42,15 @@ class SectionsInstallQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSession
         $merchant = $this->getMerchantSession()->getMerchant();
 
         $collection = $this->collectionFactory->create();
-        $collection->joinListInstalled(
+        $collection->joinListBought(
             [
-                'i.merchant_shop = ?',
+                'b.merchant_shop = ?',
                 $args['merchant_shop'] ?? $merchant->getShop()
             ]
         );
         $collection->addFieldToSelect(['name', 'url_key', 'price', 'version', 'media_gallery']);
         $collection->addFieldToFilter('main_table.is_enable', 1);
+        $collection->addFieldToFilter('main_table.type_id', \SectionBuilder\Product\Model\Config\Source\ProductType::SIMPLE_TYPE_ID);
         $collection->groupById();
         $items = $collection->getData();
 

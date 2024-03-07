@@ -1,0 +1,5 @@
+type Mutation {
+    purchaseSection(id: ID!): Section
+        @doc(description: "Purchase a section")
+        @resolver(class: "\\SectionBuilder\\BillingGraphQl\\Model\\Resolver\\PurchaseSectionMutation")
+}

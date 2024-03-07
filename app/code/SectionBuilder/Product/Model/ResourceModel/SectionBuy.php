@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace SectionBuilder\Product\Model\ResourceModel;
 
-class SectionInstall extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+class SectionBuy extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
-    const MAIN_TABLE = 'section_builder_install';
+    const MAIN_TABLE = 'section_builder_buy';
 
     protected $dateTimeFactory;
 
@@ -27,7 +27,7 @@ class SectionInstall extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
     {
         $this->_init(
             self::MAIN_TABLE,
-            \SectionBuilder\Product\Api\Data\SectionInstallInterface::ID
+            \SectionBuilder\Product\Api\Data\SectionBuyInterface::ID
         );
     }
 
@@ -45,31 +45,5 @@ class SectionInstall extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
 
         $object->setUpdatedAt($this->dateTimeFactory->create()->gmtDate());
         return parent::_beforeSave($object);
-    }
-
-    public function replaceRow($condition, $fieldToAdd)
-    {
-        $connection = $this->getConnection();
-        $select = $connection->select()->from($this->getMainTable());
-
-        foreach ($condition as $field => $value) {
-            $select->where("$field = ?", $value);
-        }
-
-        if ($connection->fetchRow($select)) {
-            $connection->update($this->getMainTable(), $fieldToAdd);
-        } else {
-            $fieldToAdd = array_merge($condition, $fieldToAdd);
-            $connection->insert($this->getMainTable(), $fieldToAdd);
-        }
-
-        return $connection;
-    }
-
-    public function deleteRow($condition)
-    {
-        $connection = $this->getConnection();
-        $connection->delete($this->getMainTable(), $condition);
-        return $connection;
     }
 }

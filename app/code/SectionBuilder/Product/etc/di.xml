@@ -6,7 +6,9 @@
     <preference for="SectionBuilder\Product\Api\SectionInstallRepositoryInterface" type="SectionBuilder\Product\Model\SectionInstallRepository"/>
     <preference for="SectionBuilder\Product\Api\SectionRepositoryInterface" type="SectionBuilder\Product\Model\SectionRepository"/>
     <preference for="SectionBuilder\Product\Api\Data\SectionSearchResultsInterface" type="SectionBuilder\Product\Model\SectionSearchResults"/>
+    <preference for="SectionBuilder\Product\Api\Data\PurchasedSectionSearchResultsInterface" type="SectionBuilder\Product\Model\PurchasedSectionSearchResults"/>
 
+    <preference for="SectionBuilder\Product\Api\SectionBuyRepositoryInterface" type="SectionBuilder\Product\Model\SectionBuyRepository"/>
     <virtualType name="SectionBuilder\Product\Model\ResourceModel\Product\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="const">SectionBuilder\Product\Model\ResourceModel\Section::MAIN_TABLE</argument>
