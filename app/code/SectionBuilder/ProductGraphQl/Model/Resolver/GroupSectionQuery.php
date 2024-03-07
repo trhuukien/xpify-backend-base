@@ -45,6 +45,12 @@ class GroupSectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbs
 
         $merchant = $this->getMerchantSession()->getMerchant();
         $collection = $this->collectionFactory->create();
+        $collection->joinListBought(
+            [
+                'b.merchant_shop IS NULL or b.merchant_shop = ?',
+                $merchant->getShop()
+            ]
+        );
         $collection->addFieldToFilter(
             'main_table.url_key',
             $args['key']
@@ -69,11 +75,7 @@ class GroupSectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbs
         }
         $item['images'] = $images;
 
-        $hasOneTime = $this->authValidation->hasOneTime(
-            $merchant,
-            $item[\SectionBuilder\Product\Api\Data\SectionInterface::KEY]
-        );
-        $item['actions']['purchase'] = !$hasOneTime;
+        $item['actions']['purchase'] = !$item['bought_id'];
 
         return $item;
     }

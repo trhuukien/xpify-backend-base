@@ -9,16 +9,16 @@ class PricingPlansQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbs
 
     protected $collectionFactory;
 
-    protected $configData;
+    protected $currentApp;
 
     public function __construct(
         \SectionBuilder\Core\Model\Auth\GraphQl $auth,
         \Xpify\PricingPlan\Model\ResourceModel\PricingPlan\CollectionFactory $collectionFactory,
-        \SectionBuilder\Core\Model\Config $configData
+        \Xpify\App\Service\GetCurrentApp $currentApp
     ) {
         $this->auth = $auth;
         $this->collectionFactory = $collectionFactory;
-        $this->configData = $configData;
+        $this->currentApp = $currentApp;
     }
 
     /**
@@ -32,7 +32,7 @@ class PricingPlansQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbs
         array $args = null
     ) {
         $merchant = $this->getMerchantSession()->getMerchant();
-        $appId = $this->configData->getAppConnectingId();
+        $appId = $this->currentApp->get()->getId();
         $collection = $this->collectionFactory->create();
         $collection->addFieldToFilter('app_id', $appId);
         $collection->addFieldToFilter('status', 1);

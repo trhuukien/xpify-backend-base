@@ -35,6 +35,8 @@ class Save extends Action implements HttpPostActionInterface
 
     protected $coreFileStorageDatabase;
 
+    protected $getFileRaw;
+
     public function __construct(
         Context $context,
         \SectionBuilder\Product\Api\SectionRepositoryInterface $sectionRepository,
@@ -45,7 +47,9 @@ class Save extends Action implements HttpPostActionInterface
         \Magento\Framework\Serialize\SerializerInterface $serializer,
         File $fileDriver,
         Filesystem $filesystem,
-        \Magento\MediaStorage\Helper\File\Storage\Database $coreFileStorageDatabase
+        \Magento\MediaStorage\Helper\File\Storage\Database $coreFileStorageDatabase,
+        \Magento\Framework\App\Response\RedirectInterface $redirect,
+        \SectionBuilder\FileModifier\Model\GetFileRaw $getFileRaw
     ) {
         parent::__construct($context);
         $this->sectionRepository = $sectionRepository;
@@ -58,6 +62,8 @@ class Save extends Action implements HttpPostActionInterface
         $this->filesystem = $filesystem;
         $this->mediaDirectory = $filesystem->getDirectoryWrite(DirectoryList::MEDIA);
         $this->coreFileStorageDatabase = $coreFileStorageDatabase;
+        $this->redirect = $redirect;
+        $this->getFileRaw = $getFileRaw;
     }
 
     public function execute()
@@ -76,21 +82,28 @@ class Save extends Action implements HttpPostActionInterface
             $section->setPrice((float)$postData['price']);
             $section->setDescription($postData['description']);
 
-            $mediaGallery = $postData['media_gallery'];
-            if (is_array($postData['media_gallery'])) {
+            $mediaGallery = $postData['media_gallery'] ?? '';
+            if (is_array($mediaGallery)) {
                 $galleryArray = $this->uploadMediaGallery($postData['media_gallery']);
                 $mediaGallery = implode(\SectionBuilder\Product\Model\Helper\Image::SEPARATION, $galleryArray);
             }
             $section->setMediaGallery($mediaGallery);
 
+            $postData['is_group_product'] = (int)$postData['is_group_product'];
             if (!$postData['is_group_product']) {
                 $section->setTypeId(\SectionBuilder\Product\Model\Config\Source\ProductType::SIMPLE_TYPE_ID);
                 $section->setVersion(trim($postData['version']));
                 $section->setPlanId($postData['plan_id'] ?: null);
                 $section->setSrc($postData['src'] ?: null);
-                $section->setFileData($postData['file_data']);
+                $section->setPathSource(ltrim($postData['path_source'], '/') ?: null);
                 $section->setReleaseNote($postData['release_note']);
                 $section->setDemoLink($postData['demo_link']);
+
+                if ($this->getFileRaw->execute($section->getPathSource()) === '') {
+                    $this->messageManager->addErrorMessage(_('The source code is empty!'));
+                    $this->dataPersistor->set('section_product_data', $postData);
+                    return $this->resultRedirectFactory->create()->setUrl($this->_redirect->getRefererUrl());
+                }
             } else {
                 $section->setTypeId(\SectionBuilder\Product\Model\Config\Source\ProductType::GROUP_TYPE_ID);
                 $childIdsArr = $this->serializer->unserialize($postData['group_products']);
@@ -101,6 +114,12 @@ class Save extends Action implements HttpPostActionInterface
                     }
                 }
                 $section->setChildIds(implode(",", $childIds));
+
+                if (!$section->getChildIds()) {
+                    $this->messageManager->addErrorMessage(__('Please select child product!'));
+                    $this->dataPersistor->set('section_product_data', $postData);
+                    return $this->resultRedirectFactory->create()->setUrl($this->_redirect->getRefererUrl());
+                }
             }
 
             $this->sectionRepository->save($section);
@@ -109,23 +128,12 @@ class Save extends Action implements HttpPostActionInterface
             $this->replaceTags($section->getId(), $postData['tags'] ?? []);
 
             $this->messageManager->addSuccessMessage(__('You saved the product.'));
-            $redirectPath = '*/*/edit';
-            $redirectParams = ['id' => $section->getId()];
         } catch (\Exception $e) {
             $this->messageManager->addExceptionMessage($e);
             $this->dataPersistor->set('section_product_data', $postData);
-            if (empty($postData['entity_id'])) {
-                $redirectPath = '*/*/add';
-            } else {
-                $redirectPath = '*/*/edit';
-                $redirectParams = ['id' => $postData['entity_id']];
-            }
         }
 
-        return $this->resultRedirectFactory->create()->setPath(
-            $redirectPath,
-            $redirectParams ?? []
-        );
+        return $this->resultRedirectFactory->create()->setUrl($this->_redirect->getRefererUrl());
     }
 
     public function uploadMediaGallery($media)

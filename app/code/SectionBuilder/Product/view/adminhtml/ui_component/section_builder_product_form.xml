@@ -360,7 +360,7 @@
                     <item name="formElement" xsi:type="string">input</item>
                     <item name="dataScope" xsi:type="string">src</item>
                     <item name="tooltip" xsi:type="array">
-                        <item name="description" xsi:type="string" translate="true">You can only update once to avoid affecting merchants using App.</item>
+                        <item name="description" xsi:type="string" translate="true">Path to save source code in the merchant's theme after the merchant installed Section.</item>
                     </item>
                 </item>
             </argument>
@@ -372,25 +372,33 @@
                 <validation>
                     <rule name="required-entry" xsi:type="boolean">true</rule>
                     <rule name="max_text_length" xsi:type="number">255</rule>
-                    <rule name="pattern" xsi:type="string">^[a-z]+\/[a-z0-9-]+\.[a-z]+$</rule>
+                    <rule name="pattern" xsi:type="string">^[a-z-_]+\/[a-z0-9-_]+\.[a-z]+$</rule>
                 </validation>
                 <notice translate="true">Ex: sections/bss-section-about01.liquid</notice>
             </settings>
         </field>
-        <field name="file_data">
+        <field name="path_source">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="dataType" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">File Content</item>
-                    <item name="formElement" xsi:type="string">textarea</item>
-                    <item name="rows" xsi:type="number">20</item>
-                    <item name="dataScope" xsi:type="string">file_data</item>
+                    <item name="label" xsi:type="string" translate="true">Path</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="dataScope" xsi:type="string">path_source</item>
+                    <item name="tooltip" xsi:type="array">
+                        <item name="description" xsi:type="string" translate="true">This is path file in project gitlab.</item>
+                    </item>
                 </item>
             </argument>
             <settings>
                 <imports>
                     <link name="visible">!${ $.provider}:data.is_group_product</link>
                 </imports>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="max_text_length" xsi:type="number">255</rule>
+                    <rule name="pattern" xsi:type="string">^[a-zA-Z0-9-_\/]+\.[a-z]+$</rule>
+                </validation>
+                <notice translate="true">Ex: app/section-builder/sections/bss-section-about01.liquid</notice>
             </settings>
         </field>
     </fieldset>

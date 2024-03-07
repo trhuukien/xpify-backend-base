@@ -45,11 +45,18 @@ class UpdateAssetMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionA
             ['theme_id', 'asset'],
             ['value']
         );
+        $merchant = $this->getMerchantSession()->getMerchant();
 
         $collection = $this->sectionFactory->create();
         $collection->addFieldToFilter(
             \SectionBuilder\Product\Api\Data\SectionInterface::SRC,
             $args['asset']
+        );
+        $collection->joinListBought(
+            [
+                'b.merchant_shop IS NULL or b.merchant_shop = ?',
+                $merchant->getShop()
+            ]
         );
         $collection->getSelect()->joinLeft(
             ['xpp' => \Xpify\PricingPlan\Model\ResourceModel\PricingPlan::MAIN_TABLE],
@@ -60,7 +67,6 @@ class UpdateAssetMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionA
         $section = $sectionItem->getData();
 
         if ($section) {
-            $merchant = $this->getMerchantSession()->getMerchant();
             $this->handleUpdate->beforeUpdateAssetGraphql($section, $merchant, $args);
             $result = $this->serviceQuery->resolve($merchant, $args);
 

@@ -35,7 +35,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         return $this;
     }
 
-    public function joinListCategoryId()
+    public function joinListCategoryId($condition = ['c.is_enable IS NULL OR c.is_enable = ?', 1])
     {
         $this->getSelect()->joinLeft(
             ['cp' => $this->getTable(\SectionBuilder\Category\Model\ResourceModel\CategoryProduct::MAIN_TABLE)],
@@ -44,11 +44,12 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         )->joinLeft(
             ['c' => $this->getTable(\SectionBuilder\Category\Model\ResourceModel\Category::MAIN_TABLE)],
             'c.entity_id = cp.category_id',
-            ['category_is_enable' => 'c.is_enable']
-        )->where(
-            'c.is_enable IS NULL OR c.is_enable = ?',
-            1
+            ''
         );
+
+        if ($condition) {
+            $this->getSelect()->where(...$condition);
+        }
 
         return $this;
     }
@@ -65,7 +66,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             ['c' => $this->getTable(\SectionBuilder\Category\Model\ResourceModel\Category::MAIN_TABLE)],
             'c.entity_id = cp.category_id',
             [
-                'category_is_enable' => 'c.is_enable',
                 'categories' => new \Zend_Db_Expr("GROUP_CONCAT(DISTINCT c.name SEPARATOR '$separation')")
             ]
         )->where(
@@ -91,7 +91,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         return $this;
     }
 
-    public function joinListTagId()
+    public function joinListTagId($condition = ['t.is_enable IS NULL OR t.is_enable = ?', 1])
     {
         $this->getSelect()->joinLeft(
             ['tp' => $this->getTable(\SectionBuilder\Tag\Model\ResourceModel\TagProduct::MAIN_TABLE)],
@@ -100,11 +100,12 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         )->joinLeft(
             ['t' => $this->getTable(\SectionBuilder\Tag\Model\ResourceModel\Tag::MAIN_TABLE)],
             't.entity_id = tp.tag_id',
-            ['tag_is_enable' => 't.is_enable']
-        )->where(
-            't.is_enable IS NULL OR t.is_enable = ?',
-            1
+            ''
         );
+
+        if ($condition) {
+            $this->getSelect()->where(...$condition);
+        }
 
         return $this;
     }
@@ -121,7 +122,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             ['t' => $this->getTable(\SectionBuilder\Tag\Model\ResourceModel\Tag::MAIN_TABLE)],
             't.entity_id = tp.tag_id',
             [
-                'tag_is_enable' => 't.is_enable',
                 'tags' => new \Zend_Db_Expr("GROUP_CONCAT(DISTINCT t.name SEPARATOR '$separation')")
             ]
         )->where(
@@ -156,11 +156,10 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
     public function joinListBought($condition = [])
     {
-        $separation = \SectionBuilder\Product\Model\ResourceModel\Section::SEPARATION;
-
         $this->getSelect()->joinLeft(
             ['b' => $this->getTable(\SectionBuilder\Product\Model\ResourceModel\SectionBuy::MAIN_TABLE)],
             'main_table.entity_id = b.product_id',
+            ['bought_id' => 'b.entity_id']
         );
 
         if ($condition) {

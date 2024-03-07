@@ -51,7 +51,18 @@ class SectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstract
         $collection->joinListCategoryName();
         $collection->joinListTagName();
         $collection->joinPricingPlan(['xpp.entity_id IS NULL or xpp.entity_id = main_table.plan_id']);
-        $collection->joinListInstalled(['i.merchant_shop IS NULL or i.merchant_shop = ?', $merchant->getShop()]);
+        $collection->joinListBought(
+            [
+                'b.merchant_shop IS NULL or b.merchant_shop = ?',
+                $merchant->getShop()
+            ]
+        );
+        $collection->joinListInstalled(
+            [
+                'i.merchant_shop IS NULL or i.merchant_shop = ?',
+                $merchant->getShop()
+            ]
+        );
 
         $result = $collection->getFirstItem()->getData();
         if (!$result) {
@@ -95,10 +106,7 @@ class SectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstract
             $result['installed'] = $arrInstall ?? [];
         }
 
-        $hasOneTime = $this->authValidation->hasOneTime(
-            $merchant,
-            $result[\SectionBuilder\Product\Api\Data\SectionInterface::KEY]
-        );
+        $hasOneTime = $result['bought_id'];
         $hasPlan = !isset($result['pricing_plan']) || $this->authValidation->hasPlan(
             $merchant,
             $result['pricing_plan']['code']

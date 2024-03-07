@@ -77,24 +77,24 @@ class Section extends \Magento\Framework\Model\AbstractModel implements SectionI
         return $this->setData(self::PRICE, $price);
     }
 
-    public function getSrc(): string
+    public function getSrc(): ?string
     {
         return $this->getData(self::SRC);
     }
 
-    public function setSrc(string $src): SectionInterface
+    public function setPathSource(?string $urlSource): SectionInterface
+    {
+        return $this->setData(self::PATH_SOURCE, $urlSource);
+    }
+
+    public function getPathSource(): ?string
+    {
+        return $this->getData(self::PATH_SOURCE);
+    }
+
+    public function setSrc(?string $src): SectionInterface
     {
         return $this->setData(self::SRC, $src);
-    }
-
-    public function getFileData(): ?string
-    {
-        return $this->getData(self::FILE_DATA);
-    }
-
-    public function setFileData(?string $fileData): SectionInterface
-    {
-        return $this->setData(self::FILE_DATA, $fileData);
     }
 
     public function getMediaGallery(): ?string

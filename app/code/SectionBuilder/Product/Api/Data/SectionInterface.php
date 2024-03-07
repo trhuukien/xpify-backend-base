@@ -12,7 +12,7 @@ interface SectionInterface
     const KEY = 'url_key';
     const PRICE = 'price';
     const SRC = 'src';
-    const FILE_DATA = 'file_data';
+    const PATH_SOURCE = 'path_source';
     const MEDIA_GALLERY = 'media_gallery';
     const DESCRIPTION = 'description';
     const TYPE_ID = 'type_id';
@@ -49,13 +49,13 @@ interface SectionInterface
 
     public function setPrice(float $price): self;
 
-    public function getSrc(): string;
+    public function getSrc(): ?string;
 
-    public function setSrc(string $src): self;
+    public function setSrc(?string $src): self;
 
-    public function getFileData(): ?string;
+    public function getPathSource(): ?string;
 
-    public function setFileData(?string $fileData): self;
+    public function setPathSource(?string $urlSource): self;
 
     public function getMediaGallery(): ?string;
 

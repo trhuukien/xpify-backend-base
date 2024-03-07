@@ -43,7 +43,8 @@ class SectionDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
 
         $this->loadedData[$data['entity_id'] ?? ""]['is_group_product']
             = $isGroup
-            = (int) $this->request->getParam('type_id') == \SectionBuilder\Product\Model\Config\Source\ProductType::GROUP_TYPE_ID;
+            = (int)($this->request->getParam('type_id') ==
+            \SectionBuilder\Product\Model\Config\Source\ProductType::GROUP_TYPE_ID);
 
         if (!empty($data)) {
             if (isset($data['entity_id'])) {
@@ -67,7 +68,7 @@ class SectionDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
                 $this->loadedData[$item->getId()] = $item->getData();
                 $this->loadedData[$item->getId()]['is_disable'] = true;
                 $this->loadedData[$item->getId()]['is_group_product']
-                    = (int) ($isGroup || $item->getData('type_id') == \SectionBuilder\Product\Model\Config\Source\ProductType::GROUP_TYPE_ID);
+                    = (int)($isGroup || $item->getData('type_id') == \SectionBuilder\Product\Model\Config\Source\ProductType::GROUP_TYPE_ID);
             }
         }
 

@@ -16,6 +16,9 @@ type Query {
     getSection(key: String!): Section
         @doc(description: "")
         @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionQuery")
+    getRelatedSections(key: String!): [Section]
+        @doc(description: "")
+        @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsRelatedQuery")
     getGroupSections: [GroupSection]
         @doc(description: "")
         @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\GroupSectionsQuery")
@@ -28,6 +31,9 @@ type Query {
     getSectionsInstall(merchant_shop: String): [SectionLite]
         @doc(description: "")
         @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsInstallQuery")
+    getSortOptions: [SortOption]
+        @doc(description: "")
+        @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SortOptionsQuery")
 }
 
 input SectionFilterInput @doc(description: "") {
@@ -118,4 +124,10 @@ type GroupSection @doc(description: "") {
     categories: [String]
     tags: [String]
     actions: Action
+}
+
+type SortOption {
+    label: String
+    value: String
+    directionLabel: String
 }

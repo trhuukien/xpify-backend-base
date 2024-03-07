@@ -15,9 +15,11 @@ class Plan
 
     protected $appRepository;
 
+    protected $contextInitializer;
+
     protected $sectionInstallRepository;
 
-    protected $contextInitializer;
+    protected $logger;
 
     protected $merchantList = [];
 
@@ -30,7 +32,8 @@ class Plan
         \Xpify\Merchant\Api\MerchantRepositoryInterface $merchantRepository,
         \Xpify\App\Model\AppRepository $appRepository,
         \Xpify\Core\Helper\ShopifyContextInitializer $contextInitializer,
-        \SectionBuilder\Product\Model\SectionInstallRepository $sectionInstallRepository
+        \SectionBuilder\Product\Model\SectionInstallRepository $sectionInstallRepository,
+        \Psr\Log\LoggerInterface $logger
     ) {
         $this->configData = $configData;
         $this->authValidation = $authValidation;
@@ -39,6 +42,7 @@ class Plan
         $this->appRepository = $appRepository;
         $this->contextInitializer = $contextInitializer;
         $this->sectionInstallRepository = $sectionInstallRepository;
+        $this->logger = $logger;
     }
 
     public function process($canChange = false)
@@ -65,12 +69,9 @@ class Plan
             $columnProduct = [
                 'src',
                 'product_name' => 'p.name',
-                'plan_id'
+                'plan_id',
+                'version'
             ];
-            if ($canChange) {
-                $columnProduct[] = 'version';
-                $columnProduct[] = 'file_data';
-            }
 
             $collection->join(
                 ['xm' => \Xpify\Merchant\Model\ResourceModel\Merchant::MAIN_TABLE],
@@ -134,7 +135,7 @@ class Plan
                         [],
                         [
                             'asset[key]' => $item['src'],
-                            'asset[value]' => $item['file_data']
+                            'asset[value]' => $item['src']
                         ]
                     );
 
@@ -154,10 +155,7 @@ class Plan
             }
         }
 
-        \Magento\Framework\App\ObjectManager::getInstance()
-            ->get('Psr\Log\LoggerInterface')
-            ->info('Kiz log system.log: Cron');
-
+        $this->logger->info('Section Builder log: Cron remove file base done.');
         return $result;
     }
 }

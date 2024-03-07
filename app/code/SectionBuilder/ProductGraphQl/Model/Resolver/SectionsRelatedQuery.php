@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace SectionBuilder\ProductGraphQl\Model\Resolver;
 
-class SectionsInstallQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractResolver implements \Magento\Framework\GraphQl\Query\ResolverInterface
+class SectionsRelatedQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractResolver implements \Magento\Framework\GraphQl\Query\ResolverInterface
 {
     protected $authValidation;
 
@@ -39,34 +39,40 @@ class SectionsInstallQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSession
         array $value = null,
         array $args = null
     ) {
-        $merchant = $this->getMerchantSession()->getMerchant();
-
         $collection = $this->collectionFactory->create();
-        $collection->joinListInstalled(
-            [
-                'i.merchant_shop = ?',
-                $args['merchant_shop'] ?? $merchant->getShop()
-            ]
-        );
-        $collection->addFieldToSelect(['name', 'url_key', 'price', 'version', 'media_gallery']);
         $collection->addFieldToFilter('main_table.is_enable', 1);
+        $collection->addFieldToSelect('entity_id');
+        if ($args['key']) {
+            $collection->addFieldToFilter('url_key', $args['key']);
+        }
+        $collection->joinListCategoryId();
+        $collection->joinListTagId();
+        $item = $collection->getFirstItem()->getData();
+
+        if (!$item['categories'] && !$item['tags']) {
+            return [];
+        } else {
+            $collection = $this->collectionFactory->create();
+            $collection->addFieldToFilter('main_table.is_enable', 1);
+            $collection->addFieldToFilter(
+                'main_table.type_id',
+                \SectionBuilder\Product\Model\Config\Source\ProductType::SIMPLE_TYPE_ID
+            );
+            $collection->addFieldToFilter('main_table.entity_id', ['neq' => $item['entity_id']]);
+            if ($item['categories']) {
+                $collection->joinListCategoryId(['c.entity_id in (?)', $item['categories']]);
+            }
+            if ($item['tags']) {
+                $collection->joinListTagId(['t.entity_id in (?)', $item['tags']]);
+            }
+        }
         $collection->groupById();
         $items = $collection->getData();
 
         $baseUrl = $this->imageHelper->getBaseUrl();
-        $separation = \SectionBuilder\Product\Model\ResourceModel\Section::SEPARATION;
         foreach ($items as &$item) {
-            $item['product_id'] = $item['entity_id'];
-
-            if (isset($item['installed'])) {
-                $installs = explode($separation, $item['installed']);
-                $arrInstall = [];
-                foreach ($installs as $key => $install) {
-                    list($arrInstall[$key]['theme_id'], $arrInstall[$key]['product_version']) = explode(":", $install);
-                }
-                $item['installed'] = $arrInstall;
-            }
-
+            $item['categories'] = [];
+            $item['tags'] = [];
             $mediaGallery = explode(\SectionBuilder\Product\Model\Helper\Image::SEPARATION, $item['media_gallery'] ?? "");
             $images = [];
             foreach ($mediaGallery as $image) {
