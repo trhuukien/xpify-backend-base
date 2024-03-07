@@ -7,16 +7,22 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Shopify\Auth\Session;
 use Shopify\Context;
+use Shopify\Exception\HttpRequestException;
+use Shopify\Exception\MissingArgumentException;
 use Xpify\App\Api\Data\AppInterface as IApp;
+use Xpify\Core\Exception\ShopifyQueryException;
 use Xpify\Merchant\Api\Data\MerchantInterface as IMerchant;
 use Xpify\Merchant\Api\Data\MerchantSubscriptionInterface as ISubscription;
 use Xpify\Merchant\Api\MerchantSubscriptionRepositoryInterface as ISubscriptionRepository;
 use Xpify\Merchant\Exception\ShopifyBillingException;
+use Xpify\Merchant\Helper\GraphqlQueryTrait;
 use Xpify\Merchant\Helper\Subscription;
 use Xpify\PricingPlan\Model\Source\IntervalType;
 
 class Billing
 {
+    use GraphqlQueryTrait;
+
     private MerchantStorage $merchantStorage;
     private static $logger = null;
 
@@ -271,22 +277,27 @@ class Billing
         return false;
     }
 
+    public static function getOneTimePayment(Imerchant $m, string $id): array
+    {
+        return self::query($m, [
+            "query" => self::GET_PURCHASED_ONETIME_QUERY,
+            "variables" => ["id" => $id]
+        ]);
+    }
+
     /**
      * Query graphql or throw exception
      *
+     * @param IMerchant $merchant
      * @param string|array $query
+     * @return array
      * @throws ShopifyBillingException
      */
-    private static function queryOrException(IMerchant $merchant, $query): array
+    private static function queryOrException(IMerchant $merchant, string|array $query): array
     {
         try {
-            $response = $merchant->getGraphql()->query($query);
-            $responseBody = $response->getDecodedBody();
-
-            if (!empty($responseBody["errors"])) {
-                throw new ShopifyBillingException("Receive response error: ", (array) $responseBody["errors"]);
-            }
-        } catch (\Throwable $e) {
+            return self::query($merchant, $query);
+        } catch (ShopifyQueryException $e) {
             self::getLogger()?->debug(
                 __(
                     "Error while billing the store merchant ID %1. The original message: %2. Trace: %3",
@@ -297,8 +308,6 @@ class Billing
             );
             throw new ShopifyBillingException("Error while billing the store", [$e->getMessage()]);
         }
-
-        return $responseBody;
     }
 
     /**
@@ -413,6 +422,23 @@ class Billing
                 field, message
             }
         }
+    }
+    QUERY;
+    private const GET_PURCHASED_ONETIME_QUERY = <<<'QUERY'
+    query QueryOnetimePurchase($id: ID!) {
+      node(id: $id) {
+        ... on AppPurchaseOneTime {
+          price {
+            amount
+            currencyCode
+          }
+          createdAt
+          id
+          name
+          status
+          test
+        }
+      }
     }
     QUERY;
 }
