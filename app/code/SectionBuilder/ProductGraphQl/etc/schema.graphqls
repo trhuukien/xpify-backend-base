@@ -11,29 +11,29 @@ type Query {
         pageSize: Int = 20,
         currentPage: Int = 1
     ): Sections
-        @doc(description: "")
-        @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsQuery")
-    getSection(key: String!): Section
-        @doc(description: "")
-        @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionQuery")
-    getRelatedSections(key: String!): [Section]
-        @doc(description: "")
-        @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsRelatedQuery")
-    getGroupSections: [GroupSection]
-        @doc(description: "")
-        @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\GroupSectionsQuery")
-    getGroupSection(key: String!): GroupSection
-        @doc(description: "")
-        @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\GroupSectionQuery")
+    @doc(description: "")
+    @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsQuery")
+    getSection(key: String!): SectionInterface
+    @doc(description: "")
+    @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionQuery")
+    getRelatedSections(key: String!): [SectionInterface]
+    @doc(description: "")
+    @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsRelatedQuery")
+    getGroupSections: [SectionInterface]
+    @doc(description: "")
+    @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\GroupSectionsQuery")
+    getGroupSection(key: String!): SectionInterface
+    @doc(description: "")
+    @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\GroupSectionQuery")
     getSectionsBuy(merchant_shop: String): [SectionLite]
-        @doc(description: "")
-        @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsBuyQuery")
+    @doc(description: "")
+    @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsBuyQuery")
     getSectionsInstall(merchant_shop: String): [SectionLite]
-        @doc(description: "")
-        @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsInstallQuery")
+    @doc(description: "")
+    @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsInstallQuery")
     getSortOptions: [SortOption]
-        @doc(description: "")
-        @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SortOptionsQuery")
+    @doc(description: "")
+    @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SortOptionsQuery")
 }
 
 input SectionFilterInput @doc(description: "") {
@@ -45,7 +45,7 @@ input SectionFilterInput @doc(description: "") {
 }
 
 type Sections {
-    items: [Section]
+    items: [SectionInterface]
     total_count: Int
     page_info: PageInfo
 }
@@ -66,7 +66,7 @@ type PageInfo {
     total_pages: Int
 }
 
-type Section @doc(description: "") {
+interface SectionInterface @typeResolver(class: "\\SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionTypeResolver") {
     entity_id : ID
     is_enable: Boolean
     plan_id : String
@@ -74,16 +74,21 @@ type Section @doc(description: "") {
     images: [Image]
     url_key: String
     price: Float
-    src: String
-    version: String
     description: String
-    release_note: String
     demo_link: String
-    pricing_plan: PricingPlan
     categories: [String]
     tags: [String]
+}
+type Section implements SectionInterface {
     actions: Action
     installed: [Install]
+    pricing_plan: PricingPlan
+    version: String
+    release_note: String
+    src: String
+}
+type GroupSection implements SectionInterface {
+    child_ids: [ID!]
 }
 
 type Image @doc(description: "") {
@@ -109,21 +114,6 @@ type SectionLite @doc(description: "") {
     url_key: String
     images: [Image]
     installed: [Install]
-}
-
-type GroupSection @doc(description: "") {
-    entity_id: ID
-    is_enable: Boolean
-    name: String
-    child_ids: [ID]
-    images: [Image]
-    url_key: String
-    price: Float
-    description: String
-    demo_link: String
-    categories: [String]
-    tags: [String]
-    actions: Action
 }
 
 type SortOption {
