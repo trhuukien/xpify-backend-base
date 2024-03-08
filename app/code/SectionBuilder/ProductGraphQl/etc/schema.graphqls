@@ -69,7 +69,6 @@ type PageInfo {
 interface SectionInterface @typeResolver(class: "\\SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionTypeResolver") {
     entity_id : ID
     is_enable: Boolean
-    plan_id : String
     name: String
     images: [Image]
     url_key: String
@@ -78,6 +77,7 @@ interface SectionInterface @typeResolver(class: "\\SectionBuilder\\ProductGraphQ
     demo_link: String
     categories: [String]
     tags: [String]
+    type_id: String
 }
 type Section implements SectionInterface {
     actions: Action
@@ -86,9 +86,15 @@ type Section implements SectionInterface {
     version: String
     release_note: String
     src: String
+    plan_id : String
 }
 type GroupSection implements SectionInterface {
     child_ids: [ID!]
+    actions: GroupAction
+}
+
+type GroupAction {
+    purchase: Boolean
 }
 
 type Image @doc(description: "") {
