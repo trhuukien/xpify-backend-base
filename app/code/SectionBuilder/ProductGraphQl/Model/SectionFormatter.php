@@ -27,6 +27,7 @@ final class SectionFormatter
             'description',
             'release_note',
             'demo_link',
+            'type_id',
         ];
         // get needed fields
         $data = [];

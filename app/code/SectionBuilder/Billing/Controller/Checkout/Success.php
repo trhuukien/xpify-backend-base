@@ -131,6 +131,10 @@ class Success implements IHttpGetAction
         if (empty($childIds)) {
             throw new PurchaseSectionException('No section found');
         }
+        // Save parent first
+        $this->handleSimpleSectionPurchase($merchant, $section, $purchase);
+
+        // put all the child section purchase into the purchased section table
         $childIds = explode(",", $childIds);
         foreach ($childIds as $childId) {
             $childSection = $this->sectionRepository->get('entity_id', $childId);
