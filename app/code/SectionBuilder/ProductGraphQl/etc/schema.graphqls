@@ -25,10 +25,10 @@ type Query {
     getGroupSection(key: String!): SectionInterface
     @doc(description: "")
     @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\GroupSectionQuery")
-    getSectionsBuy(merchant_shop: String): [SectionLite]
+    getSectionsBuy(merchant_shop: String): [SectionInterface]
     @doc(description: "")
     @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsBuyQuery")
-    getSectionsInstall(merchant_shop: String): [SectionLite]
+    getSectionsInstall(merchant_shop: String): [SectionInterface]
     @doc(description: "")
     @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsInstallQuery")
     getSortOptions: [SortOption]

@@ -48,7 +48,6 @@ class SectionsBuyQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbst
                 $args['merchant_shop'] ?? $merchant->getShop()
             ]
         );
-        $collection->addFieldToSelect(['name', 'url_key', 'price', 'version', 'media_gallery']);
         $collection->addFieldToFilter('main_table.is_enable', 1);
         $collection->addFieldToFilter('main_table.type_id', \SectionBuilder\Product\Model\Config\Source\ProductType::SIMPLE_TYPE_ID);
         $collection->groupById();
@@ -59,14 +58,14 @@ class SectionsBuyQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbst
         foreach ($items as &$item) {
             $item['product_id'] = $item['entity_id'];
 
-            if ($item['installed']) {
-                $installs = explode($separation, $item['installed']);
-                $arrInstall = [];
-                foreach ($installs as $key => $install) {
-                    list($arrInstall[$key]['theme_id'], $arrInstall[$key]['product_version']) = explode(":", $install);
-                }
-                $item['installed'] = $arrInstall;
-            }
+//            if ($item['installed']) {
+//                $installs = explode($separation, $item['installed']);
+//                $arrInstall = [];
+//                foreach ($installs as $key => $install) {
+//                    list($arrInstall[$key]['theme_id'], $arrInstall[$key]['product_version']) = explode(":", $install);
+//                }
+//                $item['installed'] = $arrInstall;
+//            }
 
             $mediaGallery = explode(\SectionBuilder\Product\Model\Helper\Image::SEPARATION, $item['media_gallery'] ?? "");
             $images = [];

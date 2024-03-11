@@ -28,10 +28,10 @@ class GetFileRaw
         try {
             $privateToken = $this->configData->getApiToken();
             $ref = $this->configData->getApiRef();
-            $url = $this->configData->getApiBaseUrl() . self::REPOSITORY_FILES_PATH . urlencode($path) . "/raw";
+            $url = $this->configData->getApiBaseUrl() . self::REPOSITORY_FILES_PATH . urlencode($path ?? '') . "/raw";
 
             $queryParams = [
-                'ref' => urlencode($ref)
+                'ref' => urlencode($ref ?? '')
             ];
             $queryString = http_build_query($queryParams);
             if (!empty($queryString)) {

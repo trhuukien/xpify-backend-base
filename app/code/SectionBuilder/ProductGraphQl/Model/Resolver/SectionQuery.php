@@ -113,7 +113,7 @@ class SectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstract
         );
 
         $result['actions'] = [
-            'install' => $result['price'] == 0 || $hasOneTime || $hasPlan,
+            'install' => $result['price'] == 0 || $hasOneTime || (isset($result['pricing_plan']['code']) && $hasPlan),
             'purchase' => $result['price'] > 0 && !$hasOneTime,
             'plan' => !$hasPlan
         ];
