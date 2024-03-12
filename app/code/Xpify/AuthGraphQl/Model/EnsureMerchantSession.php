@@ -65,8 +65,8 @@ class EnsureMerchantSession
         $this->billing = $billing;
     }
     /**
-     * @throws GraphQlShopifyReauthorizeRequiredException
-     * @throws LocalizedException
+     * @throws GraphQlShopifyReauthorizeRequiredException|LocalizedException
+     * @since 1.0.0
      */
     public function execute()
     {
@@ -79,8 +79,8 @@ class EnsureMerchantSession
         $app = $this->getCurrentApp->get();
 
         if (!$app) {
-            $this->logger->debug(__("App not found. File: %1, Line: %2.", __FILE__, __LINE__));
-            throw new \Exception(Constants::INTERNAL_SYSTEM_ERROR_MESS);
+            $this->logger->debug(__("App must be initialized before merchant session can be initialized. Let check the module sequence."));
+            throw new LocalizedException(__(Constants::INTERNAL_SYSTEM_ERROR_MESS));
         }
         $shop = Utils::sanitizeShopDomain($this->request->getParam('shop', ''));
         $session = Utils::loadCurrentSession($this->request->getHeaders()->toArray(), $_COOKIE, $isOnline);

@@ -65,11 +65,4 @@ class AppPricingPlanQuery extends AuthSessionAbstractResolver implements \Magent
             return [];
         }
     }
-
-    protected function pricingPlansRequired() : array
-    {
-        return [
-            'pro'
-        ];
-    }
 }

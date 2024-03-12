@@ -11,10 +11,15 @@ use Magento\Framework\GraphQl\Exception\GraphQlNoSuchEntityException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 use Psr\Log\LoggerInterface;
+use Xpify\AuthGraphQl\Exception\GraphQlShopifyReauthorizeRequiredException;
 use Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractResolver;
 use Xpify\Core\Helper\Utils;
+use Xpify\Core\Model\Constants;
+use Xpify\Core\Model\Logger;
 use Xpify\Merchant\Api\MerchantSubscriptionRepositoryInterface as ISubscriptionRepository;
+use Xpify\Merchant\Exception\ShopifyBillingException;
 use Xpify\Merchant\Helper\Subscription;
+use Xpify\Merchant\Service\Billing;
 use Xpify\MerchantGraphQl\Model\SubscriptionFormatter;
 use Xpify\PricingPlan\Api\PricingPlanRepositoryInterface as IPricingPlanRepository;
 use Xpify\PricingPlan\Model\Source\IntervalType;
@@ -25,24 +30,27 @@ class SubscribePricingPlanMutation extends AuthSessionAbstractResolver implement
     private ISubscriptionRepository $subscriptionRepository;
     private \Psr\Log\LoggerInterface $logger;
     private \Xpify\MerchantGraphQl\Model\SubscriptionFormatter $subscriptionFormatter;
+    private Billing $billing;
 
     /**
      * @param IPricingPlanRepository $pricingPlanRepository
      * @param ISubscriptionRepository $subscriptionRepository
      * @param LoggerInterface $logger
      * @param SubscriptionFormatter $subscriptionFormatter
-     * @param SearchCriteriaBuilder $criteriaBuilder
+     * @param Billing $billing
      */
     public function __construct(
         IPricingPlanRepository $pricingPlanRepository,
         ISubscriptionRepository $subscriptionRepository,
         \Psr\Log\LoggerInterface $logger,
-        \Xpify\MerchantGraphQl\Model\SubscriptionFormatter $subscriptionFormatter
+        \Xpify\MerchantGraphQl\Model\SubscriptionFormatter $subscriptionFormatter,
+        Billing $billing
     ) {
         $this->pricingPlanRepository = $pricingPlanRepository;
         $this->subscriptionRepository = $subscriptionRepository;
         $this->logger = $logger;
         $this->subscriptionFormatter = $subscriptionFormatter;
+        $this->billing = $billing;
     }
 
     /**
@@ -76,6 +84,20 @@ class SubscribePricingPlanMutation extends AuthSessionAbstractResolver implement
         } catch (\Throwable $e) {
             $this->logger->debug($e);
             throw new GraphQlInputException(__("Can't subscribe to this plan! Please try again later."));
+        }
+
+        if ($this->billing->isBillingRequired($merchant)) {
+            try {
+                list($shouldPay, $payUrl) = $this->billing->check($merchant);
+                if ($shouldPay) {
+                    throw new GraphQlShopifyReauthorizeRequiredException(__("Please make payment."), null, 0, true, $payUrl);
+                }
+            } catch (GraphQlShopifyReauthorizeRequiredException $e) {
+                throw $e;
+            } catch (ShopifyBillingException|\Exception $e) {
+                Logger::getLogger('subscription.log')->debug($e->getMessage() . ' ' . $e->getTraceAsString());
+                throw new GraphQlNoSuchEntityException(__(Constants::INTERNAL_SYSTEM_ERROR_MESS));
+            }
         }
 
         return $this->subscriptionFormatter->toGraphQlOutput($this->subscriptionRepository->getById($newSubscription->getId()));
