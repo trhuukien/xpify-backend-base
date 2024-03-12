@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="$xpify_pricing_plans">
+        <column xsi:type="varchar" name="section_builder_src_base" length="255" nullable="true" comment="File base SRC"/>
+    </table>
+</schema>

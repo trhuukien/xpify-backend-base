@@ -81,9 +81,6 @@
                     <item name="label" xsi:type="string" translate="true">Name</item>
                     <item name="formElement" xsi:type="string">input</item>
                     <item name="dataScope" xsi:type="string">name</item>
-                    <item name="tooltip" xsi:type="array">
-                        <item name="description" xsi:type="string" translate="true">Merchant will see it in the App.</item>
-                    </item>
                 </item>
             </argument>
             <settings>
@@ -91,6 +88,9 @@
                     <rule name="required-entry" xsi:type="boolean">true</rule>
                     <rule name="max_text_length" xsi:type="number">255</rule>
                 </validation>
+                <tooltip>
+                    <description>This is product name.</description>
+                </tooltip>
             </settings>
         </field>
         <field name="url_key">
@@ -100,9 +100,6 @@
                     <item name="label" xsi:type="string" translate="true">Key</item>
                     <item name="formElement" xsi:type="string">input</item>
                     <item name="dataScope" xsi:type="string">url_key</item>
-                    <item name="tooltip" xsi:type="array">
-                        <item name="description" xsi:type="string" translate="true">You can only update once to avoid affecting merchants using App.</item>
-                    </item>
                 </item>
             </argument>
             <settings>
@@ -115,6 +112,9 @@
                     <rule name="pattern" xsi:type="string">^[a-z][a-z0-9-]*[a-z0-9]$</rule>
                 </validation>
                 <notice translate="true">Please enter a-z, 0-9 and -</notice>
+                <tooltip>
+                    <description>Merchant will see it when they purchase Product.</description>
+                </tooltip>
             </settings>
         </field>
         <field name="price">
@@ -359,9 +359,6 @@
                     <item name="label" xsi:type="string" translate="true">File Src</item>
                     <item name="formElement" xsi:type="string">input</item>
                     <item name="dataScope" xsi:type="string">src</item>
-                    <item name="tooltip" xsi:type="array">
-                        <item name="description" xsi:type="string" translate="true">Path to save source code in the merchant's theme after the merchant installed Section.</item>
-                    </item>
                 </item>
             </argument>
             <settings>
@@ -375,6 +372,9 @@
                     <rule name="pattern" xsi:type="string">^[a-z-_]+\/[a-z0-9-_]+\.[a-z]+$</rule>
                 </validation>
                 <notice translate="true">Ex: sections/bss-section-about01.liquid</notice>
+                <tooltip>
+                    <description>Path to save source code in the merchant's theme after the merchant installed Section.</description>
+                </tooltip>
             </settings>
         </field>
         <field name="path_source">
@@ -384,9 +384,6 @@
                     <item name="label" xsi:type="string" translate="true">Path</item>
                     <item name="formElement" xsi:type="string">input</item>
                     <item name="dataScope" xsi:type="string">path_source</item>
-                    <item name="tooltip" xsi:type="array">
-                        <item name="description" xsi:type="string" translate="true">This is path file in project gitlab.</item>
-                    </item>
                 </item>
             </argument>
             <settings>
@@ -399,6 +396,9 @@
                     <rule name="pattern" xsi:type="string">^[a-zA-Z0-9-_\/]+\.[a-z]+$</rule>
                 </validation>
                 <notice translate="true">Ex: app/section-builder/sections/bss-section-about01.liquid</notice>
+                <tooltip>
+                    <description>This is path file in project gitlab.</description>
+                </tooltip>
             </settings>
         </field>
     </fieldset>

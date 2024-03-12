@@ -9,12 +9,12 @@
             <tab>shopify</tab>
             <resource>SectionBuilder_Core::config</resource>
 
-            <group id="api_management" translate="label" type="text" sortOrder="10" showInDefault="1">
+            <group id="api_management" translate="label" type="text" sortOrder="20" showInDefault="1">
                 <label>Repository API</label>
                 <field id="base_url" translate="label comment" type="text" sortOrder="10" showInDefault="1">
                     <label>Repository Url</label>
                     <validate>required-entry</validate>
-                    <comment><![CDATA[Ex: https://x-gitlab.bsscommerce.com/api/v4/projects/1112]]></comment>
+                    <comment><![CDATA[Ex: https://x-gitlab.bsscommerce.com/api/v4/projects/2001]]></comment>
                 </field>
                 <field id="token" translate="label comment" type="obscure" sortOrder="20" showInDefault="1">
                     <label>Access Token</label>
@@ -29,13 +29,8 @@
                 </field>
             </group>
 
-            <group id="file_management" translate="label" type="text" sortOrder="20" showInDefault="1">
+            <group id="file_management" translate="label" type="text" sortOrder="30" showInDefault="1">
                 <label>File Management</label>
-                <field id="src" translate="label comment" type="text" sortOrder="10" showInDefault="1" canRestore="1">
-                    <label>Src</label>
-                    <validate>required-entry</validate>
-                    <comment><![CDATA[This file will be processed when cron run.]]></comment>
-                </field>
                 <field id="frequency" translate="label" type="select" sortOrder="20" showInDefault="1">
                     <label>Frequency</label>
                     <source_model>Magento\Cron\Model\Config\Source\Frequency</source_model>

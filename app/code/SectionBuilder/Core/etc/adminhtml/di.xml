@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Xpify\PricingPlan\Ui\Component\Form\DataProvider">
+        <plugin name="section_builder_change_data_provider_pricing_plan" type="SectionBuilder\Core\Plugin\Ui\Component\Form\DataProvider" />
+    </type>
+</config>

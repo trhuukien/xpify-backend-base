@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <fieldset name="section_builder">
+        <settings>
+            <label translate="true">Section Builder</label>
+            <collapsible>true</collapsible>
+            <imports>
+                <link name="visible">${ $.provider}:data.is_section_builder_app</link>
+            </imports>
+        </settings>
+        <field name="section_builder_src_base" sortOrder="10" component="Magento_Ui/js/form/element/select" formElement="select">
+            <settings>
+                <label translate="true">File Base</label>
+                <dataScope>section_builder_src_base</dataScope>
+                <notice translate="true">File will be automatically installed to merchant themes when they subscribe this plan</notice>
+                <tooltip>
+                    <description>List of products disable</description>
+                </tooltip>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="SectionBuilder\Core\Model\Source\ProductList"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+</form>

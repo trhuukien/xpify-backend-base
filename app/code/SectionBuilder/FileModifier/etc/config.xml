@@ -6,7 +6,6 @@
                 <ref>master</ref>
             </api_management>
             <file_management>
-                <src>assets/bss-section-builder.css</src>
                 <frequency>D</frequency>
                 <time>09,00,00</time>
             </file_management>

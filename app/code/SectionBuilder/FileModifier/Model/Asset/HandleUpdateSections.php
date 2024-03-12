@@ -34,29 +34,23 @@ class HandleUpdateSections
         $this->getFileRaw = $getFileRaw;
     }
 
-    public function beforeUpdateAssetGraphql(
+    public function getSource($path)
+    {
+        return $this->getFileRaw->execute($path);
+    }
+
+    public function changeArgs(
         $section,
-        \Xpify\Merchant\Api\Data\MerchantInterface $merchant,
+        $hasPlan,
+        $sourceBase,
         array &$args
     ): void {
         $isFree = ($section['plan_code'] === null && $section['price'] == 0);
-        $source = $this->getFileRaw->execute($section['path_source']);
+        $source = $this->getSource($section['path_source']);
 
         if ($isFree || $section['bought_id']) {
-            $collection = $this->sectionFactory->create();
-            $collection->addFieldToFilter(
-                \SectionBuilder\Product\Api\Data\SectionInterface::SRC,
-                $this->configData->getFileBaseSrc()
-            );
-            $collection->addFieldToSelect(['path_source', 'version']);
-            $baseCssData = $collection->getFirstItem()->getData();
-            $sourceCss = $baseCssData['path_source'] ?? $this->getFileRaw->execute($baseCssData['path_source']);
-
-            if ($sourceCss) {
-                $args['value'] = "{% style %}\n$sourceCss{% endstyle %}\n\n" . $source;
-            }
+            $args['value'] = "{% style %}\n$sourceBase{% endstyle %}\n\n" . $source;
         } else {
-            $hasPlan = $section['plan_code'] && $this->authValidation->hasPlan($merchant, $section['plan_code']);
             if ($hasPlan) {
                 $args['value'] = $source;
             } else {

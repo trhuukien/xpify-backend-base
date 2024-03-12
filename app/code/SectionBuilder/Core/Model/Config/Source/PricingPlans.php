@@ -3,20 +3,11 @@ namespace SectionBuilder\Core\Model\Config\Source;
 
 class PricingPlans implements \Magento\Framework\Option\ArrayInterface
 {
-    protected $pricingPlanRepository;
-
-    protected $criteriaBuilder;
-
-    protected $configData;
-
+    protected $data;
     public function __construct(
-        \Xpify\PricingPlan\Model\PricingPlanRepository $pricingPlanRepository,
-        \Magento\Framework\Api\SearchCriteriaBuilder $criteriaBuilder,
-        \SectionBuilder\Core\Model\Config $configData
+        \SectionBuilder\Core\Model\Data $data
     ) {
-        $this->pricingPlanRepository = $pricingPlanRepository;
-        $this->criteriaBuilder = $criteriaBuilder;
-        $this->configData = $configData;
+        $this->data = $data;
     }
 
     /**
@@ -24,7 +15,7 @@ class PricingPlans implements \Magento\Framework\Option\ArrayInterface
      */
     public function toOptionArray()
     {
-        $plans = $this->getPricingPlans();
+        $plans = $this->data->getPricingPlans();
         $result[] = [
             'label' => __(''),
             'value' => null
@@ -36,17 +27,5 @@ class PricingPlans implements \Magento\Framework\Option\ArrayInterface
             ];
         }
         return $result;
-    }
-
-    public function getPricingPlans()
-    {
-        $appId = $this->configData->getAppConnectingId(true);
-        $criteria = $this->criteriaBuilder;
-        $criteria->addFilter(
-            \Xpify\PricingPlan\Api\Data\PricingPlanInterface::APP_ID,
-            $appId
-        );
-        $searchResults = $this->pricingPlanRepository->getList($criteria->create());
-        return $searchResults->getItems();
     }
 }

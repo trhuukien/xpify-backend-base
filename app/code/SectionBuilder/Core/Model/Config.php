@@ -7,7 +7,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const SYSTEM_XML_API_BASE_URL = 'section_builder/api_management/base_url';
     const SYSTEM_XML_API_TOKEN = 'section_builder/api_management/token';
     const SYSTEM_XML_API_REF = 'section_builder/api_management/ref';
-    const SYSTEM_XML_FILE_BASE = 'section_builder/file_management/src';
 
     protected $messageManager;
 
@@ -52,13 +51,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->scopeConfig->getValue(
             self::SYSTEM_XML_API_REF
-        );
-    }
-
-    public function getFileBaseSrc()
-    {
-        return $this->scopeConfig->getValue(
-            self::SYSTEM_XML_FILE_BASE
         );
     }
 }

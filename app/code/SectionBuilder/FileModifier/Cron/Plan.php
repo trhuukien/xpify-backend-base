@@ -7,6 +7,8 @@ class Plan
 {
     protected $configData;
 
+    protected $data;
+
     protected $authValidation;
 
     protected $sectionInstallFactory;
@@ -27,6 +29,7 @@ class Plan
 
     public function __construct(
         \SectionBuilder\Core\Model\Config $configData,
+        \SectionBuilder\Core\Model\Data $data,
         \SectionBuilder\Core\Model\Auth\Validation $authValidation,
         \SectionBuilder\Product\Model\ResourceModel\SectionInstall\CollectionFactory $sectionInstallFactory,
         \Xpify\Merchant\Api\MerchantRepositoryInterface $merchantRepository,
@@ -36,6 +39,7 @@ class Plan
         \Psr\Log\LoggerInterface $logger
     ) {
         $this->configData = $configData;
+        $this->data = $data;
         $this->authValidation = $authValidation;
         $this->sectionInstallFactory = $sectionInstallFactory;
         $this->merchantRepository = $merchantRepository;
@@ -54,24 +58,29 @@ class Plan
             'success' => 0,
             'error' => 0
         ];
-        return $result;
 
         $appId = $this->configData->getAppConnectingId();
-        $file = $this->configData->getFileBaseSrc();
+        $pricingPlans = $this->data->getPricingPlans();
 
-        if (!$appId || !$file) {
-            $result['alert'] = __('Not connected to the app or File src is empty!');
+        if (!$appId || !$pricingPlans) {
+            $result['alert'] = __('Not connected to the App or App is empty pricing plans!');
             return $result;
+        }
+
+        $app = $this->appRepository->get($appId);
+        $this->contextInitializer->initialize($app);
+        $apiVersion = $app->getApiVersion();
+
+        $listBase = [];
+        foreach ($pricingPlans as $plan) {
+            if (!$plan['section_builder_src_base']) {
+                continue;
+            }
+            $listBase[] = $plan['section_builder_src_base'];
         }
 
         try {
             $collection = $this->sectionInstallFactory->create();
-            $columnProduct = [
-                'src',
-                'product_name' => 'p.name',
-                'plan_id',
-                'version'
-            ];
 
             $collection->join(
                 ['xm' => \Xpify\Merchant\Model\ResourceModel\Merchant::MAIN_TABLE],
@@ -83,62 +92,34 @@ class Plan
             )->join(
                 ['p' => \SectionBuilder\Product\Model\ResourceModel\Section::MAIN_TABLE],
                 'main_table.product_id = p.entity_id',
-                $columnProduct
+                [
+                    'src',
+                    'product_name' => 'p.name',
+                    'version'
+                ]
             )->join(
                 ['xpp' => \Xpify\PricingPlan\Model\ResourceModel\PricingPlan::MAIN_TABLE],
-                'p.plan_id = xpp.entity_id',
-                [
-                    'plan_code' => 'xpp.code'
-                ]
+                'p.src = xpp.section_builder_src_base',
+                ['code']
             );
             $collection->addFieldToFilter('xm.app_id', $appId);
-            $collection->addFieldToFilter('p.src', $file);
+            $collection->addFieldToFilter('p.src', $listBase);
             $data = $collection->getData();
             $result['execute'] = count($data);
 
-            $app = $this->appRepository->get($appId);
-            $this->contextInitializer->initialize($app);
-            $apiVersion = $app->getApiVersion();
-        } catch (\Exception $e) {
-            $result['alert'] = $e->getMessage();
-            return $result;
-        }
+            foreach ($data as $item) {
+                $merchantId = (int)$item['merchant_id'];
+                $this->merchantList[$merchantId] = $this->merchantList[$merchantId]
+                    ?? $this->merchantRepository->getById($merchantId);
+                $this->hasPlanList[$merchantId] = $this->hasPlanList[$merchantId]
+                    ?? $this->authValidation->hasPlan($this->merchantList[$merchantId], $item['code']);
 
-        foreach ($data as $item) {
-            $merchantId = (int)$item['merchant_id'];
-            $this->merchantList[$merchantId] = $this->merchantList[$merchantId]
-                ?? $this->merchantRepository->getById($merchantId);
-            $this->hasPlanList[$merchantId] = $this->hasPlanList[$merchantId]
-                ?? $this->authValidation->hasPlan($this->merchantList[$merchantId], $item['plan_code']);
-
-            if (!$this->hasPlanList[$merchantId]) {
-                $response = $this->merchantList[$merchantId]->getRest()->delete(
-                    '/admin/api/' . $apiVersion . '/themes/' . $item['theme_id'] . '/assets.json',
-                    [],
-                    ['asset[key]' => $file]
-                );
-                $message = $response->getDecodedBody();
-                if (isset($message['errors'])) {
-                    ++$result['error'];
-                } else {
-                    ++$result['success'];
-
-                    $installRepository = $this->sectionInstallRepository->get('entity_id', (int)$item['entity_id']);
-                    $this->sectionInstallRepository->delete($installRepository);
-                }
-            } else {
-                if ($canChange && $item['version'] !== $item['product_version']) {
-                    $themeId = $item['theme_id'];
-                    $response = $this->merchantList[$merchantId]->getRest()->put(
-                        "/admin/api/$apiVersion/themes/$themeId/assets.json",
-                        null,
+                if (!$this->hasPlanList[$merchantId]) {
+                    $response = $this->merchantList[$merchantId]->getRest()->delete(
+                        '/admin/api/' . $apiVersion . '/themes/' . $item['theme_id'] . '/assets.json',
                         [],
-                        [
-                            'asset[key]' => $item['src'],
-                            'asset[value]' => $item['src']
-                        ]
+                        ['asset[key]' => $item['src']]
                     );
-
                     $message = $response->getDecodedBody();
                     if (isset($message['errors'])) {
                         ++$result['error'];
@@ -146,16 +127,51 @@ class Plan
                         ++$result['success'];
 
                         $installRepository = $this->sectionInstallRepository->get('entity_id', (int)$item['entity_id']);
-                        $installRepository->setProductVersion($item['version']);
-                        $this->sectionInstallRepository->save($installRepository);
+                        $this->sectionInstallRepository->delete($installRepository);
                     }
                 } else {
-                    ++$result['not_handle'];
+                    if ($canChange) {
+                        // $this->handleUpdateBase($item, $this->merchantList[$merchantId], $apiVersion, $result);
+                    }
                 }
             }
+        } catch (\Exception $e) {
+            $result['alert'] = $e->getMessage();
+            return $result;
         }
 
         $this->logger->info('Section Builder log: Cron remove file base done.');
+        return $result;
+    }
+
+    public function handleUpdateBase($item, $merchant, $apiVersion, &$result)
+    {
+        if ($item['version'] != $item['product_version']) {
+            $themeId = $item['theme_id'];
+            $response = $merchant->getRest()->put(
+                "/admin/api/$apiVersion/themes/$themeId/assets.json",
+                null,
+                [],
+                [
+                    'asset[key]' => $item['src'],
+                    'asset[value]' => 'TEST'
+                ]
+            );
+
+            $message = $response->getDecodedBody();
+            if (isset($message['errors'])) {
+                ++$result['error'];
+            } else {
+                ++$result['success'];
+
+                $installRepository = $this->sectionInstallRepository->get('entity_id', (int)$item['entity_id']);
+                $installRepository->setProductVersion($item['version']);
+                $this->sectionInstallRepository->save($installRepository);
+            }
+        } else {
+            ++$result['not_handle'];
+        }
+
         return $result;
     }
 }
