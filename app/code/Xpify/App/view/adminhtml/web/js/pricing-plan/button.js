@@ -5,10 +5,7 @@ define([
     'use strict';
 
     return Button.extend({
-        defaults: {
-            entityId: null,
-            customerId: null
-        },
+        defaults: { appId: null },
 
         /**
          * Apply action on target component,
@@ -18,12 +15,10 @@ define([
          */
         applyAction: function (action) {
             if (action.params && action.params[0]) {
-                action.params[0]['role_id'] = this.entityId;
-                action.params[0]['customer_id'] = this.customerId;
+                action.params[0]['app_id'] = this.appId;
             } else {
                 action.params = [{
-                    'role_id': this.entityId,
-                    'customer_id': this.customerId
+                    'app_id': this.appId
                 }];
             }
 

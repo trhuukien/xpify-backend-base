@@ -63,12 +63,13 @@ class SubscribePricingPlanMutation extends AuthSessionAbstractResolver implement
      * @param array|null $args
      * @return array
      * @throws GraphQlInputException|GraphQlNoSuchEntityException
+     * @since 1.0.0
      */
     public function execResolve(Field $field, $context, ResolveInfo $info, array $value = null, array $args = null)
     {
         $this->validateArgs($args);
         $plan = $this->pricingPlanRepository->get($args['input']['plan_id']);
-        $merchant = $this->getMerchantSession()->getMerchant();
+        $merchant = $context->getExtensionAttributes()->getMerchant();
 
         $newSubscription = $this->subscriptionRepository->create();
         $newSubscription->setMerchantId((int) $merchant->getId());
@@ -86,18 +87,16 @@ class SubscribePricingPlanMutation extends AuthSessionAbstractResolver implement
             throw new GraphQlInputException(__("Can't subscribe to this plan! Please try again later."));
         }
 
-        if ($this->billing->isBillingRequired($merchant)) {
-            try {
-                list($shouldPay, $payUrl) = $this->billing->check($merchant);
-                if ($shouldPay) {
-                    throw new GraphQlShopifyReauthorizeRequiredException(__("Please make payment."), null, 0, true, $payUrl);
-                }
-            } catch (GraphQlShopifyReauthorizeRequiredException $e) {
-                throw $e;
-            } catch (ShopifyBillingException|\Exception $e) {
-                Logger::getLogger('subscription.log')->debug($e->getMessage() . ' ' . $e->getTraceAsString());
-                throw new GraphQlNoSuchEntityException(__(Constants::INTERNAL_SYSTEM_ERROR_MESS));
+        try {
+            list($shouldPay, $payUrl) = $this->billing->check($merchant);
+            if ($shouldPay) {
+                throw new GraphQlShopifyReauthorizeRequiredException(__("Please make payment."), null, 0, true, $payUrl);
             }
+        } catch (GraphQlShopifyReauthorizeRequiredException $e) {
+            throw $e;
+        } catch (ShopifyBillingException|\Exception $e) {
+            Logger::getLogger('subscription.log')->debug($e->getMessage() . ' ' . $e->getTraceAsString());
+            throw new GraphQlNoSuchEntityException(__(Constants::INTERNAL_SYSTEM_ERROR_MESS));
         }
 
         return $this->subscriptionFormatter->toGraphQlOutput($this->subscriptionRepository->getById($newSubscription->getId()));

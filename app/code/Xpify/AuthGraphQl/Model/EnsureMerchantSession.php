@@ -5,6 +5,7 @@ namespace Xpify\AuthGraphQl\Model;
 
 use Magento\Framework\App\RequestInterface as IRequest;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\GraphQl\Exception\GraphQlNoSuchEntityException;
 use Psr\Log\LoggerInterface;
 use Shopify\Auth\Session;
@@ -68,7 +69,7 @@ class EnsureMerchantSession
      * @throws GraphQlShopifyReauthorizeRequiredException|LocalizedException
      * @since 1.0.0
      */
-    public function execute()
+    public function execute(): void
     {
         if ($this->hasInitialized) {
             return;
@@ -93,21 +94,16 @@ class EnsureMerchantSession
 
         if ($session && $session->isValid()) {
             $authorizedMerchant = $this->merchantStorage->loadMerchantBySessionid($session->getId());
-            if ($this->billing->isBillingRequired($authorizedMerchant)) {
-                try {
-                    list($shouldPay, $payUrl) = $this->billing->check($session);
-                    $proceed = true;
-                    if ($shouldPay) {
-                        throw new GraphQlShopifyReauthorizeRequiredException(__("Payment required."), null, 0, true, $payUrl);
-                    }
-                } catch (GraphQlShopifyReauthorizeRequiredException $e) {
-                    throw $e;
-                } catch (ShopifyBillingException $e) {
-                    $proceed = false;
-                } catch (\Exception $e) {
-                    $this->logger->debug($e);
-                    throw new GraphQlNoSuchEntityException(__(Constants::INTERNAL_SYSTEM_ERROR_MESS));
-                }
+            try {
+                list($shouldPay, $payUrl) = $this->billing->check($session);
+            } catch (ShopifyBillingException|NoSuchEntityException $e) {
+                throw $e;
+            } catch (\Exception $e) {
+                $this->logger->debug($e);
+                throw new LocalizedException(__(Constants::INTERNAL_SYSTEM_ERROR_MESS));
+            }
+            if ($shouldPay) {
+                throw new GraphQlShopifyReauthorizeRequiredException(__("Payment required."), null, 0, true, $payUrl);
             } else {
                 // make a request to ensure the access token still valid. otherwise, re-authenticate the user.
                 try {

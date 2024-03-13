@@ -53,11 +53,14 @@ class MerchantToContext implements ContextParametersProcessorInterface
             }
             $this->ensureMerchantSession->execute();
             $merchant = $this->ensureMerchantSession->getMerchant();
+            if (!$merchant) {
+                return $contextParameters;
+            }
             $contextParameters->addExtensionAttribute('merchant', $merchant);
         } catch (GraphQlShopifyReauthorizeRequiredException $e) {
             throw $e;
-        } catch (LocalizedException|GraphQlNoSuchEntityException|\Throwable $e) {
-            throw new GraphQlAuthorizationException(__($e->getMessage()), $e);
+        } catch (\Throwable $e) {
+            // Do nothing, just ignore authenticate merchant
         }
 
         return $contextParameters;
