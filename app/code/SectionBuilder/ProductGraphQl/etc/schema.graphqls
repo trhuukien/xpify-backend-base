@@ -28,7 +28,7 @@ type Query {
     getSectionsBuy(merchant_shop: String): [SectionInterface]
     @doc(description: "")
     @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsBuyQuery")
-    getSectionsInstall(merchant_shop: String): [SectionInterface]
+    getSectionsInstall(merchant_shop: String): [Section]
     @doc(description: "")
     @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsInstallQuery")
     getSortOptions: [SortOption]
@@ -110,16 +110,6 @@ type Action @doc(description: "Show button") {
 type Install @doc(description: "") {
     theme_id: String
     product_version: String
-}
-
-type SectionLite @doc(description: "") {
-    product_id: String
-    name: String
-    price: String
-    version: String
-    url_key: String
-    images: [Image]
-    installed: [Install]
 }
 
 type SortOption {

@@ -48,7 +48,6 @@ class SectionsInstallQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSession
                 $args['merchant_shop'] ?? $merchant->getShop()
             ]
         );
-        $collection->addFieldToSelect(['name', 'url_key', 'price', 'version', 'media_gallery']);
         $collection->addFieldToFilter('main_table.is_enable', 1);
         $collection->groupById();
         $items = $collection->getData();
