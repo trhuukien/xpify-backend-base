@@ -1,18 +1,11 @@
-type Query {
-    getPricingPlans: [PricingPlans]
-        @doc(description: "")
-        @resolver(class: "SectionBuilder\\BillingGraphQl\\Model\\Resolver\\PricingPlansQuery")
-}
-
 type Mutation {
     purchaseSection(id: ID!): SectionInterface
         @doc(description: "Purchase a section")
         @resolver(class: "\\SectionBuilder\\BillingGraphQl\\Model\\Resolver\\PurchaseSectionMutation")
 }
 
-type PricingPlans @doc(description: "") {
-    plan: PricingPlan
-    information: Information
+type PricingPlan {
+    information: Information @resolver(class: "\\SectionBuilder\\BillingGraphQl\\Model\\Resolver\\PricingPlanInformationFieldResolver")
 }
 
 type Information @doc(description: "") {

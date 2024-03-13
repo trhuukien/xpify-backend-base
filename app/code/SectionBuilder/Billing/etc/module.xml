@@ -5,6 +5,7 @@
         <sequence>
             <module name="SectionBuilder_Core"/>
             <module name="SectionBuilder_Product"/>
+            <module name="Xpify_Merchant"/>
         </sequence>
     </module>
 </config>
