@@ -14,10 +14,21 @@ use Xpify\AuthGraphQl\Model\EnsureMerchantSession;
 use Xpify\AuthGraphQl\Model\EnsureSubscription;
 use Xpify\Core\Model\Constants;
 
+/**
+ * Class Abstract authentication resolver
+ *
+ * @since 1.0.0
+ */
 abstract class AuthSessionAbstractResolver implements ResolverInterface
 {
     private ?EnsureMerchantSession $_ensureMerchantSession = null;
 
+    /**
+     * Get authenticated merchant session
+     *
+     * @return EnsureMerchantSession
+     * @deprecated 1.0.1 use context->getExtensionAttributes()->getMerchant() instead
+     */
     protected function getMerchantSession(): EnsureMerchantSession
     {
         return $this->getEnsureMerchantSession();
@@ -29,6 +40,7 @@ abstract class AuthSessionAbstractResolver implements ResolverInterface
      * If null is returned, no subscription is required
      *
      * @return string[]
+     * @since 1.0.0
      */
     protected function pricingPlansRequired(): array
     {
@@ -40,6 +52,7 @@ abstract class AuthSessionAbstractResolver implements ResolverInterface
      *
      * @return void
      * @throws AuthorizationException|\Magento\Framework\Exception\NoSuchEntityException
+     * @since 1.0.0
      */
     protected function ensureSubscription(): void
     {
@@ -51,10 +64,10 @@ abstract class AuthSessionAbstractResolver implements ResolverInterface
 
     /**
      * @inheritDoc
+     * @since 1.0.0
      */
     public function resolve(Field $field, $context, ResolveInfo $info, array $value = null, array $args = null)
     {
-        $this->getMerchantSession()->execute();
         try {
             $this->ensureSubscription();
         } catch (AuthorizationException $e) {
@@ -68,11 +81,24 @@ abstract class AuthSessionAbstractResolver implements ResolverInterface
         return $this->execResolve($field, $context, $info, $value, $args);
     }
 
+    /**
+     * Execute the resolver
+     *
+     * @param Field $field
+     * @param $context
+     * @param ResolveInfo $info
+     * @param array|null $value
+     * @param array|null $args
+     * @return mixed
+     * @since 1.0.0
+     */
     abstract public function execResolve(Field $field, $context, ResolveInfo $info, array $value = null, array $args = null);
 
     /**
      * @deprecated use getMerchantSession() instead
      * @return EnsureMerchantSession
+     * @since 1.0.0
+     * @deprecated 1.0.1
      */
     protected function getEnsureMerchantSession(): EnsureMerchantSession
     {

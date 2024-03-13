@@ -11,6 +11,7 @@ use Shopify\Exception\HttpRequestException;
 use Shopify\Exception\MissingArgumentException;
 use Xpify\App\Api\Data\AppInterface as IApp;
 use Xpify\Core\Exception\ShopifyQueryException;
+use Xpify\Core\Helper\Utils;
 use Xpify\Merchant\Api\Data\MerchantInterface as IMerchant;
 use Xpify\Merchant\Api\Data\MerchantSubscriptionInterface as ISubscription;
 use Xpify\Merchant\Api\MerchantSubscriptionRepositoryInterface as ISubscriptionRepository;
@@ -71,7 +72,7 @@ class Billing
      * @return array Array containing
      * - hasPayment: bool
      * - confirmationUrl: string|null
-     * @throws ShopifyBillingException|NoSuchEntityException|LocalizedException
+     * @throws ShopifyBillingException|NoSuchEntityException
      */
     public function check(Session|Imerchant $object): array
     {
@@ -79,25 +80,49 @@ class Billing
         if ($object instanceof Session) {
             $merchant = $this->merchantStorage->loadMerchantBySessionid($object->getId());
         }
-        $billingUrl = null;
-        $shouldPayment = false;
-        if (!$this->isBillingRequired($merchant)) {
-            return [false, $billingUrl];
+        $subscriptions = Subscription::getSubscriptions($merchant);
+        if (count($subscriptions) === 0) {
+            return [false, null];
         }
-        $subscription = $this->subscriptionOrException($merchant);
-        $config = [
-            'chargeName' => $subscription->getName(),
-            'amount' => $subscription->getPrice(),
-            'currencyCode' => \Xpify\App\Api\Data\AppInterface::CURRENCY_CODE,
-            'interval' => $subscription->getInterval(),
-        ];
+        foreach ($subscriptions as $subscription) {
+            if ($subscription->getPrice() === 0.0) {
+                continue;
+            }
+            $config = [
+                'chargeName' => $subscription->getName(),
+                'amount' => $subscription->getPrice(),
+                'currencyCode' => \Xpify\App\Api\Data\AppInterface::CURRENCY_CODE,
+                'interval' => $subscription->getInterval(),
+            ];
 
-        if (!$this->hasActivePayment($merchant, $config)) {
-            $shouldPayment = true;
+
+            if ($this->hasActivePayment($merchant, $config)) {
+                continue;
+            }
+            $appUid = Utils::idToUid($merchant->getAppId() . "");
+            $sign = \Xpify\Core\Helper\Utils::createHmac([
+                'data' => [
+                    '_mid' => $merchant->getId(),
+                    '_i' => $appUid,
+                    '_sid' => $subscription->getId(),
+                ],
+                'buildQuery' => true,
+                'buildQueryWithJoin' => true,
+            ], \Xpify\Core\Model\Constants::SYS_SECRET_KEY);
+            $config['return_url'] =
+                Context::$HOST_SCHEME . '://' .
+                Context::$HOST_NAME .
+                '/xpify/billing/success' .
+                "/_i/{$appUid}" .
+                "/_mid/{$merchant->getId()}" .
+                "/_sid/{$subscription->getId()}" .
+                "/_sign/$sign";
+
             [$billingUrl] = $this->requestPayment($merchant, $config);
+            return [true, $billingUrl];
         }
 
-        return [$shouldPayment, $billingUrl];
+        return [false, null];
     }
 
     /**
@@ -135,7 +160,7 @@ class Billing
             throw new ShopifyBillingException("Error while billing the store. Please contact us!", $data["userErrors"]);
         }
 
-        return [$data["confirmationUrl"], $data[$objectKey]];
+        return [$data["confirmationUrl"], $data[$objectKey] ?? []];
     }
 
     /**

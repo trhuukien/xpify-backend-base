@@ -86,6 +86,10 @@ class GetCurrentApp
                 IApp::REMOTE_ID
             ];
         }
+        if ($xpifyAppHeader = $this->request->getHeader('X-Xpify-App')) {
+            $appId = (int) $this->uidEncoder->decode($xpifyAppHeader);
+            return [ $appId, IApp::ID ];
+        }
         return [
             $this->request->getParam('_i') ? (int) $this->uidEncoder->decode($this->request->getParam('_i')) : null,
             IApp::ID

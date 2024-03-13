@@ -1,7 +1,7 @@
 {
   "name": "xpify/module-auth-graph-ql",
-  "version": "1.0.0",
-  "description": "N/A",
+  "version": "1.0.1",
+  "description": "Merchant authentication for Shopify Merchant requests.",
   "type": "magento2-module",
   "require": {
     "magento/framework": "*",
