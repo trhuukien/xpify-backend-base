@@ -5,6 +5,7 @@
             "is_prod": true,
             "remote_id": true,
             "name": true,
+            "handle": true,
             "api_key": true,
             "secret_key": true,
             "scopes": true,
@@ -14,7 +15,8 @@
         },
         "constraint": {
             "PRIMARY": true,
-            "$XPIFY_APPS_REMOTE_ID": true
+            "$XPIFY_APPS_REMOTE_ID": true,
+            "$XPIFY_APPS_HANDLE": true
         }
     }
 }

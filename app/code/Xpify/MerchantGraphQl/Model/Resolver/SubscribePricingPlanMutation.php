@@ -6,6 +6,7 @@ namespace Xpify\MerchantGraphQl\Model\Resolver;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\GraphQl\Config\Element\Field;
+use Magento\Framework\GraphQl\Exception\GraphQlAlreadyExistsException;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Exception\GraphQlNoSuchEntityException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
@@ -17,6 +18,7 @@ use Xpify\Core\Helper\Utils;
 use Xpify\Core\Model\Constants;
 use Xpify\Core\Model\Logger;
 use Xpify\Merchant\Api\MerchantSubscriptionRepositoryInterface as ISubscriptionRepository;
+use Xpify\Merchant\Exception\AlreadySubscribedException;
 use Xpify\Merchant\Exception\ShopifyBillingException;
 use Xpify\Merchant\Helper\Subscription;
 use Xpify\Merchant\Service\Billing;
@@ -63,6 +65,8 @@ class SubscribePricingPlanMutation extends AuthSessionAbstractResolver implement
      * @param array|null $args
      * @return array
      * @throws GraphQlInputException|GraphQlNoSuchEntityException
+     * @throws GraphQlShopifyReauthorizeRequiredException
+     * @throws GraphQlAlreadyExistsException
      * @since 1.0.0
      */
     public function execResolve(Field $field, $context, ResolveInfo $info, array $value = null, array $args = null)
@@ -71,35 +75,28 @@ class SubscribePricingPlanMutation extends AuthSessionAbstractResolver implement
         $plan = $this->pricingPlanRepository->get($args['input']['plan_id']);
         $merchant = $context->getExtensionAttributes()->getMerchant();
 
-        $newSubscription = $this->subscriptionRepository->create();
-        $newSubscription->setMerchantId((int) $merchant->getId());
-        $newSubscription->setPlanId((int) $plan->getId());
-        $newSubscription->setAppId((int) $merchant->getAppId());
-        $newSubscription->setCode($plan->getCode());
-        $newSubscription->setName($plan->getName());
-        $newSubscription->setDescription($plan->getDescription());
-        $newSubscription->setPrice($plan->getIntervalAmount($args['input']['interval']));
-        $newSubscription->setInterval($args['input']['interval']);
         try {
-            $newSubscription = $this->subscriptionRepository->save($newSubscription);
-        } catch (\Throwable $e) {
-            $this->logger->debug($e);
-            throw new GraphQlInputException(__("Can't subscribe to this plan! Please try again later."));
-        }
-
-        try {
-            list($shouldPay, $payUrl) = $this->billing->check($merchant);
-            if ($shouldPay) {
+            $payUrl = $this->billing->subscribePlan($merchant, $plan, $args['input']['interval']);
+            if ($payUrl) {
                 throw new GraphQlShopifyReauthorizeRequiredException(__("Please make payment."), null, 0, true, $payUrl);
             }
+            $subscription = Subscription::getSubscription($merchant);
+        } catch (AlreadySubscribedException $e) {
+            if ($e->getCode() === Billing::E_ALREADY_SUBSCRIBED) {
+                throw new GraphQlAlreadyExistsException(__("You have already subscribed to this plan."));
+            }
+            throw new GraphQlAlreadyExistsException(__($e->getMessage()));
         } catch (GraphQlShopifyReauthorizeRequiredException $e) {
             throw $e;
-        } catch (ShopifyBillingException|\Exception $e) {
+        } catch (\Exception $e) {
             Logger::getLogger('subscription.log')->debug($e->getMessage() . ' ' . $e->getTraceAsString());
             throw new GraphQlNoSuchEntityException(__(Constants::INTERNAL_SYSTEM_ERROR_MESS));
         }
+        if (!$subscription?->getId()) {
+            throw new GraphQlNoSuchEntityException(__(Constants::INTERNAL_SYSTEM_ERROR_MESS));
+        }
 
-        return $this->subscriptionFormatter->toGraphQlOutput($this->subscriptionRepository->getById($newSubscription->getId()));
+        return $this->subscriptionFormatter->toGraphQlOutput($subscription);
     }
 
     /**
@@ -137,11 +134,6 @@ class SubscribePricingPlanMutation extends AuthSessionAbstractResolver implement
         $f = $plan->hasIntervalPrice($args['input']['interval']);
         if (!$f) {
             throw new GraphQlNoSuchEntityException(__('Invalid interval'));
-        }
-
-        list($hasSubscription) = Subscription::hasSubscription($merchant);
-        if ($hasSubscription) {
-            throw new GraphQlInputException(__('You have already subscribed to a plan!'));
         }
     }
 }

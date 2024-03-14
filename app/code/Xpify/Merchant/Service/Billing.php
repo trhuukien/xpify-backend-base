@@ -3,26 +3,25 @@ declare(strict_types=1);
 
 namespace Xpify\Merchant\Service;
 
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Shopify\Auth\Session;
 use Shopify\Context;
-use Shopify\Exception\HttpRequestException;
-use Shopify\Exception\MissingArgumentException;
 use Xpify\App\Api\Data\AppInterface as IApp;
 use Xpify\Core\Exception\ShopifyQueryException;
 use Xpify\Core\Helper\Utils;
 use Xpify\Merchant\Api\Data\MerchantInterface as IMerchant;
-use Xpify\Merchant\Api\Data\MerchantSubscriptionInterface as ISubscription;
-use Xpify\Merchant\Api\MerchantSubscriptionRepositoryInterface as ISubscriptionRepository;
+use Xpify\Merchant\Exception\AlreadySubscribedException;
 use Xpify\Merchant\Exception\ShopifyBillingException;
 use Xpify\Merchant\Helper\GraphqlQueryTrait;
 use Xpify\Merchant\Helper\Subscription;
+use Xpify\PricingPlan\Api\Data\PricingPlanInterface;
+use Xpify\PricingPlan\Api\PricingPlanRepositoryInterface as IPricingPlanRepository;
 use Xpify\PricingPlan\Model\Source\IntervalType;
 
 class Billing
 {
     use GraphqlQueryTrait;
+    const E_ALREADY_SUBSCRIBED = 1;
 
     private MerchantStorage $merchantStorage;
     private static $logger = null;
@@ -31,38 +30,74 @@ class Billing
         IntervalType::INTERVAL_EVERY_30_DAYS, IntervalType::INTERVAL_ANNUAL
     ];
     private static ?IApp $app = null;
+    private IPricingPlanRepository $planRepository;
 
     /**
      * @param MerchantStorage $merchantStorage
-     * @param ISubscriptionRepository $subscriptionRepository
+     * @param IPricingPlanRepository $planRepository
      */
     public function __construct(
-        MerchantStorage $merchantStorage
+        MerchantStorage $merchantStorage,
+        IPricingPlanRepository $planRepository
     ) {
         $this->merchantStorage = $merchantStorage;
-    }
-
-    public function isBillingRequired(Session|Imerchant $object): bool
-    {
-        $merchant = $object;
-        if ($object instanceof Session) {
-            $merchant = $this->merchantStorage->loadMerchantBySessionid($object->getId());
-        }
-
-        list($hasSubscription, $subscription) = Subscription::hasSubscription($merchant);
-        return $hasSubscription && $subscription->getPrice() > 0;
+        $this->planRepository = $planRepository;
     }
 
     /**
-     * Get the subscription for the given merchant
-     *
      * @param IMerchant $merchant
-     * @return ISubscription
-     * @throws LocalizedException
+     * @param PricingPlanInterface $plan
+     * @param string $interval
+     * @return string|null
+     * @throws NoSuchEntityException
+     * @throws ShopifyBillingException
+     * @throws AlreadySubscribedException
      */
-    private function subscriptionOrException(IMerchant $merchant): ISubscription
+    public function subscribePlan(IMerchant $merchant, PricingPlanInterface $plan, string $interval): ?string
     {
-        return Subscription::getSubscription($merchant) ?? throw new LocalizedException(__('No subscription found'));
+        if ($plan->getIntervalAmount($interval) <= 0.0) {
+            throw new AlreadySubscribedException(__("The plan is free"));
+        }
+        list($hasSubscription) = Subscription::hasSubscription($merchant, $plan, $interval);
+        if ($hasSubscription) {
+            throw new AlreadySubscribedException(__("The merchant already has an active payment"), null, self::E_ALREADY_SUBSCRIBED);
+        }
+        $subscription = Subscription::newSubscription();
+        $subscription->setName($plan->getName());
+        $subscription->setPrice($plan->getIntervalAmount($interval));
+        $subscription->setInterval($interval);
+        $config = [
+            'chargeName' => $subscription->getName(),
+            'amount' => $subscription->getPrice(),
+            'currencyCode' => \Xpify\App\Api\Data\AppInterface::CURRENCY_CODE,
+            'interval' => $subscription->getInterval(),
+        ];
+        if ($this->hasActivePayment($merchant, $config)) {
+            throw new AlreadySubscribedException(__("The merchant already has an active payment"), null, self::E_ALREADY_SUBSCRIBED);
+        }
+        $appUid = Utils::idToUid($merchant->getAppId() . "");
+        $pUid = Utils::idToUid($plan->getId() . "");
+        $sign = \Xpify\Core\Helper\Utils::createHmac([
+            'data' => [
+                '_mid' => $merchant->getId(),
+                '_i' => $appUid,
+                '_pid' => $pUid,
+                '_interval' => $subscription->getInterval(),
+            ],
+            'buildQuery' => true,
+            'buildQueryWithJoin' => true,
+        ], \Xpify\Core\Model\Constants::SYS_SECRET_KEY);
+        $config['return_url'] =
+            Context::$HOST_SCHEME . '://' .
+            Context::$HOST_NAME .
+            '/xpify/billing/success' .
+            "/_i/{$appUid}" .
+            "/_mid/{$merchant->getId()}" .
+            "/_pid/$pUid" .
+            "/_sign/$sign" .
+            "?_interval={$subscription->getInterval()}";
+        [$billingUrl] = $this->requestPayment($merchant, $config);
+        return $billingUrl;
     }
 
     /**
@@ -80,47 +115,17 @@ class Billing
         if ($object instanceof Session) {
             $merchant = $this->merchantStorage->loadMerchantBySessionid($object->getId());
         }
-        $subscriptions = Subscription::getSubscriptions($merchant);
-        if (count($subscriptions) === 0) {
+        $subscription = Subscription::getSubscription($merchant);
+        if (!$subscription?->getId()) {
             return [false, null];
         }
-        foreach ($subscriptions as $subscription) {
-            if ($subscription->getPrice() === 0.0) {
-                continue;
+        $plan = $this->planRepository->get($subscription->getPlanId());
+        try {
+            $billingUrl = $this->subscribePlan($merchant, $plan, $subscription->getInterval());
+            if ($billingUrl) {
+                return [true, $billingUrl];
             }
-            $config = [
-                'chargeName' => $subscription->getName(),
-                'amount' => $subscription->getPrice(),
-                'currencyCode' => \Xpify\App\Api\Data\AppInterface::CURRENCY_CODE,
-                'interval' => $subscription->getInterval(),
-            ];
-
-
-            if ($this->hasActivePayment($merchant, $config)) {
-                continue;
-            }
-            $appUid = Utils::idToUid($merchant->getAppId() . "");
-            $sign = \Xpify\Core\Helper\Utils::createHmac([
-                'data' => [
-                    '_mid' => $merchant->getId(),
-                    '_i' => $appUid,
-                    '_sid' => $subscription->getId(),
-                ],
-                'buildQuery' => true,
-                'buildQueryWithJoin' => true,
-            ], \Xpify\Core\Model\Constants::SYS_SECRET_KEY);
-            $config['return_url'] =
-                Context::$HOST_SCHEME . '://' .
-                Context::$HOST_NAME .
-                '/xpify/billing/success' .
-                "/_i/{$appUid}" .
-                "/_mid/{$merchant->getId()}" .
-                "/_sid/{$subscription->getId()}" .
-                "/_sign/$sign";
-
-            [$billingUrl] = $this->requestPayment($merchant, $config);
-            return [true, $billingUrl];
-        }
+        } catch (AlreadySubscribedException $e) {}
 
         return [false, null];
     }
@@ -291,7 +296,25 @@ class Billing
         $subscriptions = $responseBody["data"]["currentAppInstallation"]["activeSubscriptions"];
 
         foreach ($subscriptions as $subscription) {
+            $returnUrl = $subscription["returnUrl"];
+            $queries = parse_url($returnUrl, PHP_URL_QUERY);
+            $intervalEqual = true;
+            if ($queries) {
+                // parse the queries to get the interval, the queries are in the format like this: _i=1&_mid=1&_interval=1
+                $queries = explode('&', $queries);
+                // try to parse the query to key => value from format key=value
+                $queries = array_reduce($queries, function ($carry, $item) {
+                    $item = explode('=', $item);
+                    $carry[$item[0]] = $item[1];
+                    return $carry;
+                }, []);
+                if (!empty($queries['_interval'])) {
+                    $intervalEqual = $queries['_interval'] === $config["interval"];
+                }
+            }
+
             if (
+                $intervalEqual &&
                 $subscription["name"] === $config["chargeName"] &&
                 (!self::getCurrentApp()->isProd() || !$subscription["test"])
             ) {
@@ -387,7 +410,7 @@ class Billing
     query appSubscription {
         currentAppInstallation {
             activeSubscriptions {
-                name, test
+                name, test, returnUrl
             }
         }
     }

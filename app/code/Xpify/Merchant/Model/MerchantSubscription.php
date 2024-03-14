@@ -267,4 +267,36 @@ class MerchantSubscription extends AbstractModel implements ISubscription
 
         return $this->planPricing;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getStatus() : ?string
+    {
+        return $this->getData(self::STATUS);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setStatus(string $status): self
+    {
+        return $this->setData(self::STATUS, $status);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSubscriptionId(): ?string
+    {
+        return $this->getData(self::SUBSCRIPTION_ID);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setSubscriptionId(string $subscriptionId): self
+    {
+        return $this->setData(self::SUBSCRIPTION_ID, $subscriptionId);
+    }
 }

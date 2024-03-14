@@ -34,7 +34,7 @@ class SuccessResponseResolver implements IResolver
      */
     public function resolve(IApp $app, Imerchant $merchant, IMerchantSubscription $subscription, ResultFactory $resultFactory)
     {
-        $returnUrl = "https://" . $merchant->getShop() . "/admin/apps/" . $app->getName() . "/?billing_completed=1";
+        $returnUrl = "https://" . $merchant->getShop() . "/admin/apps/" . $app->getHandle() . "/?billing_completed=1";
         return $resultFactory->create(ResultFactory::TYPE_REDIRECT)->setUrl($returnUrl);
     }
 

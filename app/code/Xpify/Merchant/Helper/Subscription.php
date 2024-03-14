@@ -7,6 +7,7 @@ use Magento\Framework\Api\SearchCriteriaBuilder;
 use Xpify\Merchant\Api\Data\MerchantSubscriptionInterface as ISubscription;
 use Xpify\Merchant\Api\MerchantSubscriptionRepositoryInterface as ISubscriptionRepository;
 use Xpify\Merchant\Api\Data\MerchantInterface as IMerchant;
+use Xpify\PricingPlan\Api\Data\PricingPlanInterface as IPricingPlan;
 
 final class Subscription
 {
@@ -26,17 +27,27 @@ final class Subscription
      * @param IMerchant $merchant
      * @return array [bool, ISubscription|null]
      */
-    public static function hasSubscription(IMerchant $merchant): array
+    public static function hasSubscription(IMerchant $merchant, IPricingPlan $plan, string $interval): array
     {
         $subscription = self::getSubscription($merchant);
-        return [
-            (bool) $subscription?->getId(),
-            $subscription
-        ];
+        if ($subscription->getPlanId() . "" === $plan->getId() . "" && $subscription->getInterval() === $interval) {
+            return [true, $subscription];
+        }
+        return [false, null];
     }
 
     /**
-     * Get existed subscription of the given merchant
+     * Create new subscription
+     *
+     * @return ISubscription
+     */
+    public static function newSubscription(): ISubscription
+    {
+        return self::getSubscriptionRepository()->create();
+    }
+
+    /**
+     * Get activated subscription of the given merchant
      *
      * @param IMerchant $merchant
      * @return ISubscription|null
@@ -47,6 +58,8 @@ final class Subscription
             $criteriaBuilder = self::getSearchCriteriaBuilder();
             $criteriaBuilder->addFilter(ISubscription::MERCHANT_ID, $merchant->getId());
             $criteriaBuilder->addFilter(ISubscription::APP_ID, $merchant->getAppId());
+            $criteriaBuilder->addFilter(ISubscription::STATUS, ISubscription::STATUS_ACTIVE);
+            $criteriaBuilder->setPageSize(1);
             $searchResults = self::getSubscriptionRepository()->getList($criteriaBuilder->create());
             if ($searchResults->getTotalCount() > 0) {
                 $subs = $searchResults->getItems();
