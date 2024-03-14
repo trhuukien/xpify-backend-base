@@ -105,7 +105,7 @@ class Success implements IHttpGetAction
             }
             $handler = $handlers[$section->getTypeId()];
             $this->$handler($merchant, $section, $purchase);
-            $returnUrl = "https://" . $merchant->getShop() . "/admin/apps/" . $app->getName() . "/section/" . $section->getKey() . "?purchase_completed=1";
+            $returnUrl = "https://" . $merchant->getShop() . "/admin/apps/" . $app->getHandle() . "/section/" . $section->getKey() . "?purchase_completed=1";
 
             return $this->resultFactory->create(ResultFactory::TYPE_REDIRECT)->setUrl($returnUrl);
         } catch (PurchaseSectionException $e) {

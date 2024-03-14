@@ -90,23 +90,14 @@ class Billing
         if (((bool) $section->getPlanId()) === false) {
             return false;
         }
-        // Get related section plan
-        $plan = $this->pricingPlanRepository->get($section->getPlanId());
-        $merchantSubscriptions = Subscription::getSubscriptions($merchant);
-        // check if $plan is in $merchantSubscriptions
-        $activeSubscription = null;
-        foreach ($merchantSubscriptions as $subscription) {
-            if ($subscription->getCode() === $plan->getCode()) {
-                $activeSubscription = $subscription;
-                break;
-            }
-        }
-        if (empty($activeSubscription)) {
+        $merchantSubscription = Subscription::getSubscription($merchant);
+        if ($merchantSubscription->getPlanId() . "" !== $section->getPlanId() . "") {
             return false;
         }
+        // Ensure the current subscription is active in Shopify
         return $this->billingService->hasActivePayment($merchant, [
-            'chargeName' => $activeSubscription->getName(),
-            'interval' => $activeSubscription->getInterval(),
+            'chargeName' => $merchantSubscription->getName(),
+            'interval' => $merchantSubscription->getInterval(),
         ]);
     }
 
