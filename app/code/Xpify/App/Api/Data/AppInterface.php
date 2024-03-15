@@ -20,6 +20,7 @@ interface AppInterface
     const IS_PROD = 'is_prod';
     const REMOTE_ID = 'remote_id';
     const NAME = 'name';
+    const HANDLE = 'handle';
     const API_KEY = 'api_key';
     const SECRET_KEY = 'secret_key';
     const SCOPES = 'scopes';
@@ -132,4 +133,25 @@ interface AppInterface
      * @return AppInterface
      */
     public function setUpdatedAt(string $updatedAt): AppInterface;
+
+    /**
+     * Get the handle
+     *
+     * This method is used to get the handle of the application.
+     * The return type is nullable string, meaning it can return a string or null.
+     *
+     * @return string|null The handle of the application or null if not set
+     */
+    public function getHandle(): ?string;
+
+    /**
+     * Set the handle
+     *
+     * This method is used to set the handle of the application.
+     * It accepts a string as an argument.
+     *
+     * @param string $handle The handle of the application
+     * @return AppInterface Returns the current instance of the class to allow method chaining
+     */
+    public function setHandle(string $handle): AppInterface;
 }

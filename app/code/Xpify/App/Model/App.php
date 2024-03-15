@@ -150,4 +150,26 @@ class App extends AbstractModel implements IApp
     {
         return $this->setData(self::IS_PROD, $isProd);
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getHandle(): ?string
+    {
+        if (!$this->getData(self::HANDLE)) {
+            if ($this->getName()) {
+                $handleFromName = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($this->getName())), "-");
+                $this->setHandle($handleFromName);
+            }
+        }
+        return $this->getData(self::HANDLE);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setHandle(string $handle): IApp
+    {
+        return $this->setData(self::HANDLE, $handle);
+    }
 }

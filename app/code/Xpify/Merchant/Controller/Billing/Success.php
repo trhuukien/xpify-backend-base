@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace Xpify\Merchant\Controller\Billing;
 
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\Action\HttpGetActionInterface as IAction;
 use Magento\Framework\App\RequestInterface as IRequest;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use SectionBuilder\Billing\Exception\PurchaseSectionException;
 use Xpify\App\Service\GetCurrentApp;
 use Xpify\Core\Helper\ShopifyContextInitializer;
@@ -17,6 +19,8 @@ use Xpify\Merchant\Api\MerchantRepositoryInterface as IMerchantRepository;
 use Xpify\Merchant\Api\MerchantSubscriptionRepositoryInterface as ISubscriptionRepository;
 use Xpify\Merchant\Helper\GraphqlQueryTrait;
 use Xpify\Merchant\Model\Billing\SubscriptionSuccessResolverInterface as IBillingSuccessResolver;
+use Xpify\PricingPlan\Api\PricingPlanRepositoryInterface as IPricingPlanRepository;
+use Xpify\Merchant\Model\ResourceModel\MerchantSubscription as SubscriptionResource;
 
 /**
  * Class Success
@@ -37,6 +41,8 @@ class Success implements IAction
     private ISubscriptionRepository $subscriptionRepository;
     private ResultFactory $resultFactory;
     private ManagerInterface $eventManager;
+    private IPricingPlanRepository $pricingPlanRepository;
+    private SubscriptionResource $subscriptionResource;
 
     /**
      * @param IRequest $request
@@ -46,17 +52,21 @@ class Success implements IAction
      * @param ISubscriptionRepository $subscriptionRepository
      * @param ResultFactory $resultFactory
      * @param ManagerInterface $eventManager
+     * @param IPricingPlanRepository $pricingPlanRepository
+     * @param SubscriptionResource $subscriptionResource
      * @param IBillingSuccessResolver[] $responseResolvers
      */
     public function __construct(
-        IRequest $request,
-        GetCurrentApp $currentApp,
-        ShopifyContextInitializer $shopifyContextInitializer,
-        IMerchantRepository $merchantRepository,
-        ISubscriptionRepository $subscriptionRepository,
-        ResultFactory $resultFactory,
+        IRequest                                  $request,
+        GetCurrentApp                             $currentApp,
+        ShopifyContextInitializer                 $shopifyContextInitializer,
+        IMerchantRepository                       $merchantRepository,
+        ISubscriptionRepository                   $subscriptionRepository,
+        ResultFactory                             $resultFactory,
         \Magento\Framework\Event\ManagerInterface $eventManager,
-        array $responseResolvers = []
+        IPricingPlanRepository                    $pricingPlanRepository,
+        SubscriptionResource                      $subscriptionResource,
+        array                                     $responseResolvers = []
     ) {
         $this->request = $request;
         $this->responseResolvers = $responseResolvers;
@@ -66,6 +76,8 @@ class Success implements IAction
         $this->subscriptionRepository = $subscriptionRepository;
         $this->resultFactory = $resultFactory;
         $this->eventManager = $eventManager;
+        $this->pricingPlanRepository = $pricingPlanRepository;
+        $this->subscriptionResource = $subscriptionResource;
     }
 
     /**
@@ -81,19 +93,29 @@ class Success implements IAction
                 throw new PurchaseSectionException('Invalid request');
             }
             $chargeId = $this->getRequest()->getParam('charge_id');
-            if (!$this->getRequest()->getParam('_i') || !$chargeId || ($app?->getId() . "") !== (Utils::uidToId($this->getRequest()->getParam('_i')) . "")) {
+            $planUid = $this->getRequest()->getParam('_pid');
+            $appUid = $this->getRequest()->getParam('_i');
+            if (
+                !$appUid ||
+                !$chargeId ||
+                ($app?->getId() . "") !== Utils::uidToId($appUid) ||
+                !$planUid
+            ) {
                 throw new PurchaseSectionException('Invalid request');
             }
+            $interval = $this->getRequest()->getParam('_interval');
             $merchantId = $this->getRequest()->getParam('_mid');
+            $sign = $this->getRequest()->getParam('_sign');
             $isValid = Utils::validateHmac([
                 'data' => [
                     '_mid' => $merchantId,
-                    '_i' => $this->getRequest()->getParam('_i'),
-                    '_sid' => $this->getRequest()->getParam('_sid'),
+                    '_i' => $appUid,
+                    '_pid' => $planUid,
+                    '_interval' => $interval,
                 ],
                 'buildQuery' => true,
                 'buildQueryWithJoin' => true,
-                'hmac' => $this->getRequest()->getParam('_sign'),
+                'hmac' => $sign,
             ], \Xpify\Core\Model\Constants::SYS_SECRET_KEY);
             if (!$isValid) {
                 throw new PurchaseSectionException('Invalid signature');
@@ -102,6 +124,10 @@ class Success implements IAction
             $merchant = $this->merchantRepository->getById((int) $merchantId);
             if (!$merchant?->getId()) {
                 throw new PurchaseSectionException('Merchant not found');
+            }
+            $plan = $this->pricingPlanRepository->get(Utils::uidToId($planUid));
+            if (!$plan?->getId()) {
+                throw new PurchaseSectionException('Pricing plan not found!');
             }
             $sSubscription = self::query($merchant, [
                 'query' => self::SUBSCRIPTION_STATUS_QUERY,
@@ -115,7 +141,27 @@ class Success implements IAction
             if ($subscriptionStatus !== 'ACCEPTED' && $subscriptionStatus !== 'ACTIVE') {
                 throw new PurchaseSectionException('Invalid subscription');
             }
-            $subscription = $this->subscriptionRepository->getById((int) $this->getRequest()->getParam('_sid'));
+
+            try {
+                $this->subscriptionResource->deactivateAllSubscriptions((int) $merchant->getId(), (int) $app->getId());
+                $createdAt = $sSubscription['data']['node']['createdAt'];
+                $subscription = $this->subscriptionRepository->create();
+                $subscription->setMerchantId((int) $merchant->getId());
+                $subscription->setPlanId((int) $plan->getId());
+                $subscription->setAppId((int) $merchant->getAppId());
+                $subscription->setCode($plan->getCode());
+                $subscription->setName($plan->getName());
+                $subscription->setDescription($plan->getDescription());
+                $subscription->setPrice($plan->getIntervalAmount($interval));
+                $subscription->setInterval($interval);
+                $subscription->setCreatedAt($createdAt);
+                $subscription->setStatus($subscriptionStatus);
+                $subscription->setSubscriptionId($chargeId);
+                $subscription = $this->subscriptionRepository->save($subscription);
+            } catch (\Throwable $e) {
+                $this->logger->debug($e);
+                throw new GraphQlInputException(__("Can't subscribe to this plan! Please try again later."));
+            }
 
             $this->eventManager->dispatch('xpify_merchant_subscription_success', [
                 'app' => $app,
@@ -168,7 +214,7 @@ class Success implements IAction
     private const SUBSCRIPTION_STATUS_QUERY = <<<'GRAPHQL'
         query GetSubscriptionStatus($id: ID!) {
             node(id: $id) {
-                ... on AppSubscription { status }
+                ... on AppSubscription { status createdAt }
             }
         }
     GRAPHQL;
