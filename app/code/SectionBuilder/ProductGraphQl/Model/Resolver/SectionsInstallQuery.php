@@ -42,12 +42,7 @@ class SectionsInstallQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSession
         $merchant = $this->getMerchantSession()->getMerchant();
 
         $collection = $this->collectionFactory->create();
-        $collection->joinListInstalled(
-            [
-                'i.merchant_shop = ?',
-                $args['merchant_shop'] ?? $merchant->getShop()
-            ]
-        );
+        $collection->joinListInstalled('AND i.merchant_shop = "' . $args['merchant_shop'] ?? $merchant->getShop() . '"');
         $collection->addFieldToFilter('main_table.is_enable', 1);
         $collection->groupById();
         $items = $collection->getData();

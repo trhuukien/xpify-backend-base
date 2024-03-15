@@ -42,12 +42,7 @@ class SectionsBuyQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbst
         $merchant = $this->getMerchantSession()->getMerchant();
 
         $collection = $this->collectionFactory->create();
-        $collection->joinListBought(
-            [
-                'b.merchant_shop = ?',
-                $args['merchant_shop'] ?? $merchant->getShop()
-            ]
-        );
+        $collection->joinListBought('AND b.merchant_shop = "' . $args['merchant_shop'] ?? $merchant->getShop() . '"');
         $collection->addFieldToFilter('main_table.is_enable', 1);
         $collection->addFieldToFilter('main_table.type_id', \SectionBuilder\Product\Model\Config\Source\ProductType::SIMPLE_TYPE_ID);
         $collection->groupById();

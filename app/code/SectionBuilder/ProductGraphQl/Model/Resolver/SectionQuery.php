@@ -50,19 +50,11 @@ class SectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstract
 
         $collection->joinListCategoryName();
         $collection->joinListTagName();
-        $collection->joinPricingPlan(['xpp.entity_id IS NULL or xpp.entity_id = main_table.plan_id']);
-        $collection->joinListBought(
-            [
-                'b.merchant_shop IS NULL or b.merchant_shop = ?',
-                $merchant->getShop()
-            ]
+        $collection->joinPricingPlan(
+            ['xpp.entity_id IS NULL or xpp.entity_id = main_table.plan_id']
         );
-        $collection->joinListInstalled(
-            [
-                'i.merchant_shop IS NULL or i.merchant_shop = ?',
-                $merchant->getShop()
-            ]
-        );
+        $collection->joinListBought('AND b.merchant_shop = "' . $merchant->getShop() . '"');
+        $collection->joinListInstalled('AND i.merchant_shop = "' . $merchant->getShop() . '"');
 
         $result = $collection->getFirstItem()->getData();
         if (!$result) {

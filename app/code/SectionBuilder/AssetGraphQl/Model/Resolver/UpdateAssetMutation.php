@@ -56,12 +56,7 @@ class UpdateAssetMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionA
             \SectionBuilder\Product\Api\Data\SectionInterface::SRC,
             $args['asset']
         );
-        $collection->joinListBought(
-            [
-                'b.merchant_shop IS NULL or b.merchant_shop = ?',
-                $merchant->getShop()
-            ]
-        );
+        $collection->joinListBought('AND b.merchant_shop = "' . $merchant->getShop() . '"');
         $collection->getSelect()->joinLeft(
             ['xpp' => \Xpify\PricingPlan\Model\ResourceModel\PricingPlan::MAIN_TABLE],
             'main_table.plan_id = IFNULL(xpp.entity_id, main_table.plan_id)',

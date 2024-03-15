@@ -39,6 +39,7 @@ class SectionsQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstrac
         array $value = null,
         array $args = null
     ) {
+        $merchant = $this->getMerchantSession()->getMerchant();
         $collection = $this->collectionFactory->create();
         $collection->setPageSize($args['pageSize']);
         $collection->setCurPage($args['currentPage']);
@@ -47,6 +48,8 @@ class SectionsQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstrac
             'main_table.type_id',
             \SectionBuilder\Product\Model\Config\Source\ProductType::SIMPLE_TYPE_ID
         );
+        $collection->joinListTagName();
+        $collection->joinListBought('AND b.merchant_shop = "' . $merchant->getShop() . '"');
 
         if (isset($args['search']) && $args['search']) {
             $collection->addFieldToFilter('main_table.name', ['like' => '%' . $args['search'] . '%']);
@@ -54,13 +57,12 @@ class SectionsQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstrac
         if (isset($args['filter']['product_id']) && $args['filter']['product_id']) {
             $collection->addFieldToFilter('entity_id', $args['filter']['product_id']);
         }
+        if (isset($args['filter']['tag_id']) && $args['filter']['tag_id']) {
+            $collection->addFieldToFilter('tag_id', $args['filter']['tag_id']);
+        }
         if (isset($args['filter']['category_id']) && $args['filter']['category_id']) {
             $collection->joinCategoryTable('');
             $collection->addFieldToFilter('category_id', $args['filter']['category_id']);
-        }
-        if (isset($args['filter']['tag_id']) && $args['filter']['tag_id']) {
-            $collection->joinTagTable('');
-            $collection->addFieldToFilter('tag_id', $args['filter']['tag_id']);
         }
         if (isset($args['filter']['plan_id']) && $args['filter']['plan_id']) {
             $filterPlan = [$args['filter']['plan_id']];
@@ -86,8 +88,25 @@ class SectionsQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstrac
         $items = $collection->getData();
         $baseUrl = $this->imageHelper->getBaseUrl();
         foreach ($items as &$item) {
+            if (isset($item['tags'])) {
+                $item['tags'] = explode(';', $item['tags']);
+            }
+
+            $hasOneTime = $item['bought_id'];
+            $hasPlan = !isset($item['pricing_plan']) || $this->authValidation->hasPlan(
+                $merchant,
+                $item['pricing_plan']['code']
+            );
+
+            $item['actions'] = [
+                'install' => $item['price'] == 0 || $hasOneTime || (isset($item['pricing_plan']['code']) && $hasPlan),
+                'purchase' => $item['price'] > 0 && !$hasOneTime,
+                'plan' => !$hasPlan
+            ];
+
             $mediaGallery = explode(\SectionBuilder\Product\Model\Helper\Image::SEPARATION, $item['media_gallery'] ?? "");
             $images = [];
+
             foreach ($mediaGallery as $image) {
                 $filename = str_replace(\SectionBuilder\Product\Model\Helper\Image::SUB_DIR, "", $image)
                     ?: \SectionBuilder\Product\Model\Helper\Image::EMPTY_THUMBNAIL;

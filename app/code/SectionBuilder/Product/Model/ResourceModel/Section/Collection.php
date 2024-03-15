@@ -154,36 +154,28 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         return $this;
     }
 
-    public function joinListBought($condition = [])
+    public function joinListBought($condition = "")
     {
         $this->getSelect()->joinLeft(
             ['b' => $this->getTable(\SectionBuilder\Product\Model\ResourceModel\SectionBuy::MAIN_TABLE)],
-            'main_table.entity_id = b.product_id',
+            'main_table.entity_id = b.product_id ' . $condition,
             ['bought_id' => 'b.entity_id']
         );
-
-        if ($condition) {
-            $this->getSelect()->where(...$condition);
-        }
 
         return $this;
     }
 
-    public function joinListInstalled($condition = [])
+    public function joinListInstalled($condition = "")
     {
         $separation = \SectionBuilder\Product\Model\ResourceModel\Section::SEPARATION;
 
         $this->getSelect()->joinLeft(
             ['i' => $this->getTable(\SectionBuilder\Product\Model\ResourceModel\SectionInstall::MAIN_TABLE)],
-            'main_table.entity_id = i.product_id',
+            'main_table.entity_id = i.product_id ' . $condition,
             [
                 'installed' => new \Zend_Db_Expr("GROUP_CONCAT(DISTINCT CONCAT(i.theme_id, ':', i.product_version) SEPARATOR '$separation')")
             ]
         );
-
-        if ($condition) {
-            $this->getSelect()->where(...$condition);
-        }
 
         return $this;
     }

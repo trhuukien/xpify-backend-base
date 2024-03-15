@@ -45,12 +45,7 @@ class GroupSectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbs
 
         $merchant = $this->getMerchantSession()->getMerchant();
         $collection = $this->collectionFactory->create();
-        $collection->joinListBought(
-            [
-                'b.merchant_shop IS NULL or b.merchant_shop = ?',
-                $merchant->getShop()
-            ]
-        );
+        $collection->joinListBought('AND b.merchant_shop = "' . $merchant->getShop() . '"');
         $collection->addFieldToFilter(
             'main_table.url_key',
             $args['key']
