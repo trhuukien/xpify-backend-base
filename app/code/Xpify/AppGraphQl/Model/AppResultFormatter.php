@@ -36,6 +36,7 @@ class AppResultFormatter
             IApp::CREATED_AT => $app->getCreatedAt(),
             IApp::SCOPES => $app->getScopes(),
             IApp::API_VERSION => $app->getApiVersion(),
+            IApp::HANDLE => $app->getHandle(),
         ];
     }
 }

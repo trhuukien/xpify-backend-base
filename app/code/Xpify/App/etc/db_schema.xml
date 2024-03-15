@@ -7,6 +7,7 @@
         <column xsi:type="smallint" name="is_prod" unsigned="true" nullable="false" default="0" comment="Is Production?" />
         <column xsi:type="varchar" name="remote_id" length="64" comment="Remote Real App ID"/>
         <column xsi:type="varchar" name="name" length="32" nullable="false" comment="Shopify App Name"/>
+        <column xsi:type="varchar" name="handle" length="32" nullable="true" comment="Shopify App Handle"/>
         <column xsi:type="varchar" name="api_key" length="64" comment="App API Key"/>
         <column xsi:type="varchar" name="secret_key" length="64" comment="App Secret Key"/>
         <column xsi:type="text" name="scopes" nullable="true" comment="App Scopes"/>
@@ -21,6 +22,9 @@
         </constraint>
         <constraint xsi:type="unique" referenceId="$XPIFY_APPS_REMOTE_ID">
             <column name="remote_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="$XPIFY_APPS_HANDLE">
+            <column name="handle"/>
         </constraint>
     </table>
 </schema>

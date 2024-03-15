@@ -14,6 +14,7 @@ use Psr\Log\LoggerInterface;
 use Xpify\App\Api\AppRepositoryInterface;
 use Xpify\AppGraphQl\Model\AppResultFormatter;
 use Xpify\AppGraphQl\Model\AuthorizationTrait;
+use Xpify\Core\Exception\GraphQlException;
 
 class AppSaveMutation implements ResolverInterface
 {
@@ -70,6 +71,19 @@ class AppSaveMutation implements ResolverInterface
             throw $e;
         } catch (NoSuchEntityException $e) {
             throw new GraphQlNoSuchEntityException(__("App not found!"));
+        } catch (\Magento\Framework\Exception\CouldNotSaveException $e) {
+            if ($e?->getPrevious() instanceof \Magento\Framework\Exception\AlreadyExistsException) {
+                $preOfPre = $e->getPrevious()->getPrevious();
+                if ($preOfPre instanceof \Magento\Framework\DB\Adapter\DuplicateException) {
+                    if (str_contains($preOfPre->getMessage(), '$XPIFY_APPS_HANDLE')) {
+                        throw new GraphQlException(__("App handle already exists!"), $preOfPre, 'x-duplicate-handle');
+                    }
+                    if (str_contains($preOfPre->getMessage(), '$XPIFY_APPS_REMOTE_ID')) {
+                        throw new GraphQlException(__("App remote ID already exists!"), $preOfPre, 'x-duplicate-remoteId');
+                    }
+                }
+            }
+            throw new GraphQlNoSuchEntityException(__($e->getMessage()));
         } catch (\Throwable $e) {
             $this->logger->debug($e);
             throw new GraphQlInputException(__("Can not complete the mutation. Please check log!"));

@@ -9,6 +9,8 @@ use Xpify\PricingPlan\Api\Data\PricingPlanInterface as IPricingPlan;
 
 interface MerchantSubscriptionInterface
 {
+    const STATUS_ACTIVE = 'ACTIVE';
+    const STATUS_DEACTIVATED = 'DEACTIVATED';
     const ID = 'entity_id';
     const MERCHANT_ID = 'merchant_id';
     const PLAN_ID = 'plan_id';
@@ -19,6 +21,38 @@ interface MerchantSubscriptionInterface
     const PRICE = 'price';
     const INTERVAL = 'interval';
     const CREATED_AT = 'created_at';
+    const STATUS = 'status';
+    const SUBSCRIPTION_ID = 'subscription_id';
+
+    /**
+     * Get transaction status
+     *
+     * @return string|null
+     */
+    public function getStatus(): ?string;
+
+    /**
+     * Get subscription id
+     *
+     * @return string|null
+     */
+    public function getSubscriptionId(): ?string;
+
+    /**
+     * Set transaction status
+     *
+     * @param string $status
+     * @return MerchantSubscriptionInterface
+     */
+    public function setStatus(string $status): self;
+
+    /**
+     * Set subscription id
+     *
+     * @param string $subscriptionId
+     * @return MerchantSubscriptionInterface
+     */
+    public function setSubscriptionId(string $subscriptionId): self;
 
     /**
      * @return int|null
