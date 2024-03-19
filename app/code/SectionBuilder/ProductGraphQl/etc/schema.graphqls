@@ -25,6 +25,9 @@ type Query {
     getGroupSection(key: String!): SectionInterface
     @doc(description: "")
     @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\GroupSectionQuery")
+    getSectionIds(merchant_shop: String): [Int]
+    @doc(description: "")
+    @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionIdsQuery")
     getSectionsBuy(merchant_shop: String): [SectionInterface]
     @doc(description: "")
     @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsBuyQuery")
@@ -37,11 +40,13 @@ type Query {
 }
 
 input SectionFilterInput @doc(description: "") {
+    type_id: Int @doc(description: "")
     product_id: [Int] @doc(description: "")
     category_id: [Int] @doc(description: "")
     tag_id: [Int] @doc(description: "")
     plan_id: [Int] @doc(description: "")
     price: PriceFilter @doc(description: "")
+    owned: Boolean @doc(description: "")
 }
 
 type Sections {
@@ -78,10 +83,11 @@ interface SectionInterface @typeResolver(class: "\\SectionBuilder\\ProductGraphQ
     categories: [String]
     tags: [String]
     type_id: String
-}
-type Section implements SectionInterface {
     actions: Action
     installed: [Install]
+}
+
+type Section implements SectionInterface {
     pricing_plan: PricingPlan
     version: String
     release_note: String
@@ -90,11 +96,6 @@ type Section implements SectionInterface {
 }
 type GroupSection implements SectionInterface {
     child_ids: [ID!]
-    actions: GroupAction
-}
-
-type GroupAction {
-    purchase: Boolean
 }
 
 type Image @doc(description: "") {

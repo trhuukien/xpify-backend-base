@@ -40,22 +40,26 @@ class SectionsQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstrac
         array $args = null
     ) {
         $merchant = $this->getMerchantSession()->getMerchant();
+
         $collection = $this->collectionFactory->create();
         $collection->setPageSize($args['pageSize']);
         $collection->setCurPage($args['currentPage']);
         $collection->addFieldToFilter('main_table.is_enable', 1);
-        $collection->addFieldToFilter(
-            'main_table.type_id',
-            \SectionBuilder\Product\Model\Config\Source\ProductType::SIMPLE_TYPE_ID
-        );
         $collection->joinListTagName();
         $collection->joinListBought('AND b.merchant_shop = "' . $merchant->getShop() . '"');
+        $collection->joinListInstalled('AND i.merchant_shop = "' . $merchant->getShop() . '"');
 
+        if (isset($args['filter']['owned']) && $args['filter']['owned']) {
+            $collection->addFieldToFilter(['b.entity_id', 'i.entity_id'], [['notnull' => true], ['notnull' => true]]);
+        }
         if (isset($args['search']) && $args['search']) {
             $collection->addFieldToFilter('main_table.name', ['like' => '%' . $args['search'] . '%']);
         }
+        if (isset($args['filter']['type_id']) && $args['filter']['type_id']) {
+            $collection->addFieldToFilter('main_table.type_id', $args['filter']['type_id']);
+        }
         if (isset($args['filter']['product_id']) && $args['filter']['product_id']) {
-            $collection->addFieldToFilter('entity_id', $args['filter']['product_id']);
+            $collection->addFieldToFilter('main_table.entity_id', $args['filter']['product_id']);
         }
         if (isset($args['filter']['tag_id']) && $args['filter']['tag_id']) {
             $collection->addFieldToFilter('tag_id', $args['filter']['tag_id']);
@@ -66,28 +70,35 @@ class SectionsQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstrac
         }
         if (isset($args['filter']['plan_id']) && $args['filter']['plan_id']) {
             $filterPlan = [$args['filter']['plan_id']];
-            foreach ($args['filter']['plan_id'] as $key => $planId) {
-                if ($planId == 0) {
-                    $filterPlan[] = ['null' => true];
-                    $collection->addFieldToFilter('price', 0);
-                    unset($args['filter']['plan_id'][$key]);
-                    break;
-                }
-            }
-            $collection->addFieldToFilter('plan_id', $filterPlan);
+//            foreach ($args['filter']['plan_id'] as $key => $planId) {
+//                if ($planId == 0) {
+//                    $filterPlan[] = ['null' => true];
+//                    $collection->addFieldToFilter('price', 0);
+//                    unset($args['filter']['plan_id'][$key]);
+//                    break;
+//                }
+//            }
+            $collection->addFieldToFilter('main_table.plan_id', $filterPlan);
         }
         if (isset($args['filter']['price']) && $args['filter']['price']) {
             $collection->addFieldToFilter('main_table.price', ['gteq' => $args['filter']['price']['min']]);
             $collection->addFieldToFilter('main_table.price', ['lteq' => $args['filter']['price']['max']]);
         }
+
         if (isset($args['sort']) && $args['sort']) {
             $collection->setOrder($args['sort']['column'], $args['sort']['order']);
         }
         $collection->groupById();
 
-        $items = $collection->getData();
         $baseUrl = $this->imageHelper->getBaseUrl();
+        $separation = \SectionBuilder\Product\Model\ResourceModel\Section::SEPARATION;
+        $items = $collection->getData();
+
         foreach ($items as &$item) {
+            if (isset($item['child_ids'])) {
+                $item['child_ids'] = $item['child_ids'] ? explode(",", $item['child_ids']) : [];
+            }
+
             if (isset($item['tags'])) {
                 $item['tags'] = explode(';', $item['tags']);
             }
@@ -97,6 +108,15 @@ class SectionsQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstrac
                 $merchant,
                 $item['pricing_plan']['code']
             );
+
+            if ($item['installed']) {
+                $installs = explode($separation, $item['installed']);
+                $arrInstall = [];
+                foreach ($installs as $key => $install) {
+                    list($arrInstall[$key]['theme_id'], $arrInstall[$key]['product_version']) = explode(":", $install);
+                }
+                $item['installed'] = $arrInstall;
+            }
 
             $item['actions'] = [
                 'install' => $item['price'] == 0 || $hasOneTime || (isset($item['pricing_plan']['code']) && $hasPlan),

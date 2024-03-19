@@ -173,6 +173,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             ['i' => $this->getTable(\SectionBuilder\Product\Model\ResourceModel\SectionInstall::MAIN_TABLE)],
             'main_table.entity_id = i.product_id ' . $condition,
             [
+                'installed_id' => 'i.entity_id',
                 'installed' => new \Zend_Db_Expr("GROUP_CONCAT(DISTINCT CONCAT(i.theme_id, ':', i.product_version) SEPARATOR '$separation')")
             ]
         );
