@@ -39,6 +39,16 @@ type Query {
     @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SortOptionsQuery")
 }
 
+type Category {
+    sections(
+        search: String,
+        filter: SectionFilterInput,
+        sort: SectionSortInput,
+        pageSize: Int = 20,
+        currentPage: Int = 1
+    ): Sections @doc(description: "") @resolver(class: "SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionsQuery")
+}
+
 input SectionFilterInput @doc(description: "") {
     type_id: Int @doc(description: "")
     product_id: [Int] @doc(description: "")
@@ -72,6 +82,7 @@ type PageInfo {
 }
 
 interface SectionInterface @typeResolver(class: "\\SectionBuilder\\ProductGraphQl\\Model\\Resolver\\SectionTypeResolver") {
+    id: ID
     entity_id : ID
     is_enable: Boolean
     name: String

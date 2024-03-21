@@ -2,9 +2,25 @@ type Query {
     getCategories: [Category]
         @doc(description: "")
         @resolver(class: "SectionBuilder\\CategoryGraphQl\\Model\\Resolver\\CategoriesQuery")
+
+    categories(
+        filters: CategoryFilterInput,
+        pageSize: Int = 20,
+        currentPage: Int = 1
+    ): [CategoriesOutput] @doc(description: "Fetch all categories") @resolver(class: "SectionBuilder\\CategoryGraphQl\\Model\\Resolver\\CategoriesQueryV2")
+}
+type CategoriesOutput {
+    items: [Category]
+    total_count: Int
+    page_info: PageInfo
+}
+input CategoryFilterInput {
+    name: String
+    is_enable: Boolean
 }
 
-type Category @doc(description: "") {
+type Category @doc(description: "Section category object") {
+    id: ID @doc(description: "The unique ID for a `Category` object.")
     entity_id : ID
     name: String
     is_enable: Boolean
