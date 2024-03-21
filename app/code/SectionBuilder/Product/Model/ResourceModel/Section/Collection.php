@@ -122,7 +122,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             ['t' => $this->getTable(\SectionBuilder\Tag\Model\ResourceModel\Tag::MAIN_TABLE)],
             't.entity_id = tp.tag_id',
             [
-                'tags' => new \Zend_Db_Expr("GROUP_CONCAT(DISTINCT t.name SEPARATOR '$separation')")
+                'tags' => new \Zend_Db_Expr("CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{\"id\":\"', t.entity_id, '\",\"name\":\"', t.name, '\"}') SEPARATOR ','), ']')")
             ]
         )->where(
             't.is_enable IS NULL OR t.is_enable = ?',

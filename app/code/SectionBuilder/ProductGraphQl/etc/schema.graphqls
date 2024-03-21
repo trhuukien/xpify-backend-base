@@ -81,13 +81,17 @@ interface SectionInterface @typeResolver(class: "\\SectionBuilder\\ProductGraphQ
     description: String
     demo_link: String
     categories: [String]
-    tags: [String]
+    tags: [Tag]
     type_id: String
     actions: Action
-    installed: [Install]
+}
+type Tag {
+    id: ID
+    name: String
 }
 
 type Section implements SectionInterface {
+    installed: [Install]
     pricing_plan: PricingPlan
     version: String
     release_note: String
