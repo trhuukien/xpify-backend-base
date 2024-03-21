@@ -76,8 +76,11 @@ class SectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstract
         if (isset($result['categories'])) {
             $result['categories'] = explode($separation, $result['categories']);
         }
-        if (isset($result['tags'])) {
-            $result['tags'] = explode($separation, $result['tags']);
+        if (!empty($item['tags'])) {
+            try {
+                $tags = json_decode($item['tags'], true);
+                $item['tags'] = $tags;
+            } catch (\Throwable $e) {}
         }
 
         $mediaGallery = explode(\SectionBuilder\Product\Model\Helper\Image::SEPARATION, $result['media_gallery'] ?? "");
