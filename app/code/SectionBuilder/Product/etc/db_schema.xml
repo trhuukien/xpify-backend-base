@@ -54,7 +54,7 @@
         <column xsi:type="varchar" name="merchant_shop" nullable="false" length="255" comment="FK xpify_merchants"/>
         <column xsi:type="smallint" name="product_id" padding="6" unsigned="true" nullable="false" comment="FK section_builder_product"/>
         <column xsi:type="varchar" name="theme_id" nullable="false" length="255" comment="Theme installed"/>
-        <column xsi:type="varchar" name="product_version" nullable="false" default="1.0.0" length="255" comment="Version"/>
+        <column xsi:type="varchar" name="product_version" nullable="true" length="255" comment="Version"/>
         <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" comment=""/>
         <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="true" comment=""/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
