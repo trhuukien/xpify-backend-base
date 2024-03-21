@@ -46,6 +46,8 @@ class GroupSectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbs
         $merchant = $this->getMerchantSession()->getMerchant();
         $collection = $this->collectionFactory->create();
         $collection->joinListBought('AND b.merchant_shop = "' . $merchant->getShop() . '"');
+        $collection->joinListInstalled('AND i.merchant_shop = "' . $merchant->getShop() . '"');
+
         $collection->addFieldToFilter(
             'main_table.url_key',
             $args['key']
@@ -62,6 +64,7 @@ class GroupSectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbs
             $item['media_gallery'] ?? ""
         );
         $baseUrl = $this->imageHelper->getBaseUrl();
+        $separation = \SectionBuilder\Product\Model\ResourceModel\Section::SEPARATION;
         $images = [];
         foreach ($mediaGallery as $image) {
             $filename = str_replace(\SectionBuilder\Product\Model\Helper\Image::SUB_DIR, "", $image)
@@ -70,7 +73,20 @@ class GroupSectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbs
         }
         $item['images'] = $images;
 
-        $item['actions']['purchase'] = !$item['bought_id'];
+        if ($item['installed']) {
+            $installs = explode($separation, $item['installed']);
+            $arrInstall = [];
+            foreach ($installs as $key => $install) {
+                list($arrInstall[$key]['theme_id'], $arrInstall[$key]['product_version']) = explode(":", $install);
+            }
+            $item['installed'] = $arrInstall;
+        }
+
+        $item['actions'] = [
+            'install' => $item['price'] == 0 || $item['bought_id'],
+            'purchase' => $item['price'] > 0 && !$item['bought_id'],
+            'plan' => false
+        ];
 
         return $item;
     }

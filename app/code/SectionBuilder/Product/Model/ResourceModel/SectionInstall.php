@@ -57,7 +57,7 @@ class SectionInstall extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
         }
 
         if ($connection->fetchRow($select)) {
-            $connection->update($this->getMainTable(), $fieldToAdd);
+            $connection->update($this->getMainTable(), $fieldToAdd, $condition);
         } else {
             $fieldToAdd = array_merge($condition, $fieldToAdd);
             $connection->insert($this->getMainTable(), $fieldToAdd);

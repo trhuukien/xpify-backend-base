@@ -45,10 +45,9 @@ class HandleUpdateSections
         $sourceBase,
         array &$args
     ): void {
-        $isFree = ($section['plan_code'] === null && $section['price'] == 0);
         $source = $this->getSource($section['path_source']);
 
-        if ($isFree || $section['bought_id']) {
+        if ($section['bought_id'] || ($section['plan_code'] === null && $section['price'] == 0)) {
             $args['value'] = "{% style %}\n$sourceBase{% endstyle %}\n\n" . $source;
         } else {
             if ($hasPlan) {

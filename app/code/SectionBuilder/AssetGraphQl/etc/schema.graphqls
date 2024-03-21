@@ -8,10 +8,16 @@ type Query {
 }
 
 type Mutation {
-    updateAsset(theme_id: String!, asset: String!, value: String!): Asset
+#    updateAsset(theme_id: String!, asset: String!, value: String!): Asset
+#        @doc(description: "Creates or updates an asset for a theme")
+#        @resolver(class: "SectionBuilder\\AssetGraphQl\\Model\\Resolver\\UpdateAssetMutation")
+#    deleteAsset(theme_id: String!, asset: String!): DeletionResponse
+#        @doc(description: "Deletes an asset from a theme")
+#        @resolver(class: "SectionBuilder\\AssetGraphQl\\Model\\Resolver\\DeleteAssetMutation")
+    updateAsset(theme_id: String!, key: String!): [Asset]
         @doc(description: "Creates or updates an asset for a theme")
         @resolver(class: "SectionBuilder\\AssetGraphQl\\Model\\Resolver\\UpdateAssetMutation")
-    deleteAsset(theme_id: String!, asset: String!): DeletionResponse
+    deleteAsset(theme_id: String!, key: String!): DeletionResponse
         @doc(description: "Deletes an asset from a theme")
         @resolver(class: "SectionBuilder\\AssetGraphQl\\Model\\Resolver\\DeleteAssetMutation")
 }
@@ -27,6 +33,7 @@ type Asset @doc(description: "Follow response Shopify API") {
     checksum: String
     theme_id: String
     errors: String
+    name: String @doc(description: "Section name")
 }
 
 type DeletionResponse @doc(description: "Follow response Shopify API") {
