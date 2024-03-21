@@ -99,8 +99,11 @@ class SectionsQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstrac
                 $item['child_ids'] = $item['child_ids'] ? explode(",", $item['child_ids']) : [];
             }
 
-            if (isset($item['tags'])) {
-                $item['tags'] = explode(';', $item['tags']);
+            if (!empty($item['tags'])) {
+                try {
+                    $tags = json_decode($item['tags'], true);
+                    $item['tags'] = $tags;
+                } catch (\Throwable $e) {}
             }
 
             $hasOneTime = $item['bought_id'];
