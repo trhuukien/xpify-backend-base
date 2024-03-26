@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace SectionBuilder\ProductGraphQl\Model\Resolver;
 
+use Xpify\Core\Helper\Utils;
+
 class SectionsQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstractResolver implements \Magento\Framework\GraphQl\Query\ResolverInterface
 {
     protected $authValidation;
@@ -39,7 +41,7 @@ class SectionsQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstrac
         array $value = null,
         array $args = null
     ) {
-        $merchant = $this->getMerchantSession()->getMerchant();
+        $merchant = $context->getExtensionAttributes()->getMerchant();
 
         $collection = $this->collectionFactory->create();
         $collection->setPageSize($args['pageSize']);
@@ -95,6 +97,8 @@ class SectionsQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstrac
         $items = $collection->getData();
 
         foreach ($items as &$item) {
+            $item['model'] = $item;
+            $item['id'] = Utils::idToUid($item['entity_id']);
             if (isset($item['child_ids'])) {
                 $item['child_ids'] = $item['child_ids'] ? explode(",", $item['child_ids']) : [];
             }

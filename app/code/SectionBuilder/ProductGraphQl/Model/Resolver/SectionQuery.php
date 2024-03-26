@@ -76,8 +76,8 @@ class SectionQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstract
         if (isset($result['categories'])) {
             $result['categories'] = explode($separation, $result['categories']);
         }
+
         if (isset($result['tags'])) {
-//            $result['tags'] = explode($separation, $result['tags']);
             $tags = json_decode($result['tags'], true);
             $result['tags'] = $tags;
         }
