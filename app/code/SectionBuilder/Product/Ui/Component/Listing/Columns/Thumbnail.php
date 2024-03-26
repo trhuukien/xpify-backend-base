@@ -56,6 +56,10 @@ class Thumbnail extends \Magento\Ui\Component\Listing\Columns\Column
                 $item[$fieldName . '_src'] = $this->imageHelper->getBaseUrl() . $filename;
                 $item[$fieldName . '_alt'] = $item['name'];
                 $item[$fieldName . '_orig_src'] = $this->imageHelper->getBaseUrl() . $filename;
+                $item[$fieldName . '_link'] = $this->urlBuilder->getUrl(
+                    'section_builder/product/edit',
+                    ['id' => $item['entity_id'], 'store' => $this->context->getRequestParam('store')]
+                );
             }
         }
 

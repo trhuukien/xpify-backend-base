@@ -3,26 +3,20 @@ namespace SectionBuilder\Product\Block\Adminhtml;
 
 class AssignProducts extends \Magento\Backend\Block\Template
 {
-    protected $_template = 'products/assign_products.phtml';
+    protected $_template = 'SectionBuilder_Product::products/assign_products.phtml';
 
     protected $blockGrid;
-
-    protected $registry;
-
-    protected $jsonEncoder;
 
     protected $productFactory;
 
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Json\EncoderInterface $jsonEncoder,
         \SectionBuilder\Product\Model\ResourceModel\Section\CollectionFactory $productFactory,
+        \Magento\Framework\App\Request\DataPersistorInterface $dataPersistor,
         array $data = []
     ) {
-        $this->registry = $registry;
-        $this->jsonEncoder = $jsonEncoder;
         $this->productFactory = $productFactory;
+        $this->dataPersistor = $dataPersistor;
         parent::__construct($context, $data);
     }
 
@@ -30,8 +24,8 @@ class AssignProducts extends \Magento\Backend\Block\Template
     {
         if (null === $this->blockGrid) {
             $this->blockGrid = $this->getLayout()->createBlock(
-                'SectionBuilder\Product\Block\Adminhtml\Tab\Productgrid',
-                'sb.products'
+                'SectionBuilder\Product\Block\Adminhtml\Tab\ProductGrid',
+                'sb.list_product'
             );
         }
         return $this->blockGrid;
@@ -44,34 +38,51 @@ class AssignProducts extends \Magento\Backend\Block\Template
 
     public function getProductsJson()
     {
-        $typeId = $this->getRequest()->getParam('type_id');
         $currentProductId = $this->getRequest()->getParam('id');
-        if ($currentProductId) {
-            $productFactory = $this->productFactory->create();
-            $productFactory->addFieldToSelect(['child_ids', 'type_id']);
-            $productFactory->addFieldToFilter('entity_id', ['eq' => $currentProductId]);
-            $product = $productFactory->getFirstItem();
-            $childIdsSelected = explode(",", $product->getChildIds() ?? "");
-            $typeId = $product->getTypeId();
-        }
-        if ($typeId != \SectionBuilder\Product\Model\Config\Source\ProductType::GROUP_TYPE_ID) {
-            return '{}';
+        $typeId = $this->getRequest()->getParam('type_id');
+
+        $dataPersistor = $this->dataPersistor->get('section_product_data');
+        if (isset($dataPersistor['product_list'])) {
+            $childIdsSelected = explode(",", $dataPersistor['product_list']);
+        } else {
+            if ($currentProductId) {
+                $productFactory = $this->productFactory->create();
+                $productFactory->addFieldToSelect(['child_ids', 'type_id']);
+                $productFactory->addFieldToFilter('entity_id', ['eq' => $currentProductId]);
+                $product = $productFactory->getFirstItem();
+                $childIds = $product->getChildIds() ?? "";
+                $childIdsSelected = explode(",", $childIds);
+                $typeId = $product->getTypeId();
+            }
+
+            if ($typeId != \SectionBuilder\Product\Model\Config\Source\ProductType::GROUP_TYPE_ID) {
+                return '{}';
+            }
         }
 
         $productFactory = $this->productFactory->create();
         $productFactory->addFieldToSelect(['entity_id']);
-        $productFactory->addFieldToFilter('type_id', ['eq' => 1]);
+        $productFactory->addFieldToFilter('type_id', ['eq' => \SectionBuilder\Product\Model\Config\Source\ProductType::SIMPLE_TYPE_ID]);
         $productData = $productFactory->getData();
 
         $result = [];
         foreach ($productData as $product) {
-            if (isset($childIdsSelected) && in_array($product['entity_id'], $childIdsSelected)) {
-                $result[$product['entity_id']] = 1;
+            if (isset($childIdsSelected)) {
+                if (in_array($product['entity_id'], $childIdsSelected)) {
+                    $result[$product['entity_id']] = 1;
+                } else {
+                    $result[$product['entity_id']] = '';
+                }
             } else {
-                $result[$product['entity_id']] = '';
+                return '{}';
             }
         }
 
-        return $result ? $this->jsonEncoder->encode($result) : '{}';
+        return $result ? json_encode($result) : '{}';
+    }
+
+    public function getDataFormPart()
+    {
+        return 'section_builder_product_form';
     }
 }

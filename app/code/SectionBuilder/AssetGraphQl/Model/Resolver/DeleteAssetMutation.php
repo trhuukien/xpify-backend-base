@@ -49,22 +49,49 @@ class DeleteAssetMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionA
         $sectionItem = $collection->getFirstItem();
         $section = $sectionItem->getData();
 
-        if ($section) {
-            $args['asset'] = $section['src'];
-            $merchant = $this->getMerchantSession()->getMerchant();
-            $result = $this->serviceQuery->resolve($merchant, $args);
-
-            if (isset($result['message'])) {
-                $this->sectionInstall->deleteRow(
-                    [
-                        'merchant_shop = ?' => $merchant->getShop(),
-                        'product_id = ?' => $section['entity_id'],
-                        'theme_id = ?' => $args['theme_id']
-                    ]
+        if (!$section) {
+            return $result;
+        }
+        $merchant = $this->getMerchantSession()->getMerchant();
+        if ($section['type_id'] == \SectionBuilder\Product\Model\Config\Source\ProductType::GROUP_TYPE_ID) {
+            $childIds = explode(",", $section['child_ids']);
+            foreach ($childIds as $id) {
+                $collection = $this->sectionFactory->create();
+                $collection->addFieldToFilter(
+                    'main_table.entity_id',
+                    $id
                 );
+                $collection->addFieldToSelect(['entity_id', 'src']);
+                $sectionChildItem = $collection->getFirstItem();
+                $sectionChild = $sectionChildItem->getData();
+
+                if ($sectionChild) {
+                    $this->execute($merchant, $sectionChild, $args);
+                }
             }
+            $this->deleteRowInstall($section, $merchant->getShop(), $args['theme_id']);
+        } else {
+            $this->execute($merchant, $section, $args);
         }
 
         return $result;
+    }
+
+    public function execute($merchant, $section, $args)
+    {
+        $args['asset'] = $section['src'];
+        $result = $this->serviceQuery->resolve($merchant, $args);
+        $this->deleteRowInstall($section, $merchant->getShop(), $args['theme_id']);
+    }
+
+    public function deleteRowInstall($section, $shop, $themeId)
+    {
+        $this->sectionInstall->deleteRow(
+            [
+                'merchant_shop = ?' => $shop,
+                'product_id = ?' => $section['entity_id'],
+                'theme_id = ?' => $themeId
+            ]
+        );
     }
 }

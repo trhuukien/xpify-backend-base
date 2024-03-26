@@ -107,6 +107,16 @@ class Section extends \Magento\Framework\Model\AbstractModel implements SectionI
         return $this->setData(self::MEDIA_GALLERY, $mediaGallery);
     }
 
+    public function getShortDescription(): ?string
+    {
+        return $this->getData(self::SHORT_DESCRIPTION);
+    }
+
+    public function setShortDescription(?string $shortDescription): SectionInterface
+    {
+        return $this->setData(self::SHORT_DESCRIPTION, $shortDescription);
+    }
+
     public function getDescription(): ?string
     {
         return $this->getData(self::DESCRIPTION);
@@ -135,16 +145,6 @@ class Section extends \Magento\Framework\Model\AbstractModel implements SectionI
     public function setChildIds(?string $childIds): SectionInterface
     {
         return $this->setData(self::CHILD_IDS, $childIds);
-    }
-
-    public function getQtySold(): int
-    {
-        return $this->getData(self::QTY_SOLD);
-    }
-
-    public function setQtySold(int $qtySold): SectionInterface
-    {
-        return $this->setData(self::QTY_SOLD, $qtySold);
     }
 
     public function getQtyInstalled(): int

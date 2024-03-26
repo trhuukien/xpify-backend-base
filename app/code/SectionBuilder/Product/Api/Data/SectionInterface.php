@@ -14,6 +14,7 @@ interface SectionInterface
     const SRC = 'src';
     const PATH_SOURCE = 'path_source';
     const MEDIA_GALLERY = 'media_gallery';
+    const SHORT_DESCRIPTION = 'short_description';
     const DESCRIPTION = 'description';
     const TYPE_ID = 'type_id';
     const CHILD_IDS = 'child_ids';
@@ -61,6 +62,10 @@ interface SectionInterface
 
     public function setMediaGallery(?string $mediaGallery): self;
 
+    public function getShortDescription(): ?string;
+
+    public function setShortDescription(?string $shortDescription): self;
+
     public function getDescription(): ?string;
 
     public function setDescription(?string $description): self;
@@ -72,10 +77,6 @@ interface SectionInterface
     public function getChildIds(): ?string;
 
     public function setChildIds(?string $childIds): self;
-
-    public function getQtySold(): int;
-
-    public function setQtySold(int $qtySold): self;
 
     public function getQtyInstalled(): int;
 

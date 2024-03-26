@@ -1,12 +1,12 @@
 <?php
-namespace SectionBuilder\Product\Controller\Adminhtml\Index;
+namespace SectionBuilder\Product\Controller\Adminhtml\Product;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\RawFactory;
 use Magento\Framework\View\LayoutFactory;
 
-class Grids extends \Magento\Backend\App\Action
+class ProductGrids extends \Magento\Backend\App\Action
 {
     protected $resultRawFactory;
 
@@ -27,8 +27,8 @@ class Grids extends \Magento\Backend\App\Action
         $resultRaw = $this->resultRawFactory->create();
         return $resultRaw->setContents(
             $this->layoutFactory->create()->createBlock(
-                'SectionBuilder\Product\Block\Adminhtml\Tab\Productgrid',
-                'sb.group_products.grid'
+                'SectionBuilder\Product\Block\Adminhtml\Tab\ProductGrid',
+                'sb.list_product'
             )->toHtml()
         );
     }

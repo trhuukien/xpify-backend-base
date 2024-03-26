@@ -164,16 +164,16 @@ class UpdateAssetMutation extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionA
         $this->replaceRowInstall($section, $shop, $themeId);
     }
 
-    public function replaceRowInstall($product, $shop, $themeId)
+    public function replaceRowInstall($section, $shop, $themeId)
     {
         $this->sectionInstall->replaceRow(
             [
                 'merchant_shop' => $shop,
-                'product_id' => $product['entity_id'],
+                'product_id' => $section['entity_id'],
                 'theme_id' => $themeId
             ],
             [
-                'product_version' => $product['version']
+                'product_version' => $section['version']
             ]
         );
     }

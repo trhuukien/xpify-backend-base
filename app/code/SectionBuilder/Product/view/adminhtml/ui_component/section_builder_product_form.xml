@@ -248,9 +248,6 @@
                     <rule name="max_text_length" xsi:type="number">255</rule>
                     <rule name="pattern" xsi:type="string">^http</rule>
                 </validation>
-                <imports>
-                    <link name="visible">!${ $.provider}:data.is_group_product</link>
-                </imports>
             </settings>
         </field>
     </fieldset>
@@ -283,6 +280,22 @@
             <label translate="true">Content</label>
             <collapsible>true</collapsible>
         </settings>
+        <field name="short_description">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="formElement" xsi:type="string">wysiwyg</item>
+                    <item name="wysiwyg" xsi:type="boolean">true</item>
+                    <item name="wysiwygConfigData" xsi:type="array">
+                        <item name="is_pagebuilder_enabled" xsi:type="boolean">false</item>
+                    </item>
+                    <item name="label" xsi:type="string">Short Description</item>
+                    <item name="template" xsi:type="string">ui/form/field</item>
+                    <item name="dataScope" xsi:type="string">short_description</item>
+                    <item name="rows" xsi:type="number">8</item>
+                </item>
+            </argument>
+        </field>
         <field name="description">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -407,22 +420,15 @@
             <label translate="true">Information</label>
             <collapsible>true</collapsible>
         </settings>
-        <field name="qty_installed" formElement="input">
-            <settings>
-                <label translate="true">Installed</label>
-                <dataScope>qty_installed</dataScope>
-                <elementTmpl>ui/form/element/text</elementTmpl>
-                <imports>
-                    <link name="visible">!${ $.provider}:data.is_group_product</link>
-                </imports>
-            </settings>
-        </field>
-        <field name="qty_sold" formElement="input">
-            <settings>
-                <label translate="true">Sold</label>
-                <dataScope>qty_sold</dataScope>
-                <elementTmpl>ui/form/element/text</elementTmpl>
-            </settings>
-        </field>
+        <container name="installing">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="sortOrder" xsi:type="number">10</item>
+                </item>
+            </argument>
+            <htmlContent name="html_content">
+                <argument name="block" xsi:type="object">SectionBuilder\Product\Block\Adminhtml\SellInstall</argument>
+            </htmlContent>
+        </container>
     </fieldset>
 </form>

@@ -7,10 +7,10 @@
         <column xsi:type="varchar" name="name" nullable="false" length="255" comment="Name"/>
         <column xsi:type="varchar" name="url_key" nullable="false" length="255" comment="Key"/>
         <column xsi:type="decimal" name="price" scale="2" precision="20" unsigned="false" nullable="true" comment="Section price" />
-        <column xsi:type="varchar" name="version" nullable="false" default="1.0.0" length="255" comment="Current Version"/>
+        <column xsi:type="varchar" name="version" nullable="true" length="255" comment="Current Version"/>
         <column xsi:type="text" name="media_gallery" nullable="true" comment="Media. Ex: section_builder/product/hokage.jpg;section_builder/product/kiz.png"/>
+        <column xsi:type="text" name="short_description" nullable="true" comment="Short Description"/>
         <column xsi:type="text" name="description" nullable="true" comment="Description"/>
-        <column xsi:type="smallint" name="qty_sold" unsigned="true" nullable="false" default="0" comment="Quantity Sold" />
         <column xsi:type="smallint" name="qty_installed" unsigned="true" nullable="false" default="0" comment="Quantity Installed" />
         <column xsi:type="smallint" name="type_id" unsigned="true" nullable="false" default="1" comment="Type product" />
         <column xsi:type="varchar" name="child_ids" nullable="true" length="255" comment="Child product ids"/>

@@ -42,6 +42,8 @@ class Product extends Action
      */
     protected $sectionFactory;
 
+    protected $collectionFactory;
+
     /**
      * @var \Psr\Log\LoggerInterface
      */
@@ -61,12 +63,14 @@ class Product extends Action
         \Magento\Backend\Model\View\Result\ForwardFactory $forwardFactory,
         PageFactory $pageFactory,
         SectionFactory $sectionFactory,
+        \SectionBuilder\Product\Model\ResourceModel\Section\CollectionFactory $collectionFactory,
         \Psr\Log\LoggerInterface $logger
     ) {
         parent::__construct($context);
         $this->forwardFactory = $forwardFactory;
         $this->pageFactory = $pageFactory;
         $this->sectionFactory = $sectionFactory;
+        $this->collectionFactory = $collectionFactory;
         $this->logger = $logger;
     }
 

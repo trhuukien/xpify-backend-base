@@ -3,7 +3,8 @@
 ?>
 
 <?= /* @escapeNotVerified */ $block->getGridHtml() ?>
-<input type="hidden" name="group_products" data-form-part="section_builder_product_form" id="group_products" value=""  />
+<?php $form = $block->getDataFormPart() ?>
+<input type="hidden" name="product_list" data-form-part="<?= $form ?>" id="product_list" value=""  />
 <script type="text/x-magento-init">
     {
         "*": {

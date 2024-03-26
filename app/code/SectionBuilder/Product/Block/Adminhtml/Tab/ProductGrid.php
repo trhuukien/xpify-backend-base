@@ -4,31 +4,27 @@ namespace SectionBuilder\Product\Block\Adminhtml\Tab;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Framework\App\ObjectManager;
 
-class Productgrid extends \Magento\Backend\Block\Widget\Grid\Extended
+class ProductGrid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-    protected $coreRegistry = null;
+    protected $moduleManager;
+
+    protected $dataPersistor;
 
     protected $productFactory;
 
-    protected $productCollFactory;
+    protected $productCollectionFactory;
 
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
-        \SectionBuilder\Product\Model\SectionFactory $productFactory,
-        \SectionBuilder\Product\Model\ResourceModel\Section\CollectionFactory $productCollFactory,
-        \Magento\Framework\Registry $coreRegistry,
+        \SectionBuilder\Product\Model\ResourceModel\Section\CollectionFactory $productCollectionFactory,
         \Magento\Framework\Module\Manager $moduleManager,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        Visibility $visibility = null,
+        \Magento\Framework\App\Request\DataPersistorInterface $dataPersistor,
         array $data = []
     ) {
-        $this->productFactory = $productFactory;
-        $this->productCollFactory = $productCollFactory;
-        $this->coreRegistry = $coreRegistry;
+        $this->productCollectionFactory = $productCollectionFactory;
         $this->moduleManager = $moduleManager;
-        $this->_storeManager = $storeManager;
-        $this->visibility = $visibility ?: ObjectManager::getInstance()->get(Visibility::class);
+        $this->dataPersistor = $dataPersistor;
         parent::__construct($context, $backendHelper, $data);
     }
 
@@ -41,16 +37,14 @@ class Productgrid extends \Magento\Backend\Block\Widget\Grid\Extended
         $this->setDefaultDir('ASC');
         if ($this->getRequest()->getParam('id')) {
             $this->setDefaultFilter(['in_products' => 1]);
-        } else {
-            $this->setDefaultFilter(['in_products' => 0]);
         }
         $this->setSaveParametersInSession(false);
     }
 
     protected function _prepareCollection()
     {
-        $collection = $this->productCollFactory->create()
-            ->addFieldToFilter('type_id', ['eq' => 1])
+        $collection = $this->productCollectionFactory->create()
+            ->addFieldToFilter('type_id', ['eq' => \SectionBuilder\Product\Model\Config\Source\ProductType::SIMPLE_TYPE_ID])
             ->addFieldToFilter('is_enable', ['eq' => 1]);
         $this->setCollection($collection);
         return parent::_prepareCollection();
@@ -147,15 +141,20 @@ class Productgrid extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     public function getGridUrl()
     {
-        return $this->getUrl('*/index/grids', ['_current' => true]);
+        return $this->getUrl('*/product/productGrids', ['_current' => true]);
     }
 
     protected function _getSelectedProducts()
     {
-        $collection = $this->productCollFactory->create()
-            ->addFieldToFilter('entity_id', $this->getRequest()->getParam('id'))
-            ->addFieldToSelect('child_ids');
-        $childIds = $collection->getFirstItem()->getChildIds() ?? "";
+        $dataPersistor = $this->dataPersistor->get('section_product_data');
+        if (isset($dataPersistor['product_list'])) {
+            $childIds = $dataPersistor['product_list'];
+        } else {
+            $collection = $this->productCollectionFactory->create()
+                ->addFieldToFilter('entity_id', $this->getRequest()->getParam('id'))
+                ->addFieldToSelect('child_ids');
+            $childIds = $collection->getFirstItem()->getChildIds() ?? "";
+        }
 
         return explode(",", $childIds);
     }

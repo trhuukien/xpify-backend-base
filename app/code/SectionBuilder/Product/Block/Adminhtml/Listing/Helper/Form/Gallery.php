@@ -13,23 +13,19 @@ class Gallery extends \Magento\Framework\View\Element\AbstractBlock
 
     protected $sectionFactory;
 
-    /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    protected $storeManager;
+    protected $dataPersistor;
 
     public function __construct(
         \Magento\Framework\View\Element\Context $context,
         \SectionBuilder\Product\Model\ResourceModel\Section\CollectionFactory $sectionFactory,
+        \Magento\Framework\App\Request\DataPersistorInterface $dataPersistor,
         $data = []
     ) {
         $this->sectionFactory = $sectionFactory;
+        $this->dataPersistor = $dataPersistor;
         parent::__construct($context, $data);
     }
 
-    /**
-     * @return string
-     */
     public function getElementHtml()
     {
         return $this->getContentHtml();
@@ -38,17 +34,26 @@ class Gallery extends \Magento\Framework\View\Element\AbstractBlock
     public function getImages()
     {
         $result = [];
-        $id = $this->getRequest()->getParam('id');
-        if (!$id) {
-            return $result;
-        }
         $gallery = [];
-        $currentSection = $this->sectionFactory->create()->addFieldToFilter('entity_id', $id)->getFirstItem();
+
+        $dataPersistor = $this->dataPersistor->get('section_product_data');
+        if (isset($dataPersistor['media_gallery'])) {
+            $mediaGallery = $dataPersistor['media_gallery'];
+        } else {
+            $id = $this->getRequest()->getParam('id');
+            if (!$id) {
+                return $result;
+            }
+
+            $currentSection = $this->sectionFactory->create()->addFieldToFilter('entity_id', $id)->getFirstItem();
+            $mediaGallery = $currentSection->getMediaGallery();
+        }
+
         $mediaUrl = $this->_urlBuilder->getBaseUrl(['_type' => \Magento\Framework\UrlInterface::URL_TYPE_MEDIA]);
-        if ($currentSection->getMediaGallery()) {
+        if ($mediaGallery) {
             $gallery = explode(
                 \SectionBuilder\Product\Model\Helper\Image::SEPARATION,
-                $currentSection->getMediaGallery()
+                $mediaGallery
             );
         }
 

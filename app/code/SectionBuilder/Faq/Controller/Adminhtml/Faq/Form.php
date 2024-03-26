@@ -18,6 +18,7 @@ class Form extends Faq
         }
 
         $page = $this->pageFactory->create();
+        $page->setActiveMenu('SectionBuilder_Product::product_management');
         $page->getConfig()->getTitle()->prepend($title);
         return $page;
     }

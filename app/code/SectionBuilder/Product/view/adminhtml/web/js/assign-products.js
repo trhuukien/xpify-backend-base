@@ -7,7 +7,7 @@ define([
         var selectedProducts = config.selectedProducts,
             categoryProducts = $H(selectedProducts),
             gridJsObject = window[config.gridJsObjectName],
-            inputSelector = $('group_products');
+            inputSelector = $('product_list');
 
         inputSelector.value = Object.toJSON(categoryProducts);
 

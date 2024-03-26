@@ -28,10 +28,10 @@ class Index extends Product
      */
     public function execute()
     {
-        $resultPage = $this->pageFactory->create();
-        $resultPage->setActiveMenu('SectionBuilder_Product::product_management');
-        $resultPage->getConfig()->getTitle()->prepend(__('Section Product'));
+        $page = $this->pageFactory->create();
+        $page->setActiveMenu('SectionBuilder_Product::product_management');
+        $page->getConfig()->getTitle()->prepend(__('Section Product'));
 
-        return $resultPage;
+        return $page;
     }
 }

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">section_builder_product_mass_update.section_builder_product_mass_update_data_source</item>
+            <item name="deps" xsi:type="string">section_builder_product_mass_update.section_builder_product_mass_update_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Product Information</item>
+        <item name="config" xsi:type="array">
+            <item name="dataScope" xsi:type="string">data</item>
+            <item name="namespace" xsi:type="string">section_builder_product_mass_update</item>
+        </item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="save" class="SectionBuilder\Core\Model\Block\Adminhtml\Form\SaveButton" />
+            <button name="back" class="Magento\Customer\Block\Adminhtml\Edit\BackButton" />
+        </buttons>
+        <layout>
+            <type>tabs</type>
+            <navContainerName>left</navContainerName>
+        </layout>
+        <deps>
+            <dep>section_builder_product_mass_update_data_source.section_builder_product_mass_update_data_source_data_source</dep>
+        </deps>
+        <dataScope>data</dataScope>
+        <namespace>section_builder_product_mass_update_data_source</namespace>
+    </settings>
+    <dataSource name="section_builder_product_mass_update_data_source">
+        <argument name="dataProvider" xsi:type="configurableObject">
+            <argument name="class" xsi:type="string">SectionBuilder\Product\Ui\Component\Form\MassUpdateDataProvider</argument>
+            <argument name="name" xsi:type="string">section_builder_product_mass_update_data_source</argument>
+            <argument name="primaryFieldName" xsi:type="string">main_table.entity_id</argument>
+            <argument name="requestFieldName" xsi:type="string">id</argument>
+        </argument>
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="section_builder/product/massSave"/>
+        </settings>
+    </dataSource>
+    <fieldset name="general" sortOrder="10">
+        <settings>
+            <label translate="true">General</label>
+            <collapsible>false</collapsible>
+        </settings>
+        <field name="product_ids" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataScope" xsi:type="string">product_ids</item>
+                    <item name="visible" xsi:type="boolean">false</item>
+                </item>
+            </argument>
+        </field>
+        <field name="is_enable" formElement="checkbox">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">block</item>
+                    <item name="default" xsi:type="number">1</item>
+                    <item name="service" xsi:type="array">
+                        <item name="template" xsi:type="string">ui/form/element/helper/service</item>
+                    </item>
+                    <item name="disabled" xsi:type="boolean">true</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Enable</label>
+                <dataScope>is_enable</dataScope>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="price">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">price</item>
+                    <item name="label" xsi:type="string" translate="true">Price</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="dataScope" xsi:type="string">price</item>
+                    <item name="addbefore" xsi:type="string">$</item>
+                    <item name="additionalClasses" xsi:type="string">admin__field-small</item>
+                    <item name="service" xsi:type="array">
+                        <item name="template" xsi:type="string">ui/form/element/helper/service</item>
+                    </item>
+                    <item name="disabled" xsi:type="boolean">true</item>
+                </item>
+            </argument>
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="validate-number" xsi:type="boolean">true</rule>
+                    <rule name="validate-zero-or-greater" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="plan_id">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">SectionBuilder\Product\Ui\Component\Form\OptionTree\PricingPlan</item>
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Plan</item>
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="dataScope" xsi:type="string">plan_id</item>
+                    <item name="additionalClasses" xsi:type="string">admin__field-small</item>
+                    <item name="service" xsi:type="array">
+                        <item name="template" xsi:type="string">ui/form/element/helper/service</item>
+                    </item>
+                    <item name="disabled" xsi:type="boolean">true</item>
+                </item>
+            </argument>
+        </field>
+        <field name="demo_link">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">URL Demo</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="dataScope" xsi:type="string">demo_link</item>
+                    <item name="service" xsi:type="array">
+                        <item name="template" xsi:type="string">ui/form/element/helper/service</item>
+                    </item>
+                    <item name="disabled" xsi:type="boolean">true</item>
+                </item>
+            </argument>
+            <settings>
+                <validation>
+                    <rule name="max_text_length" xsi:type="number">255</rule>
+                    <rule name="pattern" xsi:type="string">^http</rule>
+                </validation>
+            </settings>
+        </field>
+    </fieldset>
+    <fieldset name="content" sortOrder="20">
+        <settings>
+            <label translate="true">Content</label>
+            <collapsible>false</collapsible>
+        </settings>
+        <field name="short_description">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="formElement" xsi:type="string">wysiwyg</item>
+                    <item name="wysiwyg" xsi:type="boolean">true</item>
+                    <item name="wysiwygConfigData" xsi:type="array">
+                        <item name="is_pagebuilder_enabled" xsi:type="boolean">false</item>
+                    </item>
+                    <item name="label" xsi:type="string">Short Description</item>
+                    <item name="template" xsi:type="string">ui/form/field</item>
+                    <item name="dataScope" xsi:type="string">short_description</item>
+                    <item name="rows" xsi:type="number">8</item>
+                    <item name="service" xsi:type="array">
+                        <item name="template" xsi:type="string">ui/form/element/helper/service</item>
+                    </item>
+                    <item name="disabled" xsi:type="boolean">true</item>
+                </item>
+            </argument>
+        </field>
+        <field name="description">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="formElement" xsi:type="string">wysiwyg</item>
+                    <item name="wysiwyg" xsi:type="boolean">true</item>
+                    <item name="wysiwygConfigData" xsi:type="array">
+                        <item name="is_pagebuilder_enabled" xsi:type="boolean">false</item>
+                    </item>
+                    <item name="label" xsi:type="string">Description</item>
+                    <item name="template" xsi:type="string">ui/form/field</item>
+                    <item name="dataScope" xsi:type="string">description</item>
+                    <item name="rows" xsi:type="number">8</item>
+                    <item name="service" xsi:type="array">
+                        <item name="template" xsi:type="string">ui/form/element/helper/service</item>
+                    </item>
+                    <item name="disabled" xsi:type="boolean">true</item>
+                </item>
+            </argument>
+        </field>
+    </fieldset>
+</form>

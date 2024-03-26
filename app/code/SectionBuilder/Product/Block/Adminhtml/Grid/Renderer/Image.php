@@ -30,7 +30,7 @@ class Image extends \Magento\Backend\Block\Widget\Grid\Column\Renderer\AbstractR
             );
             $result .= "<div><img src='$img'/></div>";
 
-            if ($index >= 6) { // Shows only a few images
+            if ($index >= 0) { // Shows only a few images
                 break;
             }
         }

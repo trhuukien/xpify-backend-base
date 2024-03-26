@@ -3,17 +3,13 @@ declare(strict_types=1);
 
 namespace SectionBuilder\Product\Controller\Adminhtml\Product;
 
-use Magento\Backend\App\Action;
-use Magento\Backend\App\Action\Context;
-use Magento\Framework\App\Action\HttpPostActionInterface;
-use Magento\Framework\App\Filesystem\DirectoryList;
-use Magento\Framework\App\Request\DataPersistorInterface;
-use Magento\Framework\Filesystem;
-use Magento\Framework\Filesystem\Driver\File;
+use SectionBuilder\Product\Model\Helper\Image;
 
-class Save extends Action implements HttpPostActionInterface
+class Save extends \Magento\Backend\App\Action implements \Magento\Framework\App\Action\HttpPostActionInterface
 {
     public const ADMIN_RESOURCE = Edit::ADMIN_RESOURCE;
+
+    protected $changeData;
 
     protected $sectionRepository;
 
@@ -21,57 +17,48 @@ class Save extends Action implements HttpPostActionInterface
 
     protected $tagProductResource;
 
+    protected $imageHelper;
+
+    protected $getFileRaw;
+
     protected $dataPersistor;
 
     protected $messageManager;
 
     protected $serializer;
 
-    protected $fileDriver;
-
-    protected $filesystem;
-
-    protected $mediaDirectory;
-
-    protected $coreFileStorageDatabase;
-
-    protected $getFileRaw;
-
     public function __construct(
-        Context $context,
+        \Magento\Backend\App\Action\Context $context,
+        \SectionBuilder\Core\Model\Change $changeData,
         \SectionBuilder\Product\Api\SectionRepositoryInterface $sectionRepository,
         \SectionBuilder\Category\Model\ResourceModel\CategoryProduct $categoryProductResource,
         \SectionBuilder\Tag\Model\ResourceModel\TagProduct $tagProductResource,
-        DataPersistorInterface $dataPersistor,
+        \SectionBuilder\Product\Model\Helper\Image $imageHelper,
+        \SectionBuilder\FileModifier\Model\GetFileRaw $getFileRaw,
+        \Magento\Framework\App\Request\DataPersistorInterface $dataPersistor,
         \Magento\Framework\Message\ManagerInterface $messageManager,
-        \Magento\Framework\Serialize\SerializerInterface $serializer,
-        File $fileDriver,
-        Filesystem $filesystem,
-        \Magento\MediaStorage\Helper\File\Storage\Database $coreFileStorageDatabase,
-        \Magento\Framework\App\Response\RedirectInterface $redirect,
-        \SectionBuilder\FileModifier\Model\GetFileRaw $getFileRaw
+        \Magento\Framework\Serialize\SerializerInterface $serializer
     ) {
         parent::__construct($context);
+        $this->changeData = $changeData;
         $this->sectionRepository = $sectionRepository;
         $this->categoryProductResource = $categoryProductResource;
         $this->tagProductResource = $tagProductResource;
+        $this->imageHelper = $imageHelper;
+        $this->getFileRaw = $getFileRaw;
         $this->dataPersistor = $dataPersistor;
         $this->messageManager = $messageManager;
         $this->serializer = $serializer;
-        $this->fileDriver = $fileDriver;
-        $this->filesystem = $filesystem;
-        $this->mediaDirectory = $filesystem->getDirectoryWrite(DirectoryList::MEDIA);
-        $this->coreFileStorageDatabase = $coreFileStorageDatabase;
-        $this->redirect = $redirect;
-        $this->getFileRaw = $getFileRaw;
     }
 
     public function execute()
     {
         $postData = $this->getRequest()->getPost()->toArray();
+
         try {
             if (empty($postData['entity_id'])) {
                 $section = $this->sectionRepository->create();
+                $redirectEditPage = true;
             } else {
                 $section = $this->sectionRepository->get('entity_id', $postData['entity_id']);
             }
@@ -80,14 +67,16 @@ class Save extends Action implements HttpPostActionInterface
             $section->setName(trim($postData['name']));
             $section->setKey(trim($postData['url_key']));
             $section->setPrice((float)$postData['price']);
+            $section->setShortDescription($postData['short_description']);
             $section->setDescription($postData['description']);
 
             $mediaGallery = $postData['media_gallery'] ?? '';
             if (is_array($mediaGallery)) {
-                $galleryArray = $this->uploadMediaGallery($postData['media_gallery']);
+                $galleryArray = $this->imageHelper->uploadMediaGallery($postData['media_gallery']);
                 $mediaGallery = implode(\SectionBuilder\Product\Model\Helper\Image::SEPARATION, $galleryArray);
             }
-            $section->setMediaGallery($mediaGallery);
+            $postData['media_gallery'] = $mediaGallery;
+            $section->setMediaGallery($postData['media_gallery']);
 
             $postData['is_group_product'] = (int)$postData['is_group_product'];
             if (!$postData['is_group_product']) {
@@ -106,14 +95,15 @@ class Save extends Action implements HttpPostActionInterface
                 }
             } else {
                 $section->setTypeId(\SectionBuilder\Product\Model\Config\Source\ProductType::GROUP_TYPE_ID);
-                $childIdsArr = $this->serializer->unserialize($postData['group_products']);
+                $childIdsArr = $this->serializer->unserialize($postData['product_list']);
                 $childIds = [];
                 foreach ($childIdsArr as $entityId => $isSelected) {
                     if ($isSelected) {
                         $childIds[] = $entityId;
                     }
                 }
-                $section->setChildIds(implode(",", $childIds));
+                $postData['product_list'] = implode(",", $childIds);
+                $section->setChildIds($postData['product_list']);
 
                 if (!$section->getChildIds()) {
                     $this->messageManager->addErrorMessage(__('Please select child product!'));
@@ -124,125 +114,35 @@ class Save extends Action implements HttpPostActionInterface
 
             $this->sectionRepository->save($section);
 
-            $this->replaceCategories($section->getId(), $postData['categories'] ?? []);
-            $this->replaceTags($section->getId(), $postData['tags'] ?? []);
+            $this->changeData->replaceData(
+                $this->categoryProductResource,
+                $postData['categories'] ?? [],
+                'product_id',
+                $section->getId(),
+                'category_id'
+            );
+            $this->changeData->replaceData(
+                $this->tagProductResource,
+                $postData['tags'] ?? [],
+                'product_id',
+                $section->getId(),
+                'tag_id'
+            );
 
             $this->messageManager->addSuccessMessage(__('You saved the product.'));
+            if (!empty($redirectEditPage)) {
+                $redirectPath = '*/*/edit';
+                $redirectParams = ['id' => $section->getId()];
+                return $this->resultRedirectFactory->create()->setPath(
+                    $redirectPath,
+                    $redirectParams
+                );
+            }
         } catch (\Exception $e) {
             $this->messageManager->addExceptionMessage($e);
             $this->dataPersistor->set('section_product_data', $postData);
         }
 
         return $this->resultRedirectFactory->create()->setUrl($this->_redirect->getRefererUrl());
-    }
-
-    public function uploadMediaGallery($media)
-    {
-        $gallery = [];
-
-        if (!empty($media['images'])) {
-            $images = $media['images'];
-            $bannerimageDirPath = $this->mediaDirectory->getAbsolutePath("section_builder/product");
-            $tmp = $this->mediaDirectory->getAbsolutePath(\SectionBuilder\Product\Model\Helper\Image::SUB_DIR . "tmp");
-            if (!$this->fileDriver->isExists($bannerimageDirPath)) {
-                $this->fileDriver->createDirectory($bannerimageDirPath);
-                $this->fileDriver->createDirectory($tmp);
-            }
-            foreach ($images as $image) {
-                if (empty($image['removed'])) {
-                    if (!empty($image['value_id'])) {
-                        $gallery[] = $image['value_id'];
-                    } elseif (!empty($image['file'])) {
-                        $originalImageName = $image['file'];
-                        $imageName = $originalImageName;
-                        $basePath = "section_builder/product";
-                        $baseTmpImagePath = "catalog/tmp/category/" . $imageName;
-                        $baseImagePath = $basePath . "/" . $imageName;
-                        $mediaPath = $this->filesystem->getDirectoryRead(DirectoryList::MEDIA)->getAbsolutePath();
-                        $baseImageAbsolutePath = $mediaPath . $baseImagePath;
-                        $i = 1;
-                        while (file_exists($baseImageAbsolutePath)) {
-                            $i++;
-                            $p = mb_strrpos($originalImageName, '.');
-                            if (false !== $p) {
-                                $imageName = mb_substr($originalImageName, 0, $p) . $i . mb_substr($originalImageName, $p);
-                            } else {
-                                $imageName = $originalImageName . $i;
-                            }
-                            $baseImagePath = $basePath . "/" . $imageName;
-                            $baseImageAbsolutePath = $mediaPath . $baseImagePath;
-                        }
-                        $this->coreFileStorageDatabase->copyFile(
-                            $baseTmpImagePath,
-                            $baseImagePath
-                        );
-                        $this->mediaDirectory->renameFile(
-                            $baseTmpImagePath,
-                            $baseImagePath
-                        );
-
-                        $gallery[] = $baseImagePath;
-                    }
-                }
-            }
-        }
-
-        return $gallery;
-    }
-
-    public function replaceCategories($productId, $data)
-    {
-        $this->replaceData(
-            $this->categoryProductResource,
-            $data,
-            $productId,
-            'category_id'
-        );
-    }
-
-    public function replaceTags($productId, $data)
-    {
-        $this->replaceData(
-            $this->tagProductResource,
-            $data,
-            $productId,
-            'tag_id'
-        );
-    }
-
-    public function replaceData($resourceModel, $data, $productId, $key)
-    {
-        $tableName = $resourceModel->getMainTable();
-        $select = $resourceModel->getConnection()->select()
-            ->from($tableName)
-            ->where('product_id = ?', $productId);
-        $oldData = $resourceModel->getConnection()->fetchAll($select);
-        $oldData = array_column($oldData, $key);
-
-        $dataToRemove = array_diff($oldData, $data);
-        $dataToAdd = array_diff($data, $oldData);
-
-        $resourceModel->getConnection()->delete(
-            $tableName,
-            [
-                'product_id = ?' => $productId,
-                "$key IN (?)" => $dataToRemove
-            ]
-        );
-
-        foreach ($dataToAdd as $id) {
-            if ($id) {
-                $dataToInsert[] = [
-                    'product_id' => $productId,
-                    "$key" => $id
-                ];
-            }
-        }
-        if (!empty($dataToInsert)) {
-            $resourceModel->getConnection()->insertMultiple(
-                $tableName,
-                $dataToInsert
-            );
-        }
     }
 }

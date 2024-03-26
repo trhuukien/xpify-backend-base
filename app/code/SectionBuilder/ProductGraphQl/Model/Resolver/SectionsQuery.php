@@ -100,10 +100,8 @@ class SectionsQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbstrac
             }
 
             if (!empty($item['tags'])) {
-                try {
-                    $tags = json_decode($item['tags'], true);
-                    $item['tags'] = $tags;
-                } catch (\Throwable $e) {}
+                $tags = json_decode($item['tags'], true);
+                $item['tags'] = $tags;
             }
 
             $hasOneTime = $item['bought_id'];

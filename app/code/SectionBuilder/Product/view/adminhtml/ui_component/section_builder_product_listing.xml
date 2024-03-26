@@ -53,26 +53,11 @@
         <filters name="listing_filters" />
 
         <massaction name="listing_massaction" component="Magento_Ui/js/grid/tree-massactions" class="\Magento\Catalog\Ui\Component\Product\MassAction">
-            <action name="status">
+            <action name="update">
                 <settings>
-                    <type>status</type>
-                    <label translate="true">Change status</label>
-                    <actions>
-                        <action name="0">
-                            <type>enable</type>
-                            <label translate="true">Enable</label>
-                            <url path="*/*/massStatus">
-                                <param name="status">1</param>
-                            </url>
-                        </action>
-                        <action name="1">
-                            <type>disable</type>
-                            <label translate="true">Disable</label>
-                            <url path="*/*/massStatus">
-                                <param name="status">0</param>
-                            </url>
-                        </action>
-                    </actions>
+                    <type>update</type>
+                    <label translate="true">Mass update</label>
+                    <url path="*/*/massUpdate" />
                 </settings>
             </action>
         </massaction>
@@ -177,22 +162,6 @@
                     <item name="label" xsi:type="string" translate="true">Status</item>
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
                     <item name="dataType" xsi:type="string">select</item>
-                </item>
-            </argument>
-        </column>
-        <column name="qty_installed">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">textRange</item>
-                    <item name="label" xsi:type="string" translate="true">Installed</item>
-                </item>
-            </argument>
-        </column>
-        <column name="qty_sold">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">textRange</item>
-                    <item name="label" xsi:type="string" translate="true">Sold</item>
                 </item>
             </argument>
         </column>
