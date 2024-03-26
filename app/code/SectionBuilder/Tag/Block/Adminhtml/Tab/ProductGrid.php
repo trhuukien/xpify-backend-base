@@ -1,25 +1,26 @@
 <?php
-namespace SectionBuilder\Category\Block\Adminhtml\Tab;
+namespace SectionBuilder\Tag\Block\Adminhtml\Tab;
 
 class ProductGrid extends \SectionBuilder\Product\Block\Adminhtml\Tab\ProductGrid
 {
-    protected $categoryProductCollectionFactory;
+    protected $tagProductCollectionFactory;
 
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
         \SectionBuilder\Product\Model\ResourceModel\Section\CollectionFactory $productCollectionFactory,
-        \SectionBuilder\Category\Model\ResourceModel\CategoryProduct\CollectionFactory $categoryProductCollectionFactory,
+        \SectionBuilder\Tag\Model\ResourceModel\TagProduct\CollectionFactory $tagProductCollectionFactory,
         \Magento\Framework\Module\Manager $moduleManager,
+        \Magento\Framework\App\Request\DataPersistorInterface $dataPersistor,
         array $data = []
     ) {
-        $this->categoryProductCollectionFactory = $categoryProductCollectionFactory;
-        parent::__construct($context, $backendHelper, $productCollectionFactory, $moduleManager, $data);
+        $this->tagProductCollectionFactory = $tagProductCollectionFactory;
+        parent::__construct($context, $backendHelper, $productCollectionFactory, $moduleManager, $dataPersistor, $data);
     }
 
     public function getGridUrl()
     {
-        return $this->getUrl('*/category/grids', ['_current' => true]);
+        return $this->getUrl('*/tag/grids', ['_current' => true]);
     }
 
     protected function _prepareCollection()
@@ -36,8 +37,8 @@ class ProductGrid extends \SectionBuilder\Product\Block\Adminhtml\Tab\ProductGri
             return [];
         }
 
-        $collection = $this->categoryProductCollectionFactory->create()
-            ->addFieldToFilter('category_id', $this->getRequest()->getParam('id'))
+        $collection = $this->tagProductCollectionFactory->create()
+            ->addFieldToFilter('tag_id', $this->getRequest()->getParam('id'))
             ->addFieldToSelect('product_id');
         $productIds = $collection->getData();
 

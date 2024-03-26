@@ -37,6 +37,7 @@ class Save extends Action implements HttpPostActionInterface
         try {
             if (empty($postData['entity_id'])) {
                 $faq = $this->faqRepository->create();
+                $redirectEditPage = true;
             } else {
                 $faq = $this->faqRepository->get('entity_id', $postData['entity_id']);
             }
@@ -47,22 +48,19 @@ class Save extends Action implements HttpPostActionInterface
             $this->faqRepository->save($faq);
 
             $this->messageManager->addSuccessMessage(__('You saved the faq.'));
-            $redirectPath = '*/*/';
-            $redirectParams = ['id' => $faq->getId()];
+            if (!empty($redirectEditPage)) {
+                $redirectPath = '*/*/edit';
+                $redirectParams = ['id' => $faq->getId()];
+                return $this->resultRedirectFactory->create()->setPath(
+                    $redirectPath,
+                    $redirectParams
+                );
+            }
         } catch (\Exception $e) {
             $this->messageManager->addExceptionMessage($e);
             $this->dataPersistor->set('section_faq_data', $postData);
-            if (empty($postData['entity_id'])) {
-                $redirectPath = '*/*/add';
-            } else {
-                $redirectPath = '*/*/';
-                $redirectParams = ['id' => $postData['entity_id']];
-            }
         }
 
-        return $this->resultRedirectFactory->create()->setPath(
-            $redirectPath,
-            $redirectParams ?? []
-        );
+        return $this->resultRedirectFactory->create()->setUrl($this->_redirect->getRefererUrl());
     }
 }

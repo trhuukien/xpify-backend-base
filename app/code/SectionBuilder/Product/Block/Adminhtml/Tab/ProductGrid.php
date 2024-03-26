@@ -132,6 +132,22 @@ class ProductGrid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'column_css_class' => 'col-price'
             ]
         );
+        $this->addColumn(
+            'type_id',
+            [
+                'header' => __('Type'),
+                'index' => 'type_id',
+                'type' => 'options',
+                'options' => [
+                    '' => __(' '),
+                    1 => __('Simple'),
+                    2 => __('Group')
+                ],
+                'filter' => \Magento\Backend\Block\Widget\Grid\Column\Filter\Select::class,
+                'header_css_class' => 'col-type_id',
+                'column_css_class' => 'col-type_id'
+            ]
+        );
 
         return parent::_prepareColumns();
     }

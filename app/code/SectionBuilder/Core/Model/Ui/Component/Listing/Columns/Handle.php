@@ -17,22 +17,26 @@ class Handle extends Column
 
     protected $tagCollectionFactory;
 
+    protected $timezone;
+
     public function __construct(
         ContextInterface $context,
         UiComponentFactory $uiComponentFactory,
         UrlInterface $urlBuilder,
         \SectionBuilder\Category\Model\ResourceModel\CategoryProduct\CollectionFactory $categoryCollectionFactory,
         \SectionBuilder\Tag\Model\ResourceModel\TagProduct\CollectionFactory $tagCollectionFactory,
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
         array $components = [],
         array $data = []
     ) {
         $this->urlBuilder = $urlBuilder;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->tagCollectionFactory = $tagCollectionFactory;
+        $this->timezone = $timezone;
         parent::__construct($context, $uiComponentFactory, $components, $data);
     }
 
-    public function handleAction(array $dataSource, $path)
+    public function addActionEdit(array $dataSource, $path)
     {
         if (isset($dataSource['data']['items'])) {
             foreach ($dataSource['data']['items'] as &$item) {
@@ -41,8 +45,35 @@ class Handle extends Column
                         $path,
                         ['id' => $item['entity_id']]
                     ),
-                    'label' => __('Edit'),
-                    'hidden' => false,
+                    'label' => __('Edit')
+                ];
+            }
+        }
+
+        return $dataSource;
+    }
+
+    public function addActionDelete(array $dataSource, $path)
+    {
+        $currentTime = $this->timezone->date();
+
+        if (isset($dataSource['data']['items'])) {
+            foreach ($dataSource['data']['items'] as &$item) {
+                /* Restrict product deletion */
+                if ($item['qty_installed'] || !$item['created_at']) {
+                    continue;
+                }
+                if ($currentTime->getTimestamp() - strtotime($item['created_at']) > 3600) {
+                    continue;
+                }
+
+                $item[$this->getData('name')]['delete'] = [
+                    'href' => $this->urlBuilder->getUrl($path, ['id' => $item['entity_id']]),
+                    'label' => __('Delete'),
+                    'confirm' => [
+                        'title' => __('Delete "%1"', $item['name']),
+                        'message' => __('Are you sure you want to delete a "%1"?', $item['name'])
+                    ]
                 ];
             }
         }

@@ -18,12 +18,12 @@ class SortOptionsQuery extends \Xpify\AuthGraphQl\Model\Resolver\AuthSessionAbst
         return [
             [
                 'label' => 'Popular',
-                'value' => 'main_table.qty_sold asc',
+                'value' => 'main_table.qty_installed asc',
                 'directionLabel' => 'Ascending'
             ],
             [
                 'label' => 'Popular',
-                'value' => 'main_table.qty_sold desc',
+                'value' => 'main_table.qty_installed desc',
                 'directionLabel' => 'Descending'
             ],
             [

@@ -1,7 +1,7 @@
 <?php
 namespace SectionBuilder\Category\Controller\Adminhtml\Category;
 
-class Grids extends \SectionBuilder\Product\Controller\Adminhtml\Product\Grids
+class Grids extends \SectionBuilder\Product\Controller\Adminhtml\Product\ProductGrids
 {
     public function execute()
     {

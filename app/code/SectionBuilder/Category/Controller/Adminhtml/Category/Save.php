@@ -67,15 +67,15 @@ class Save extends Action implements HttpPostActionInterface
                         $productIds[] = $productId;
                     }
                 }
-            }
 
-            $this->changeData->replaceData(
-                $this->categoryProductResource,
-                $productIds,
-                'category_id',
-                $category->getId(),
-                'product_id'
-            );
+                $this->changeData->replaceData(
+                    $this->categoryProductResource,
+                    $productIds,
+                    'category_id',
+                    $category->getId(),
+                    'product_id'
+                );
+            }
 
             $this->messageManager->addSuccessMessage(__('You saved the category.'));
             if (!empty($redirectEditPage)) {

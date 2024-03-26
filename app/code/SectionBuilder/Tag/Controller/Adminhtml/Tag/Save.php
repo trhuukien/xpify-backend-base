@@ -61,15 +61,15 @@ class Save extends Action implements HttpPostActionInterface
                         $productIds[] = $productId;
                     }
                 }
-            }
 
-            $this->changeData->replaceData(
-                $this->tagProductResource,
-                $productIds,
-                'tag_id',
-                $tag->getId(),
-                'product_id'
-            );
+                $this->changeData->replaceData(
+                    $this->tagProductResource,
+                    $productIds,
+                    'tag_id',
+                    $tag->getId(),
+                    'product_id'
+                );
+            }
 
             $this->messageManager->addSuccessMessage(__('You saved the tag.'));
             if (!empty($redirectEditPage)) {

@@ -18,7 +18,6 @@ interface SectionInterface
     const DESCRIPTION = 'description';
     const TYPE_ID = 'type_id';
     const CHILD_IDS = 'child_ids';
-    const QTY_SOLD = 'qty_sold';
     const QTY_INSTALLED = 'qty_installed';
     const VERSION = 'version';
     const RELEASE_NOTE = 'release_note';

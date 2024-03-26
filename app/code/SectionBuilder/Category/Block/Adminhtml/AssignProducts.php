@@ -8,11 +8,12 @@ class AssignProducts extends \SectionBuilder\Product\Block\Adminhtml\AssignProdu
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \SectionBuilder\Product\Model\ResourceModel\Section\CollectionFactory $productFactory,
+        \Magento\Framework\App\Request\DataPersistorInterface $dataPersistor,
         \SectionBuilder\Category\Model\ResourceModel\CategoryProduct\CollectionFactory $categoryProductCollectionFactory,
         array $data = []
     ) {
         $this->categoryProductCollectionFactory = $categoryProductCollectionFactory;
-        parent::__construct($context, $productFactory, $data);
+        parent::__construct($context, $productFactory, $dataPersistor, $data);
     }
 
     public function getBlockGrid()

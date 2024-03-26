@@ -11,6 +11,9 @@ class Action extends \SectionBuilder\Core\Model\Ui\Component\Listing\Columns\Han
      */
     public function prepareDataSource(array $dataSource)
     {
-        return $this->handleAction($dataSource, 'section_builder/product/edit');
+        $dataSource = $this->addActionEdit($dataSource, 'section_builder/product/edit');
+        $dataSource = $this->addActionDelete($dataSource, 'section_builder/product/delete');
+
+        return $dataSource;
     }
 }

@@ -3,3 +3,13 @@
 ?>
 
 <?= /* @escapeNotVerified */ $block->getGridHtml() ?>
+
+<?php $total = $block->getTotalRecord(); ?>
+<div class="total-sell_install">
+    <div>
+        <p>Shop Installing: <span><?= /* @escapeNotVerified */ $total['shop_installing'] ?? 0 ?></span></p>
+        <p>Theme Installing: <span><?= /* @escapeNotVerified */ $total['theme_installing'] ?? 0 ?></span></p>
+        <p>Purchase: <span><?= /* @escapeNotVerified */ $total['bought'] ?? 0 ?></span></p>
+    </div>
+    <p>Total Installed: <span><?= /* @escapeNotVerified */ $total['installed'] ?? 0 ?></span></p>
+</div>

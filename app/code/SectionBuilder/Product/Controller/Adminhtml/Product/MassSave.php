@@ -43,8 +43,8 @@ class MassSave extends \Magento\Backend\App\Action
         }
 
         if (!$data || !$productIds) {
-            $this->messageManager->addErrorMessage(
-                __('No records have been updated')
+            $this->messageManager->addWarningMessage(
+                __('No record have been updated')
             );
 
             return $resultRedirect->setPath('*/*/');
